@@ -1,0 +1,642 @@
+{
+  "provenance": {
+    "dataset": "CIC-IDS2017 GeneratedLabelledFlows",
+    "archive": "GeneratedLabelledFlows.zip",
+    "files": [
+      "Wednesday-workingHours.pcap_ISCX.csv",
+      "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv"
+    ],
+    "scope": "Selected full one-minute groups; sampled evidence records shown"
+  },
+  "rules": {
+    "window_seconds": 60,
+    "portscan_min_destination_ports": 100,
+    "portscan_min_source_ports": 10,
+    "portscan_min_flows": 100,
+    "dos_min_flows": 1000,
+    "dos_min_packets": 10000,
+    "ddos_min_sources": 3
+  },
+  "evaluation": {
+    "groups_scanned": 146835,
+    "rule_matches": 74,
+    "preview_cases": 5
+  },
+  "flows": [
+    {
+      "flow_id": "FLOW-745C5543C223",
+      "timestamp": "2017-07-05T10:43:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "50748",
+      "packet_count": 9.0,
+      "dataset_label": "DoS Hulk",
+      "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+      "source_row": 74862,
+      "original_flow_id": "172.16.0.1-192.168.10.50-50748-80-6"
+    },
+    {
+      "flow_id": "FLOW-6550BDBA5F3E",
+      "timestamp": "2017-07-05T10:43:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "50752",
+      "packet_count": 9.0,
+      "dataset_label": "DoS Hulk",
+      "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+      "source_row": 74863,
+      "original_flow_id": "172.16.0.1-192.168.10.50-50752-80-6"
+    },
+    {
+      "flow_id": "FLOW-DF73F85BD029",
+      "timestamp": "2017-07-05T10:43:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "50750",
+      "packet_count": 4.0,
+      "dataset_label": "DoS Hulk",
+      "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+      "source_row": 74864,
+      "original_flow_id": "172.16.0.1-192.168.10.50-50750-80-6"
+    },
+    {
+      "flow_id": "FLOW-6F299AB30BA8",
+      "timestamp": "2017-07-05T10:43:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "50750",
+      "packet_count": 10.0,
+      "dataset_label": "DoS Hulk",
+      "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+      "source_row": 74865,
+      "original_flow_id": "172.16.0.1-192.168.10.50-50750-80-6"
+    },
+    {
+      "flow_id": "FLOW-6E8C96A1DF91",
+      "timestamp": "2017-07-05T10:43:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "50770",
+      "packet_count": 9.0,
+      "dataset_label": "DoS Hulk",
+      "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+      "source_row": 74866,
+      "original_flow_id": "172.16.0.1-192.168.10.50-50770-80-6"
+    },
+    {
+      "flow_id": "FLOW-1FA612614826",
+      "timestamp": "2017-07-05T10:43:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "37738",
+      "packet_count": 16.0,
+      "dataset_label": "DoS Hulk",
+      "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+      "source_row": 93048,
+      "original_flow_id": "172.16.0.1-192.168.10.50-37738-80-6"
+    },
+    {
+      "flow_id": "FLOW-78AB76BDB82C",
+      "timestamp": "2017-07-07T14:55:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "49614",
+      "packet_count": 4.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 183649,
+      "original_flow_id": "172.16.0.1-192.168.10.50-49614-80-6"
+    },
+    {
+      "flow_id": "FLOW-CEBBC40AC56B",
+      "timestamp": "2017-07-07T14:55:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "1119",
+      "source_port": "43902",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 183650,
+      "original_flow_id": "172.16.0.1-192.168.10.50-43902-1119-6"
+    },
+    {
+      "flow_id": "FLOW-5A5EA69C8028",
+      "timestamp": "2017-07-07T14:55:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "1038",
+      "source_port": "41398",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 183651,
+      "original_flow_id": "172.16.0.1-192.168.10.50-41398-1038-6"
+    },
+    {
+      "flow_id": "FLOW-E67F4F5AF4C4",
+      "timestamp": "2017-07-07T14:55:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "125",
+      "source_port": "51874",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 183652,
+      "original_flow_id": "172.16.0.1-192.168.10.50-51874-125-6"
+    },
+    {
+      "flow_id": "FLOW-63AC74FB9CCE",
+      "timestamp": "2017-07-07T14:55:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "1218",
+      "source_port": "59634",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 183653,
+      "original_flow_id": "172.16.0.1-192.168.10.50-59634-1218-6"
+    },
+    {
+      "flow_id": "FLOW-DE7C1502C2A5",
+      "timestamp": "2017-07-07T14:55:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "32773",
+      "source_port": "60232",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 229857,
+      "original_flow_id": "172.16.0.1-192.168.10.50-60232-32773-6"
+    },
+    {
+      "flow_id": "FLOW-A5E210226279",
+      "timestamp": "2017-07-07T15:57:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "51684",
+      "packet_count": 4.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 22551,
+      "original_flow_id": "172.16.0.1-192.168.10.50-51684-80-6"
+    },
+    {
+      "flow_id": "FLOW-55D6C47029F7",
+      "timestamp": "2017-07-07T15:57:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "51686",
+      "packet_count": 4.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 22552,
+      "original_flow_id": "172.16.0.1-192.168.10.50-51686-80-6"
+    },
+    {
+      "flow_id": "FLOW-6557A92B58CE",
+      "timestamp": "2017-07-07T15:57:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "51688",
+      "packet_count": 5.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 22553,
+      "original_flow_id": "172.16.0.1-192.168.10.50-51688-80-6"
+    },
+    {
+      "flow_id": "FLOW-19AA9CC5B262",
+      "timestamp": "2017-07-07T15:57:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "51691",
+      "packet_count": 5.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 22554,
+      "original_flow_id": "172.16.0.1-192.168.10.50-51691-80-6"
+    },
+    {
+      "flow_id": "FLOW-2882D7353100",
+      "timestamp": "2017-07-07T15:57:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "51687",
+      "packet_count": 4.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 22555,
+      "original_flow_id": "172.16.0.1-192.168.10.50-51687-80-6"
+    },
+    {
+      "flow_id": "FLOW-5B5A59641CE2",
+      "timestamp": "2017-07-07T15:57:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "53821",
+      "packet_count": 9.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 30794,
+      "original_flow_id": "172.16.0.1-192.168.10.50-53821-80-6"
+    },
+    {
+      "flow_id": "FLOW-79B097EE02EC",
+      "timestamp": "2017-07-07T16:01:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "20489",
+      "packet_count": 5.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 61690,
+      "original_flow_id": "172.16.0.1-192.168.10.50-20489-80-6"
+    },
+    {
+      "flow_id": "FLOW-24D5EE154B55",
+      "timestamp": "2017-07-07T16:01:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "20490",
+      "packet_count": 4.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 61691,
+      "original_flow_id": "172.16.0.1-192.168.10.50-20490-80-6"
+    },
+    {
+      "flow_id": "FLOW-9402A360622B",
+      "timestamp": "2017-07-07T16:01:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "20491",
+      "packet_count": 5.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 61692,
+      "original_flow_id": "172.16.0.1-192.168.10.50-20491-80-6"
+    },
+    {
+      "flow_id": "FLOW-5715F91290DE",
+      "timestamp": "2017-07-07T16:01:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "20492",
+      "packet_count": 5.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 61693,
+      "original_flow_id": "172.16.0.1-192.168.10.50-20492-80-6"
+    },
+    {
+      "flow_id": "FLOW-07BF5C528446",
+      "timestamp": "2017-07-07T16:01:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "20493",
+      "packet_count": 5.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 61694,
+      "original_flow_id": "172.16.0.1-192.168.10.50-20493-80-6"
+    },
+    {
+      "flow_id": "FLOW-03B1FA44B1D5",
+      "timestamp": "2017-07-07T16:01:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "60523",
+      "packet_count": 8.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 68666,
+      "original_flow_id": "172.16.0.1-192.168.10.50-60523-80-6"
+    },
+    {
+      "flow_id": "FLOW-446C3EC3C49A",
+      "timestamp": "2017-07-07T16:02:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "22095",
+      "packet_count": 4.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 70968,
+      "original_flow_id": "172.16.0.1-192.168.10.50-22095-80-6"
+    },
+    {
+      "flow_id": "FLOW-5D279CADB7C8",
+      "timestamp": "2017-07-07T16:02:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "22096",
+      "packet_count": 4.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 70969,
+      "original_flow_id": "172.16.0.1-192.168.10.50-22096-80-6"
+    },
+    {
+      "flow_id": "FLOW-CC38CBDE4AD1",
+      "timestamp": "2017-07-07T16:02:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "22097",
+      "packet_count": 4.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 70970,
+      "original_flow_id": "172.16.0.1-192.168.10.50-22097-80-6"
+    },
+    {
+      "flow_id": "FLOW-7053F0977AD8",
+      "timestamp": "2017-07-07T16:02:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "22098",
+      "packet_count": 4.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 70971,
+      "original_flow_id": "172.16.0.1-192.168.10.50-22098-80-6"
+    },
+    {
+      "flow_id": "FLOW-54E033A35CEF",
+      "timestamp": "2017-07-07T16:02:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "22099",
+      "packet_count": 5.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 70972,
+      "original_flow_id": "172.16.0.1-192.168.10.50-22099-80-6"
+    },
+    {
+      "flow_id": "FLOW-67A8B03B0418",
+      "timestamp": "2017-07-07T16:02:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "62189",
+      "packet_count": 8.0,
+      "dataset_label": "DDoS",
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_row": 77856,
+      "original_flow_id": "172.16.0.1-192.168.10.50-62189-80-6"
+    }
+  ],
+  "alerts": [
+    {
+      "alert_id": "ALT-8178077891CE",
+      "incident_id": "INC-CADF3563BF02",
+      "type": "DoS",
+      "timestamp": "2017-07-05T10:43:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "flow_count": 17752,
+      "destination_port_count": 1,
+      "source_port_count": 7614,
+      "source_count": 1,
+      "evidence_sample_ids": [
+        "FLOW-745C5543C223",
+        "FLOW-6550BDBA5F3E",
+        "FLOW-DF73F85BD029",
+        "FLOW-6F299AB30BA8",
+        "FLOW-6E8C96A1DF91",
+        "FLOW-1FA612614826"
+      ],
+      "dataset_labels": {
+        "DoS Hulk": 17752
+      },
+      "ddos_reference": false,
+      "rule_basis": "17752 flows and 173643 packets in one minute"
+    },
+    {
+      "alert_id": "ALT-67F2BEB6C51A",
+      "incident_id": "INC-FA4E327F1DFD",
+      "type": "PortScan",
+      "timestamp": "2017-07-07T14:55:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "flow_count": 44410,
+      "destination_port_count": 996,
+      "source_port_count": 13497,
+      "source_count": 1,
+      "evidence_sample_ids": [
+        "FLOW-78AB76BDB82C",
+        "FLOW-CEBBC40AC56B",
+        "FLOW-5A5EA69C8028",
+        "FLOW-E67F4F5AF4C4",
+        "FLOW-63AC74FB9CCE",
+        "FLOW-DE7C1502C2A5"
+      ],
+      "dataset_labels": {
+        "PortScan": 44410
+      },
+      "ddos_reference": false,
+      "rule_basis": "996 destination ports, 13497 source ports in one minute"
+    },
+    {
+      "alert_id": "ALT-D3ACF33D1454",
+      "incident_id": "INC-2B98E5DB02AE",
+      "type": "DoS",
+      "timestamp": "2017-07-07T15:57:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "flow_count": 8244,
+      "destination_port_count": 1,
+      "source_port_count": 4884,
+      "source_count": 1,
+      "evidence_sample_ids": [
+        "FLOW-A5E210226279",
+        "FLOW-55D6C47029F7",
+        "FLOW-6557A92B58CE",
+        "FLOW-19AA9CC5B262",
+        "FLOW-2882D7353100",
+        "FLOW-5B5A59641CE2"
+      ],
+      "dataset_labels": {
+        "DDoS": 8244
+      },
+      "ddos_reference": true,
+      "rule_basis": "8244 flows and 63984 packets in one minute"
+    },
+    {
+      "alert_id": "ALT-2F38DEC39253",
+      "incident_id": "INC-66A751FF249C",
+      "type": "DoS",
+      "timestamp": "2017-07-07T16:01:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "flow_count": 6977,
+      "destination_port_count": 1,
+      "source_port_count": 4531,
+      "source_count": 1,
+      "evidence_sample_ids": [
+        "FLOW-79B097EE02EC",
+        "FLOW-24D5EE154B55",
+        "FLOW-9402A360622B",
+        "FLOW-5715F91290DE",
+        "FLOW-07BF5C528446",
+        "FLOW-03B1FA44B1D5"
+      ],
+      "dataset_labels": {
+        "DDoS": 6977
+      },
+      "ddos_reference": true,
+      "rule_basis": "6977 flows and 54413 packets in one minute"
+    },
+    {
+      "alert_id": "ALT-4237741DD78D",
+      "incident_id": "INC-3B7D873771E4",
+      "type": "DoS",
+      "timestamp": "2017-07-07T16:02:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "flow_count": 6889,
+      "destination_port_count": 1,
+      "source_port_count": 4465,
+      "source_count": 1,
+      "evidence_sample_ids": [
+        "FLOW-446C3EC3C49A",
+        "FLOW-5D279CADB7C8",
+        "FLOW-CC38CBDE4AD1",
+        "FLOW-7053F0977AD8",
+        "FLOW-54E033A35CEF",
+        "FLOW-67A8B03B0418"
+      ],
+      "dataset_labels": {
+        "DDoS": 6889
+      },
+      "ddos_reference": true,
+      "rule_basis": "6889 flows and 54038 packets in one minute"
+    }
+  ],
+  "incidents": [
+    {
+      "incident_id": "INC-CADF3563BF02",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "window_start": "2017-07-05T10:43:00",
+      "alert_ids": [
+        "ALT-8178077891CE"
+      ],
+      "evidence_sample_ids": [
+        "FLOW-745C5543C223",
+        "FLOW-6550BDBA5F3E",
+        "FLOW-DF73F85BD029",
+        "FLOW-6F299AB30BA8",
+        "FLOW-6E8C96A1DF91",
+        "FLOW-1FA612614826"
+      ],
+      "flow_count": 17752,
+      "source_file": "Wednesday-workingHours.pcap_ISCX.csv"
+    },
+    {
+      "incident_id": "INC-FA4E327F1DFD",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "window_start": "2017-07-07T14:55:00",
+      "alert_ids": [
+        "ALT-67F2BEB6C51A"
+      ],
+      "evidence_sample_ids": [
+        "FLOW-78AB76BDB82C",
+        "FLOW-CEBBC40AC56B",
+        "FLOW-5A5EA69C8028",
+        "FLOW-E67F4F5AF4C4",
+        "FLOW-63AC74FB9CCE",
+        "FLOW-DE7C1502C2A5"
+      ],
+      "flow_count": 44410,
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv"
+    },
+    {
+      "incident_id": "INC-2B98E5DB02AE",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "window_start": "2017-07-07T15:57:00",
+      "alert_ids": [
+        "ALT-D3ACF33D1454"
+      ],
+      "evidence_sample_ids": [
+        "FLOW-A5E210226279",
+        "FLOW-55D6C47029F7",
+        "FLOW-6557A92B58CE",
+        "FLOW-19AA9CC5B262",
+        "FLOW-2882D7353100",
+        "FLOW-5B5A59641CE2"
+      ],
+      "flow_count": 8244,
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"
+    },
+    {
+      "incident_id": "INC-66A751FF249C",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "window_start": "2017-07-07T16:01:00",
+      "alert_ids": [
+        "ALT-2F38DEC39253"
+      ],
+      "evidence_sample_ids": [
+        "FLOW-79B097EE02EC",
+        "FLOW-24D5EE154B55",
+        "FLOW-9402A360622B",
+        "FLOW-5715F91290DE",
+        "FLOW-07BF5C528446",
+        "FLOW-03B1FA44B1D5"
+      ],
+      "flow_count": 6977,
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"
+    },
+    {
+      "incident_id": "INC-3B7D873771E4",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "window_start": "2017-07-07T16:02:00",
+      "alert_ids": [
+        "ALT-4237741DD78D"
+      ],
+      "evidence_sample_ids": [
+        "FLOW-446C3EC3C49A",
+        "FLOW-5D279CADB7C8",
+        "FLOW-CC38CBDE4AD1",
+        "FLOW-7053F0977AD8",
+        "FLOW-54E033A35CEF",
+        "FLOW-67A8B03B0418"
+      ],
+      "flow_count": 6889,
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"
+    }
+  ]
+}

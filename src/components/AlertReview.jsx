@@ -1,51 +1,28 @@
 import React, { useState } from 'react';
-
-const tabs = ['Overview', 'Evidence', 'Timeline', 'Next Steps', 'Activity'];
+import Alerts from '../modules/alerts.jsx';
+import Timeline from '../modules/timeline.jsx';
+import data from '../real-alerts.json';
+import timelineData from '../real-timelines.json';
 
 export default function AlertReview() {
-  const [activeTab, setActiveTab] = useState('Overview');
+  const [selectedId, setSelectedId] = useState(data.incidents[0]?.incident_id);
+  const incident = data.incidents.find((item) => item.incident_id === selectedId);
+  const alert = data.alerts.find((item) => item.incident_id === selectedId);
+  const events = timelineData.timelines.find((item) => item.incident_id === selectedId)?.events || [];
 
   return (
     <>
-      <div className="page-heading">
+      <div className="page-heading review-page-heading">
         <h1>Alert Review</h1>
       </div>
-
       <div className="review-layout">
-        <section className="review-list" aria-label="Alerts">
-          <div className="review-heading">
-            <h2>Alerts</h2>
-            <span>00</span>
-          </div>
-          <div className="review-list-empty">No alerts yet</div>
-        </section>
-
-        <section className="review-detail" aria-label="Alert details">
-          <div className="review-tabs" role="tablist" aria-label="Review sections">
-            {tabs.map((tab) => (
-              <button
-                key={tab}
-                id={`tab-${tab.replaceAll(' ', '-').toLowerCase()}`}
-                role="tab"
-                aria-selected={activeTab === tab}
-                aria-controls="review-panel"
-                className={activeTab === tab ? 'active' : ''}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-          <div
-            id="review-panel"
-            className="review-empty"
-            role="tabpanel"
-            aria-labelledby={`tab-${activeTab.replaceAll(' ', '-').toLowerCase()}`}
-          >
-            <span className="empty-icon" aria-hidden="true">◎</span>
-            <span>No alert selected</span>
-          </div>
-        </section>
+        <Alerts incidents={data.incidents} alerts={data.alerts} selectedId={selectedId} onSelect={setSelectedId} />
+        {incident && alert && <div className="review-detail">
+          <div className="incident-heading"><div><span className="module-kicker">RULE MATCH</span><h2>{alert.type}</h2><code>{incident.incident_id}</code></div></div>
+          <div className="incident-facts"><div><span>Source</span><strong>{incident.source_ip}</strong></div><div><span>Destination</span><strong>{incident.destination_ip}</strong></div><div><span>Window</span><strong>{incident.window_start.replace('T', ' ').slice(0, 16)}</strong></div><div><span>Flows</span><strong>{incident.flow_count.toLocaleString()}</strong></div></div>
+          <div className="rule-detail"><div><span className="module-kicker">RULE BASIS</span><strong>{alert.rule_basis}</strong></div><div><span className="module-kicker">DATASET LABEL</span><strong>{Object.entries(alert.dataset_labels).map(([label, count]) => `${label} · ${count.toLocaleString()}`).join(' · ')}</strong></div>{alert.ddos_reference && alert.type !== 'DDoS' && <p>One visible source IP; distributed origin unverified.</p>}</div>
+          <Timeline events={events} />
+        </div>}
       </div>
     </>
   );
