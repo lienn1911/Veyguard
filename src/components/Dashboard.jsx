@@ -1,20 +1,66 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Icon from './Icon.jsx';
 import data from '../real-alerts.json';
 
-const nameFor = (type) => type === 'PortScan' ? 'Many ports checked' : 'Heavy network traffic';
+function shortDateTime(value) {
+  const [date, time = ''] = value.split('T');
+  const [year, month, day] = date.split('-');
+  return `${day}/${month}/${year} · ${time.slice(0, 5)}`;
+}
 
-export default function Dashboard({ onReview, onReplay }) {
-  const scans = data.incidents.filter((incident) => data.alerts.some((alert) => alert.incident_id === incident.incident_id && alert.type === 'PortScan')).length;
-  const floods = data.incidents.length - scans;
+export default function Dashboard({ onReview, onAlerts, username }) {
+  const incidents = data.incidents;
+  const alerts = data.alerts;
+  const [tasks, setTasks] = useState([]);
+  const [taskError, setTaskError] = useState('');
+  const [taskLoading, setTaskLoading] = useState(true);
+  const [completing, setCompleting] = useState(null);
 
-  return <>
-    <div className="page-heading dashboard-page-heading"><div><h1>Dashboard</h1><p>Historical network activity · CIC-IDS2017 sample</p></div>{onReplay && <button type="button" onClick={onReplay}>Replay alert</button>}</div>
-    <section className="dashboard-metrics" aria-label="Cases in this preview">
-      {[['Cases to review', data.incidents.length], ['Many ports checked', scans], ['Heavy traffic', floods]].map(([label, value]) => <div className="dashboard-metric" key={label}><span>{label}</span><strong>{value}</strong></div>)}
+  useEffect(() => {
+    let active = true;
+    fetch('/api/tasks')
+      .then((response) => { if (!response.ok) throw new Error('Tasks unavailable'); return response.json(); })
+      .then((result) => { if (active) setTasks(result.tasks || []); })
+      .catch(() => { if (active) setTaskError('Task service unavailable'); })
+      .finally(() => { if (active) setTaskLoading(false); });
+    return () => { active = false; };
+  }, []);
+
+  async function finishTask(task) {
+    setCompleting(task.id);
+    setTaskError('');
+    try {
+      const response = await fetch(`/api/tasks/${encodeURIComponent(task.id)}/complete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ analyst: username }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Could not complete task');
+      setTasks(result.tasks);
+    } catch (error) {
+      setTaskError(error.message);
+    } finally {
+      setCompleting(null);
+    }
+  }
+
+  return <div className="iris-home">
+    <section className="welcome-strip">
+      <div className="welcome-stats">
+        <button onClick={() => onReview()}><strong>{incidents.length}</strong><span className="blue"><Icon name="layers" size={15} /> CASES</span></button>
+        <button onClick={() => onAlerts()}><strong>{alerts.length}</strong><span className="red"><Icon name="bell" size={15} /> ALERTS</span></button>
+        <div><strong>{taskLoading ? '…' : tasks.length}</strong><span className="green"><Icon name="check" size={15} /> PENDING TASKS</span></div>
+      </div>
     </section>
-    <div className="dashboard-grid"><section className="dashboard-panel"><div className="dashboard-panel-head"><h2>Cases to review</h2><button onClick={onReview}>View cases <Icon name="arrow" size={15} /></button></div>
-      {data.incidents.map((incident) => { const alerts = data.alerts.filter((item) => item.incident_id === incident.incident_id); const type = alerts[0].type; return <div className="dashboard-flow" key={incident.incident_id}><span className={`alert-type ${type.toLowerCase()}`}>{nameFor(type)}</span><strong>{incident.source_ip} → {incident.destination_ip}</strong><span>{alerts.length} alerts</span></div>; })}
-    </section><section className="dashboard-panel"><div className="dashboard-panel-head"><h2>About this preview</h2></div><div className="dashboard-scope"><strong>Past network activity, not live monitoring</strong><span>{data.incidents.length} example cases are available to explore.</span><p>Open a case to see the traffic, why an alert appeared, and what still needs a human decision.</p></div></section></div>
-  </>;
+    <div className="home-grid home-overview-grid top-row">
+      <section className="home-card cases-card"><header><h2><span className="blue"><Icon name="layers" size={20} /></span>Cases</h2><button onClick={() => onReview()}>View all <Icon name="arrow" size={15} /></button></header>
+        <div className="home-card-body">{incidents.map((incident, i) => <button className="home-case home-overview-row" key={incident.incident_id} onClick={() => onReview(incident.incident_id)}><span className="home-row-index">#{i + 1}</span><span className="home-row-content"><strong>{incident.source_ip} → {incident.destination_ip}</strong><small>{shortDateTime(incident.window_start)}</small></span><span className="home-row-trailing">{incident.alert_ids.length} alerts</span></button>)}</div>
+      </section>
+      <section className="home-card alerts-card"><header><h2><span className="red"><Icon name="bell" size={20} /></span>Alerts</h2><button onClick={() => onAlerts()}>View all <Icon name="arrow" size={15} /></button></header>
+        <div className="home-card-body">{alerts.slice(0, 4).map((alert) => <button className="home-case home-overview-row" key={alert.alert_id} onClick={() => onAlerts(alert)}><span className="home-alert-type">{alert.type}</span><span className="home-row-content"><strong>{alert.source_ip} → {alert.destination_ip}</strong><small>{shortDateTime(alert.timestamp)}</small></span></button>)}</div>
+      </section>
+    </div>
+    {(tasks.length > 0 || taskError) && <section className="home-card tasks-card"><header><h2><span className="green"><Icon name="check" size={20} /></span>Pending investigation steps</h2></header>{taskError && <p className="task-error" role="alert">{taskError}</p>}{tasks.length > 0 && <div className="home-card-body">{tasks.map((task) => <div className="home-task" key={task.id}><button type="button" onClick={() => onReview(task.incident_id)}><strong>{task.text}</strong><small>Open case →</small></button><button type="button" className="task-done" disabled={completing === task.id} onClick={() => finishTask(task)}>{completing === task.id ? 'Saving…' : 'Mark done'}</button></div>)}</div>}</section>}
+  </div>;
 }

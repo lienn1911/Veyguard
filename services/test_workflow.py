@@ -4,7 +4,10 @@ import tempfile
 import unittest
 from contextlib import closing
 from pathlib import Path
+from unittest.mock import patch
 
+from services.api import complete_task, pending_tasks
+from services.case_notes import add_note, list_notes
 from services.guardrails import evaluate_safety, validate_guardrails
 from services.recommendations import generate_recommendations, get_case_note, save_decision
 
@@ -37,6 +40,29 @@ class WorkflowTests(unittest.TestCase):
         with closing(sqlite3.connect(self.db)) as db:
             events = [row[0] for row in db.execute('SELECT event FROM audit_log ORDER BY id')]
         self.assertIn('ANALYST_DECISION', events)
+
+    def test_approved_step_becomes_pending_task_until_analyst_completes_it(self):
+        rec = generate_recommendations(DATA, CASE_ID, self.db)[0]
+        save_decision(DATA, CASE_ID, rec['id'], 'APPROVED', 'Test Analyst', 'Needs Review', self.db)
+        with patch('services.api.DB_PATH', self.db):
+            self.assertEqual([task['id'] for task in pending_tasks()], [rec['id']])
+            self.assertEqual(complete_task(rec['id'], 'Test Analyst'), CASE_ID)
+            self.assertEqual(pending_tasks(), [])
+            with self.assertRaisesRegex(ValueError, 'already completed'):
+                complete_task(rec['id'], 'Test Analyst')
+        with closing(sqlite3.connect(self.db)) as db:
+            events = [row[0] for row in db.execute('SELECT event FROM audit_log ORDER BY id')]
+        self.assertIn('INVESTIGATION_STEP_COMPLETED', events)
+
+    def test_case_note_links_only_its_own_evidence_and_is_audited(self):
+        evidence_id = DATA['incidents'][0]['alert_ids'][0]
+        with self.assertRaisesRegex(ValueError, 'Select evidence'):
+            add_note(DATA, CASE_ID, 'Test Analyst', 'ALT-UNKNOWN', 'Observed activity', self.db)
+        note = add_note(DATA, CASE_ID, 'Test Analyst', evidence_id, 'Observed activity', self.db)
+        self.assertEqual(list_notes(CASE_ID, self.db), [note])
+        with closing(sqlite3.connect(self.db)) as db:
+            events = [row[0] for row in db.execute('SELECT event FROM audit_log ORDER BY id')]
+        self.assertEqual(events, ['ANALYST_NOTE_ADDED'])
 
     def test_unrelated_evidence_and_closure_are_blocked(self):
         alert_id = DATA['incidents'][0]['alert_ids'][0]

@@ -1,42 +1,33 @@
 import React from 'react';
+import {
+  ArrowRight, BellRing, Check, Home, Layers, MenuFold, MenuUnfold,
+  NetworkTree, Search, Shield, Star, Attention, HamburgerButton, Close,
+  User, Lock, PreviewOpen, PreviewClose,
+} from '@icon-park/react';
 
-export default function Icon({ name, size = 20 }) {
-  const props = {
-    width: size,
-    height: size,
-    viewBox: '0 0 24 24',
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 1.9,
-    strokeLinecap: 'round',
-    strokeLinejoin: 'round',
-    'aria-hidden': true,
-  };
+const icons = {
+  arrow: ArrowRight,
+  bell: BellRing,
+  check: Check,
+  home: Home,
+  layers: Layers,
+  menu: HamburgerButton,
+  network: NetworkTree,
+  search: Search,
+  shield: Shield,
+  star: Star,
+  alert: Attention,
+  flow: NetworkTree,
+  close: Close,
+  user: User,
+  lock: Lock,
+  show: PreviewOpen,
+  hide: PreviewClose,
+  collapse: MenuFold,
+  expand: MenuUnfold,
+};
 
-  switch (name) {
-    case 'grid':
-      return (
-        <svg {...props}>
-          <rect x="3" y="3" width="7" height="7" rx="2" />
-          <rect x="14" y="3" width="7" height="7" rx="2" />
-          <rect x="3" y="14" width="7" height="7" rx="2" />
-          <rect x="14" y="14" width="7" height="7" rx="2" />
-        </svg>
-      );
-    case 'arrow':
-      return (
-        <svg {...props}>
-          <path d="M5 12h14m-6-6 6 6-6 6" />
-        </svg>
-      );
-    case 'shield':
-      return (
-        <svg {...props}>
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
-          <path d="m9 12 2 2 4-4" />
-        </svg>
-      );
-    default:
-      return null;
-  }
+export default function Icon({ name, size = 20, solid = false }) {
+  const Component = icons[name];
+  return Component ? <Component theme={solid ? 'filled' : 'outline'} size={size} strokeWidth={3} fill="currentColor" aria-hidden="true" /> : null;
 }

@@ -1,46 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Icon from './Icon.jsx';
 
-export default function Sidebar({ page, open, collapsed, onToggle, onSelect }) {
-  return (
-    <aside
-      className={`sidebar${open ? ' open' : ''}${collapsed ? ' collapsed' : ''}`}
-      aria-label="Main navigation"
-    >
-      <div className="brand">
-        <span className="brand-icon">
-          <Icon name="shield" size={24} />
-        </span>
-        <strong className="brand-name">SOC Triage</strong>
-      </div>
+const items = [
+  { label: 'Home', icon: 'home', page: 'dashboard' },
+  { section: 'INVESTIGATION' },
+  { label: 'Cases', icon: 'network', page: 'cases' },
+  { label: 'Alerts', icon: 'bell', page: 'alerts' },
+];
 
-      <nav>
-        <button
-          className={`nav-item${page === 'dashboard' ? ' active' : ''}`}
-          aria-label="Dashboard"
-          aria-current={page === 'dashboard' ? 'page' : undefined}
-          title={collapsed ? 'Dashboard' : undefined}
-          onClick={() => onSelect('dashboard')}
-        >
-          <Icon name="grid" />
-          <span className="nav-label">Dashboard</span>
-        </button>
-        <button
-          className={`nav-item${page === 'review' || page === 'cases' ? ' active' : ''}`}
-          aria-label="Cases"
-          aria-current={page === 'review' || page === 'cases' ? 'page' : undefined}
-          title={collapsed ? 'Cases' : undefined}
-          onClick={() => onSelect('cases')}
-        >
-          <span className="nav-glyph" aria-hidden="true">◎</span>
-          <span className="nav-label">Cases</span>
-        </button>
-        <button className={`nav-item${page === 'alerts' ? ' active' : ''}`} aria-label="Alerts" aria-current={page === 'alerts' ? 'page' : undefined} title={collapsed ? 'Alerts' : undefined} onClick={() => onSelect('alerts')}>
-          <span className="nav-glyph" aria-hidden="true">♧</span>
-          <span className="nav-label">Alerts</span>
-        </button>
-      </nav>
-      <button className="sidebar-toggle" type="button" onClick={onToggle} aria-label={collapsed ? 'Expand navigation' : 'Collapse navigation'} aria-expanded={!collapsed} title={collapsed ? 'Expand navigation' : 'Collapse navigation'}><span aria-hidden="true">{collapsed ? '›' : '‹'}</span><span className="sidebar-toggle-label">{collapsed ? 'Expand' : 'Collapse'}</span></button>
-    </aside>
-  );
+export default function Sidebar({ page, open, collapsed, onSelect, onLogout, username }) {
+  const [accountOpen, setAccountOpen] = useState(false);
+  return <aside className={`sidebar${open ? ' open' : ''}${collapsed ? ' collapsed' : ''}`} aria-label="Main navigation">
+    <nav>{items.map((item, index) => item.section
+      ? <div className="nav-section" key={item.section}>{item.section}</div>
+      : <button key={`${item.label}-${index}`} className={`nav-item${(page === item.page || (page === 'review' && item.page === 'cases')) ? ' active' : ''}`} aria-current={page === item.page || (page === 'review' && item.page === 'cases') ? 'page' : undefined} title={collapsed ? item.label : undefined} onClick={() => onSelect(item.page)}><Icon name={item.icon} size={20} /><span className="nav-label">{item.label}</span></button>
+    )}</nav>
+    <div className="sidebar-account">
+      {accountOpen && <div className="account-menu"><span>Signed in as {username}</span><button type="button" onClick={onLogout}>Sign out</button></div>}
+      <button className="sidebar-profile" type="button" onClick={() => setAccountOpen((value) => !value)} aria-expanded={accountOpen} aria-label="Account menu"><span className="profile-avatar">{username.slice(0, 1).toUpperCase()}</span><span className="profile-copy"><strong>{username}</strong><small>SOC Desk workspace</small></span><Icon name="user" size={18} solid /></button>
+    </div>
+  </aside>;
 }

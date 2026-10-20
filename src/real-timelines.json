@@ -2469,6 +2469,78 @@
           "technique": "Unmapped"
         }
       ]
+    },
+    {
+      "incident_id": "INC-8CA20303B050",
+      "total_flows": 710279,
+      "alert_count": 1,
+      "sampled_flows": 6,
+      "events": [
+        {
+          "timestamp": "2023-03-15T11:56:12.7399828+00:00",
+          "title": "172.0.0.13 \u2192 port 8080",
+          "record_type": "flow",
+          "evidence_id": "FLOW-88A333CEF734",
+          "source_file": "normal_synflood_ddos/nsg.csv",
+          "source_row": 11374765,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2023-03-15T11:56:20.0830828+00:00",
+          "title": "172.0.0.7 \u2192 port 8080",
+          "record_type": "flow",
+          "evidence_id": "FLOW-F7DDDC868BE7",
+          "source_file": "normal_synflood_ddos/nsg.csv",
+          "source_row": 11505097,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2023-03-15T11:56:47.4412247+00:00",
+          "title": "172.0.0.6 \u2192 port 8080",
+          "record_type": "flow",
+          "evidence_id": "FLOW-E083ED8DC44C",
+          "source_file": "normal_synflood_ddos/nsg.csv",
+          "source_row": 11638629,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2023-03-15T11:56:47.5620409+00:00",
+          "title": "172.0.0.13 \u2192 port 8080",
+          "record_type": "flow",
+          "evidence_id": "FLOW-689E217024EE",
+          "source_file": "normal_synflood_ddos/nsg.csv",
+          "source_row": 12004858,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2023-03-15T11:56:47.5620409+00:00",
+          "title": "172.0.0.7 \u2192 port 8080",
+          "record_type": "flow",
+          "evidence_id": "FLOW-CC60891CF1D4",
+          "source_file": "normal_synflood_ddos/nsg.csv",
+          "source_row": 12006516,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2023-03-15T11:56:51.5949547+00:00",
+          "title": "172.0.0.6 \u2192 port 8080",
+          "record_type": "flow",
+          "evidence_id": "FLOW-89561911B38E",
+          "source_file": "normal_synflood_ddos/nsg.csv",
+          "source_row": 12141999,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2023-03-15T11:56:51.5949547+00:00",
+          "title": "DDoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-F886206F87CE",
+          "technique": {
+            "id": "T1498",
+            "name": "Network Denial of Service"
+          }
+        }
+      ]
     }
   ]
 }

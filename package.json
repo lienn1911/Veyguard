@@ -1,5 +1,5 @@
 {
-  "name": "soc-triage-console",
+  "name": "soc-desk",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -8,6 +8,7 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@icon-park/react": "^1.4.2",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },

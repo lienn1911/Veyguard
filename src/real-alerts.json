@@ -8,7 +8,8 @@
       "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv"
     ],
     "mode": "preview",
-    "scope": "All matching one-minute alerts; up to six sampled source flows per alert"
+    "scope": "All matching one-minute alerts; up to six sampled source flows per alert",
+    "additional_dataset": "Microsoft Yatesbury SYN Flood DDoS scenario"
   },
   "rules": {
     "window_seconds": 60,
@@ -26,8 +27,8 @@
     "groups_scanned": 146835,
     "rule_matches": 45,
     "incidents": 4,
-    "exported_incidents": 3,
-    "exported_alerts": 40
+    "exported_incidents": 4,
+    "exported_alerts": 41
   },
   "flows": [
     {
@@ -3149,6 +3150,78 @@
       "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
       "source_row": 330672,
       "original_flow_id": "172.16.0.1-192.168.10.50-58060-80-6"
+    },
+    {
+      "flow_id": "FLOW-88A333CEF734",
+      "timestamp": "2023-03-15T11:56:12.7399828+00:00",
+      "source_ip": "172.0.0.13",
+      "destination_ip": "172.0.0.19",
+      "source_port": "2397",
+      "destination_port": "8080",
+      "packet_count": 0,
+      "dataset_label": "1",
+      "source_file": "normal_synflood_ddos/nsg.csv",
+      "source_row": 11374765
+    },
+    {
+      "flow_id": "FLOW-F7DDDC868BE7",
+      "timestamp": "2023-03-15T11:56:20.0830828+00:00",
+      "source_ip": "172.0.0.7",
+      "destination_ip": "172.0.0.19",
+      "source_port": "11033",
+      "destination_port": "8080",
+      "packet_count": 0,
+      "dataset_label": "1",
+      "source_file": "normal_synflood_ddos/nsg.csv",
+      "source_row": 11505097
+    },
+    {
+      "flow_id": "FLOW-E083ED8DC44C",
+      "timestamp": "2023-03-15T11:56:47.4412247+00:00",
+      "source_ip": "172.0.0.6",
+      "destination_ip": "172.0.0.19",
+      "source_port": "29974",
+      "destination_port": "8080",
+      "packet_count": 0,
+      "dataset_label": "1",
+      "source_file": "normal_synflood_ddos/nsg.csv",
+      "source_row": 11638629
+    },
+    {
+      "flow_id": "FLOW-689E217024EE",
+      "timestamp": "2023-03-15T11:56:47.5620409+00:00",
+      "source_ip": "172.0.0.13",
+      "destination_ip": "172.0.0.19",
+      "source_port": "28311",
+      "destination_port": "8080",
+      "packet_count": 0,
+      "dataset_label": "1",
+      "source_file": "normal_synflood_ddos/nsg.csv",
+      "source_row": 12004858
+    },
+    {
+      "flow_id": "FLOW-CC60891CF1D4",
+      "timestamp": "2023-03-15T11:56:47.5620409+00:00",
+      "source_ip": "172.0.0.7",
+      "destination_ip": "172.0.0.19",
+      "source_port": "30371",
+      "destination_port": "8080",
+      "packet_count": 0,
+      "dataset_label": "1",
+      "source_file": "normal_synflood_ddos/nsg.csv",
+      "source_row": 12006516
+    },
+    {
+      "flow_id": "FLOW-89561911B38E",
+      "timestamp": "2023-03-15T11:56:51.5949547+00:00",
+      "source_ip": "172.0.0.6",
+      "destination_ip": "172.0.0.19",
+      "source_port": "33188",
+      "destination_port": "8080",
+      "packet_count": 0,
+      "dataset_label": "1",
+      "source_file": "normal_synflood_ddos/nsg.csv",
+      "source_row": 12141999
     }
   ],
   "alerts": [
@@ -4191,6 +4264,37 @@
       "ddos_reference": false,
       "rule_basis": "9395 flows and 37633 packets in one minute",
       "incident_id": "INC-303BE523B8D9"
+    },
+    {
+      "alert_id": "ALT-F886206F87CE",
+      "incident_id": "INC-8CA20303B050",
+      "type": "DDoS",
+      "timestamp": "2023-03-15T11:56:51.5949547+00:00",
+      "source_file": "normal_synflood_ddos/nsg.csv",
+      "source_ip": "Multiple sources",
+      "destination_ip": "172.0.0.19",
+      "flow_count": 710279,
+      "destination_port_count": 1,
+      "source_port_count": 65536,
+      "source_count": 3,
+      "source_contributions": {
+        "172.0.0.13": 235572,
+        "172.0.0.6": 241552,
+        "172.0.0.7": 233155
+      },
+      "evidence_sample_ids": [
+        "FLOW-88A333CEF734",
+        "FLOW-F7DDDC868BE7",
+        "FLOW-E083ED8DC44C",
+        "FLOW-689E217024EE",
+        "FLOW-CC60891CF1D4",
+        "FLOW-89561911B38E"
+      ],
+      "dataset_labels": {
+        "1": 6
+      },
+      "ddos_reference": true,
+      "rule_basis": "710,279 TCP records and 485,706 packets from 3 sources in one minute; each source contributed at least 1,000 records"
     }
   ],
   "incidents": [
@@ -4512,6 +4616,26 @@
       ],
       "flow_count": 126676,
       "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"
+    },
+    {
+      "incident_id": "INC-8CA20303B050",
+      "source_ip": "Multiple sources",
+      "destination_ip": "172.0.0.19",
+      "window_start": "2023-03-15T11:56:12.7399828+00:00",
+      "window_end": "2023-03-15T11:56:51.5949547+00:00",
+      "alert_ids": [
+        "ALT-F886206F87CE"
+      ],
+      "evidence_sample_ids": [
+        "FLOW-88A333CEF734",
+        "FLOW-F7DDDC868BE7",
+        "FLOW-E083ED8DC44C",
+        "FLOW-689E217024EE",
+        "FLOW-CC60891CF1D4",
+        "FLOW-89561911B38E"
+      ],
+      "flow_count": 710279,
+      "source_file": "normal_synflood_ddos/nsg.csv"
     }
   ]
 }

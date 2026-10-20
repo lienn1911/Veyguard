@@ -8,12 +8,13 @@ if not exist "node_modules\vite\bin\vite.js" goto :missing_packages
 where python.exe >nul 2>nul || goto :missing_python
 if not exist data mkdir data
 start "" /min powershell.exe -NoProfile -WindowStyle Hidden -Command "Start-Process -FilePath 'python.exe' -ArgumentList '-m','services.api' -WorkingDirectory '%~dp0' -WindowStyle Hidden -RedirectStandardOutput 'data/api.out.log' -RedirectStandardError 'data/api.err.log'"
-echo Starting SOC Triage at http://127.0.0.1:5173
-if not defined SOC_TRIAGE_NO_BROWSER start "" /min powershell.exe -NoProfile -WindowStyle Hidden -Command "Start-Sleep -Seconds 3; Start-Process 'http://127.0.0.1:5173'"
-"%NODE_EXE%" "node_modules\vite\bin\vite.js" --host 127.0.0.1 --port 5173 --strictPort
+if not defined SOC_DESK_PORT set "SOC_DESK_PORT=5174"
+echo Starting SOC Desk at http://127.0.0.1:%SOC_DESK_PORT%
+if not defined SOC_TRIAGE_NO_BROWSER start "" /min powershell.exe -NoProfile -WindowStyle Hidden -Command "Start-Sleep -Seconds 3; Start-Process 'http://127.0.0.1:%SOC_DESK_PORT%'"
+"%NODE_EXE%" "node_modules\vite\bin\vite.js" --host 127.0.0.1 --port %SOC_DESK_PORT% --strictPort
 if errorlevel 1 (
   echo.
-  echo Server could not start. Check if port 5173 is already in use.
+  echo Server could not start. Check if port %SOC_DESK_PORT% is already in use.
   pause
 )
 exit /b

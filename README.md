@@ -1,4 +1,8 @@
-# SOC Triage
+# SOC Desk
+
+## Demo sign-in
+
+The local UI opens on a demo sign-in screen. Use `administrator` / `Demo@1234`. The demo session lasts for the current browser session. Use the account menu at the bottom of the sidebar to sign out. This is a UI demonstration only: the sample data is bundled with the frontend and the local API is not protected by this sign-in.
 
 Alert generation, incident grouping, and timeline reconstruction use the official CIC-IDS2017 `GeneratedLabelledFlows.zip`. Suggested investigation checks, analyst decisions, case-note drafts, and audit logging run in a local Python service. AI triage remains a separate integration point and does not yet issue verdicts.
 
@@ -11,11 +15,12 @@ python services/alerts.py data/GeneratedLabelledFlows.zip -o data/alerts-full.js
 python services/alerts.py --preview-from data/alerts-full.json --preview-cases 3 -o src/real-alerts.json
 python services/timeline.py data/alerts-full.json -o data/timelines-full.json
 python services/timeline.py src/real-alerts.json -o src/real-timelines.json
+python -m services.yatesbury data/normal_synflood_ddos.tar.gz --alerts-output src/real-alerts.json --timelines-output src/real-timelines.json
 npm install
 start.cmd
 ```
 
-`start.cmd` starts Vite and the loopback Python review service. The frontend reads the tracked preview JSON files; the local review service writes `data/audit.db`. `data/` stays local and is ignored by Git. `data/alerts-full.json` and `data/timelines-full.json` contain every matched alert and grouped incident from the three selected CSV files. Both exports retain up to six source-flow records per alert, rather than copying every raw flow.
+`start.cmd` starts Vite and the loopback Python review service. The frontend reads the tracked preview JSON files; the local review service writes `data/audit.db`. `data/` stays local and is ignored by Git. The Yatesbury command needs the single `normal_synflood_ddos.tar.gz` scenario from [Microsoft Yatesbury](https://github.com/microsoft/Yatesbury), not the full collection. Run it after regenerating the CIC-IDS2017 preview. It replaces its own case on repeat runs. The original 163 MB archive stays local; only sampled evidence enters the tracked preview JSON.
 
 ## Detection and grouping
 
@@ -29,7 +34,11 @@ The detector does not read dataset labels when matching or grouping alerts. Labe
 
 `services/timeline.py` orders sampled source records and every alert in each incident by timestamp and CSV row. Each event carries an evidence ID that resolves to a flow or alert in the matching JSON export. PortScan alerts map to MITRE ATT&CK T1046; DDoS alerts map to T1498; events without sufficient evidence are Unmapped. The source timestamps have minute precision. Friday afternoon CSV hours are normalized to afternoon according to their filename.
 
-The preview selects three incidents for the UI. The full export currently contains four incidents and 45 one-minute alerts from the scanned files; regenerate after changing any rule or dataset input.
+The CIC-IDS2017 preview selects three incidents. The Yatesbury import adds a fourth, independently sourced DDoS incident. The CIC-IDS2017 full export currently contains four incidents and 45 one-minute alerts from its scanned files; regenerate after changing any rule or dataset input.
+
+## Yatesbury DDoS case
+
+The additional historical case uses the SYN Flood DDoS scenario's `nsg.csv` records for 2023-03-15 11:56 UTC. Three distinct sources sent 710,279 TCP records and 485,706 reported packets to 172.0.0.19 in that minute. Each source contributed more than 1,000 records. Detection uses the traffic records; `label.csv` is read afterward as a separate reference, not as the trigger. Six sampled flow IDs point back to original `nsg.csv` row numbers. This is a historical dataset replay, not live detection.
 
 ## Demo path
 

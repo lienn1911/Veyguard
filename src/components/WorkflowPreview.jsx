@@ -1,18 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-export function TriagePreview({ alerts, flows }) {
-  return <section className="process-panel">
-    <div className="process-panel-head"><h3>AI assessment</h3></div>
-    <div className="workflow-status"><span>AI assessment</span><strong>Not available yet</strong></div>
-    <div className="workflow-preview-grid"><div><span>Inputs</span><strong>{alerts.length} alerts · {flows.length} example records</strong></div><div><span>Result</span><strong>Pending teammate integration</strong><small>Conclusion must link to evidence</small></div></div>
-  </section>;
-}
+const endpoint = (id) => `/api/cases/${encodeURIComponent(id)}/ai-assessment`;
+const verdicts = new Set(['Likely Attack', 'Likely Benign', 'Needs Review']);
 
-export function NextStepsPreview() {
-  return <section className="process-panel">
-    <div className="process-panel-head"><h3>Next steps</h3></div>
-    <div className="workflow-preview-grid three"><div><span>Suggested checks</span><strong>Waiting for AI</strong></div><div><span>Human approval</span><strong>Required</strong></div><div><span>Written summary</span><strong>After approval</strong></div></div>
-    <div className="workflow-guardrail"><strong>Human control</strong><p>AI cannot close, dismiss, or lower the priority of a case.</p></div>
-    <div className="workflow-audit"><span>Activity history</span><strong>No decisions yet</strong></div>
+export function TriagePreview({ incidentId, alerts, flows, onEvidence }) {
+  const [result, setResult] = useState(null);
+  const [state, setState] = useState('loading');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    setState('loading');
+    setError('');
+    fetch(endpoint(incidentId))
+      .then(async (response) => {
+        const payload = await response.json();
+        if (!response.ok && payload.error === 'Unknown endpoint') return { status: 'pending', assessment: null };
+        if (!response.ok) throw new Error('AI status unavailable');
+        return payload;
+      })
+      .then((payload) => {
+        if (!active) return;
+        setResult(payload.assessment || null);
+        setState(payload.status === 'ready' && payload.assessment ? 'ready' : 'pending');
+      })
+      .catch(() => { if (active) { setState('error'); setError('Could not load AI status. Restart the local service.'); } });
+    return () => { active = false; };
+  }, [incidentId]);
+
+  const validEvidence = new Set([...alerts.map((item) => item.alert_id), ...flows.map((item) => item.flow_id)]);
+  const evidenceIds = Array.isArray(result?.evidence_ids) ? result.evidence_ids.filter((id) => validEvidence.has(id)) : [];
+  const ready = state === 'ready' && verdicts.has(result?.verdict) && evidenceIds.length > 0;
+
+  return <section className="ai-assessment" aria-live="polite">
+    <div className="ai-assessment-heading"><h3>AI check</h3><span className={`ai-assessment-state ${ready ? 'ready' : ''}`}>{ready ? 'Ready for review' : state === 'loading' ? 'Loading' : state === 'error' ? 'Unavailable' : 'Waiting for analysis'}</span></div>
+    {ready ? <>
+      <div className="ai-assessment-result"><span>Assessment</span><strong>{result.verdict}</strong>{typeof result.confidence === 'number' && result.confidence >= 0 && result.confidence <= 1 && <small>{Math.round(result.confidence * 100)}% confidence</small>}</div>
+      {typeof result.summary === 'string' && result.summary.trim() && <p className="ai-assessment-summary">{result.summary}</p>}
+      <div className="ai-assessment-evidence"><strong>Supporting evidence</strong><div>{evidenceIds.map((id) => <button type="button" key={id} onClick={() => onEvidence(id)}>{id}</button>)}</div></div>
+      <p className="ai-assessment-note">Analyst review is required before any next step.</p>
+    </> : <div className="ai-assessment-empty"><strong>{state === 'loading' ? 'Checking analysis status…' : state === 'error' ? error : 'No AI assessment yet'}</strong><p>{state === 'pending' ? `${alerts.length} alerts and ${flows.length} example records are available for analysis.` : 'The alert and case evidence remain available for manual review.'}</p></div>}
   </section>;
 }

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
-const endpoint = (id, action) => `http://127.0.0.1:8765/api/cases/${encodeURIComponent(id)}/${action}`;
+const endpoint = (id, action) => `/api/cases/${encodeURIComponent(id)}/${action}`;
 
-export default function NextSteps({ incidentId, onEvidence }) {
+export default function NextSteps({ incidentId, analystName, onEvidence, onReviewed }) {
   const [proposal, setProposal] = useState(null);
   const [decisions, setDecisions] = useState({});
-  const [analyst, setAnalyst] = useState('');
+  const [analyst, setAnalyst] = useState(analystName || '');
   const [events, setEvents] = useState([]);
   const [note, setNote] = useState(null);
   const [error, setError] = useState('');
@@ -46,6 +46,7 @@ export default function NextSteps({ incidentId, onEvidence }) {
       setNote(result.note);
       setEvents(result.events);
       setSubmitted(true);
+      onReviewed?.();
     } catch (failure) {
       setError(failure.message);
     } finally {
@@ -68,7 +69,8 @@ export default function NextSteps({ incidentId, onEvidence }) {
           <button type="button" disabled={submitted} className={decisions[item.id] === 'rejected' ? 'selected' : ''} aria-pressed={decisions[item.id] === 'rejected'} onClick={() => setDecisions({ ...decisions, [item.id]: 'rejected' })}>Reject</button>
         </div>
       </div>)}</div>
-      {!submitted && <div className="review-approval"><label htmlFor="analyst-name">Analyst name</label><input id="analyst-name" value={analyst} onChange={(event) => setAnalyst(event.target.value)} placeholder="Your name" autoComplete="name" /><button type="button" disabled={!complete || !analyst.trim() || saving} onClick={submit}>{saving ? 'Saving…' : 'Save decisions'}</button></div>}
+      {!submitted && <div className="review-approval"><label htmlFor="analyst-name">Reviewed by</label><input id="analyst-name" value={analyst} onChange={(event) => setAnalyst(event.target.value)} placeholder="Your name" autoComplete="name" /><button type="button" disabled={!complete || !analyst.trim() || saving} onClick={submit}>{saving ? 'Saving…' : 'Finish review'}</button></div>}
+      {submitted && <p className="process-note" role="status">Review saved.</p>}
       {note && <div className="case-note"><strong>Case note draft</strong><p>{note.summary}</p><ul>{note.approved_checks.map((item) => <li key={item.id}>{item.text}</li>)}</ul><small>Needs Review · Draft only</small></div>}
       {submitted && !note && <p className="process-note">All checks were rejected. No case note was drafted.</p>}
     </>}

@@ -47,6 +47,25 @@ def init_db(db_path=DB_PATH):
             )
         """)
 
+        db.execute("""
+            CREATE TABLE IF NOT EXISTS task_completions (
+                recommendation_id TEXT PRIMARY KEY,
+                completed_by TEXT NOT NULL,
+                completed_at TEXT NOT NULL
+            )
+        """)
+
+        db.execute("""
+            CREATE TABLE IF NOT EXISTS case_notes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                incident_id TEXT NOT NULL,
+                analyst_id TEXT NOT NULL,
+                evidence_id TEXT NOT NULL,
+                text TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )
+        """)
+
         db.commit()
 
     finally:
