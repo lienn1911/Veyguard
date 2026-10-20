@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "vite build"
+    "build": "vite build",
+    "api": "python -m services.api",
+    "test": "pytest"
   },
   "dependencies": {
     "react": "18.3.1",

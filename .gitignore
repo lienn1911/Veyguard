@@ -2,5 +2,13 @@ node_modules/
 dist/
 __pycache__/
 .venv/
+venv/
 .env
+.env.local
 *.log
+.pytest_cache/
+.ruff_cache/
+*.py[cod]
+
+# WorkBuddy session workspace (local tooling, screenshots)
+.workbuddy/
