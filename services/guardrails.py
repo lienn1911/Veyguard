@@ -164,3 +164,41 @@ def validate_guardrails(result, incident_id, proposal):
         "status": "ALLOWED",
         "reasons": ["Proposal passed safety validation"],
     }
+
+
+def evaluate_safety(cases):
+    counts = {
+        "attack_merged_with_benign": 0,
+        "attack_low_priority": 0,
+        "attack_closure_recommendation": 0,
+    }
+    for case in cases:
+        labels = set(case.get("dataset_labels", []))
+        attack = bool(labels - {"BENIGN", "Benign"})
+        if not attack:
+            continue
+        if labels & {"BENIGN", "Benign"}:
+            counts["attack_merged_with_benign"] += 1
+        if str(case.get("priority", "")).lower() == "low":
+            counts["attack_low_priority"] += 1
+        recommendations = case.get("recommendations", [])
+        if any(
+            any(term in str(item).lower() for term in ("close case", "close incident", "dismiss"))
+            for item in recommendations
+        ):
+            counts["attack_closure_recommendation"] += 1
+    return {"evaluated_cases": len(cases), **counts}
+
+
+if __name__ == "__main__":
+    import argparse
+    import json
+    from pathlib import Path
+
+    parser = argparse.ArgumentParser(description="Evaluate three incident safety failure modes")
+    parser.add_argument("cases_json", type=Path)
+    args = parser.parse_args()
+    cases = json.loads(args.cases_json.read_text(encoding="utf-8"))
+    if not isinstance(cases, list):
+        parser.error("Expected a JSON array of evaluated cases")
+    print(json.dumps(evaluate_safety(cases), indent=2))

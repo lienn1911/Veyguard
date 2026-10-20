@@ -1,17 +1,18 @@
 {
   "timelines": [
     {
-      "incident_id": "INC-CADF3563BF02",
-      "total_flows": 17752,
-      "sampled_events": 7,
+      "incident_id": "INC-303BE523B8D9",
+      "total_flows": 230726,
+      "alert_count": 18,
+      "sampled_flows": 108,
       "events": [
         {
           "timestamp": "2017-07-05T10:43:00",
           "title": "172.16.0.1 \u2192 port 80",
           "record_type": "flow",
-          "evidence_id": "FLOW-1FA612614826",
+          "evidence_id": "FLOW-745C5543C223",
           "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
-          "source_row": 93048,
+          "source_row": 74862,
           "technique": "Unmapped"
         },
         {
@@ -27,9 +28,9 @@
           "timestamp": "2017-07-05T10:43:00",
           "title": "172.16.0.1 \u2192 port 80",
           "record_type": "flow",
-          "evidence_id": "FLOW-6E8C96A1DF91",
+          "evidence_id": "FLOW-DF73F85BD029",
           "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
-          "source_row": 74866,
+          "source_row": 74864,
           "technique": "Unmapped"
         },
         {
@@ -45,51 +46,1135 @@
           "timestamp": "2017-07-05T10:43:00",
           "title": "172.16.0.1 \u2192 port 80",
           "record_type": "flow",
-          "evidence_id": "FLOW-745C5543C223",
+          "evidence_id": "FLOW-6E8C96A1DF91",
           "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
-          "source_row": 74862,
+          "source_row": 74866,
           "technique": "Unmapped"
         },
         {
           "timestamp": "2017-07-05T10:43:00",
           "title": "172.16.0.1 \u2192 port 80",
           "record_type": "flow",
-          "evidence_id": "FLOW-DF73F85BD029",
+          "evidence_id": "FLOW-1FA612614826",
           "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
-          "source_row": 74864,
+          "source_row": 93048,
           "technique": "Unmapped"
         },
         {
           "timestamp": "2017-07-05T10:43:00",
           "title": "DoS rule matched",
           "record_type": "alert",
-          "evidence_id": "ALT-8178077891CE",
+          "evidence_id": "ALT-4AF3D618FAA9",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:44:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-8FC7C816EF4A",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 93049,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:44:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-D121D7B9CBB3",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 93050,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:44:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-3BACD09ABE60",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 93051,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:44:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-7ADCE256A5C2",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 93052,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:44:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-5B1DB84B8CD7",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 93053,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:44:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-FF60CE016381",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 111069,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:44:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-9941B48CD40E",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:45:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-2BABFEFECD66",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 111070,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:45:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-B8A2AFB9DE92",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 111071,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:45:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-2EDA0FDF0DF3",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 111072,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:45:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-36DF30C5E19C",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 111073,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:45:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-F23C4AB2DEF0",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 111074,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:45:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-1946FDF46D3D",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 126036,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:45:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-5716F9F63616",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:46:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-1BD94A250EB5",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 126037,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:46:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-1604709F0612",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 126038,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:46:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-D34652736360",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 126039,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:46:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-67D72D69293C",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 126040,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:46:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-767FB35A5C07",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 126041,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:46:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-C764FBC55A37",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 137618,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:46:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-C64FF27D6BC3",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:47:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-6BD585DFC68A",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 137619,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:47:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-0E5343EF6840",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 137620,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:47:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-A83D7958B4B6",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 137621,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:47:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-4F79530C632C",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 137622,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:47:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-67CE473D82A7",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 137623,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:47:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-4EDF4ACFBBAB",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 151316,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:47:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-153D8C605865",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:48:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-3A5B320CC20F",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 151317,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:48:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-B54A83E45927",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 151318,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:48:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-FC11ACECFA8D",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 151319,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:48:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-C8832582B62F",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 151320,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:48:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-555ECFC4D47E",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 151321,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:48:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-8ABD329ECC9C",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 166211,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:48:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-B7B337D90D54",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:49:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-F12B298469CA",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 166212,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:49:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-317D08D37685",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 166213,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:49:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-38B336C6439D",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 166214,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:49:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-2C92DB203690",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 166215,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:49:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-AF527AC35A39",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 166216,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:49:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-629F6F8F5227",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 177167,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:49:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-A1338EA4EA37",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:50:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-04CF8E5A3A4B",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 177168,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:50:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-872720CE74C7",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 177169,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:50:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-C5BBC4FFDE21",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 177170,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:50:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-1F0E3B22B3C5",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 177171,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:50:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-468EEABEFA4A",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 177172,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:50:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-41B562B7B159",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 192143,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:50:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-6C150237DF05",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:51:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-281D2FF6144A",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 192144,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:51:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-FD364E548E5B",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 192145,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:51:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-BD84AF1D9367",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 192146,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:51:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-F7C650C40045",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 192147,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:51:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-FCA48ABBE9CB",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 192148,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:51:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-23BD305D92C1",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 202858,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:51:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-0AD500D5F174",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:52:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-D3056D7B14F5",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 202859,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:52:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-4C3FACCD8EA9",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 202860,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:52:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-C77765104F4F",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 202861,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:52:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-4A147763E018",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 202862,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:52:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-57B521766B74",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 202863,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:52:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-FC08B9679939",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 217534,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:52:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-4BCF234A07D5",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:53:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-4AB08D645275",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 217535,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:53:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-633D78EA6D2B",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 217536,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:53:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-8AFBEBDB91A8",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 217537,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:53:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-6BA9422E339C",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 217538,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:53:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-ABF3839520A5",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 217539,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:53:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-CDEC9417B6A5",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 232199,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:53:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-D317DD55C73D",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:54:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-78772470347E",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 232201,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:54:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-C6B8B0D0FB1D",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 232203,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:54:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-91DD47A27F57",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 232204,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:54:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-18AEE7CE9A26",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 232205,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:54:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-7DC1CD2A9C1C",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 232206,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:54:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-B25488DD2874",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 243117,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:54:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-622A15CB8286",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:55:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-6A123194106A",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 243118,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:55:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-BB8CC5E319A8",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 243119,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:55:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-CB4A17008AC6",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 243120,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:55:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-7F9E95F96D1E",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 243121,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:55:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-181108916856",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 243122,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:55:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-27966597092C",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 258151,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:55:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-0F36B4CE6526",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:56:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-AD2D86E580D9",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 258152,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:56:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-6B017A2B32AF",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 258153,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:56:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-A5A1FAF82B29",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 258154,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:56:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-D26ECEA58098",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 258155,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:56:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-1CF6819B7055",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 258156,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:56:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-41EAB2428888",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 269706,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:56:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-9DC3FDF87630",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:57:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-C451900FA56C",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 269707,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:57:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-8E7D6344377E",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 269708,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:57:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-D371EE01E92C",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 269709,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:57:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-2282A2701394",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 269710,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:57:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-567E23208813",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 269711,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:57:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-8B4A2EAAF4FC",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 284992,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:57:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-65E00C8425EB",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:58:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-BCFAD5F033E3",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 284993,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:58:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-5FF26634D732",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 284994,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:58:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-63B1706984A0",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 284996,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:58:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-4EA84FFA0869",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 284997,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:58:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-4304A06DB7E2",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 284998,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:58:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-19825E4AD9E6",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 298661,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:58:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-1531E8BA8E6B",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:59:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-BAA9FE341D59",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 298662,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:59:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-07D7CE76332C",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 298663,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:59:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-698BCF835696",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 298664,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:59:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-90BCDC62B00E",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 298665,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:59:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-B51CDA8B14D5",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 298666,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:59:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-59D3B4A8DADD",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 317644,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T10:59:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-C512020215ED",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T11:00:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-07F2EE168E55",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 317645,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T11:00:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-20AC5E030844",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 317646,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T11:00:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-4D1A9F13F249",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 317647,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T11:00:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-747BA3EAFD3E",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 317648,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T11:00:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-0A0329D6E618",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 317649,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T11:00:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-121F6CDD6BFD",
+          "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+          "source_row": 330672,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-05T11:00:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-59F52DEAAE01",
           "technique": "Unmapped"
         }
       ]
     },
     {
-      "incident_id": "INC-FA4E327F1DFD",
-      "total_flows": 44410,
-      "sampled_events": 7,
+      "incident_id": "INC-EF9D2C7066EB",
+      "total_flows": 79030,
+      "alert_count": 2,
+      "sampled_flows": 12,
       "events": [
         {
-          "timestamp": "2017-07-07T14:55:00",
-          "title": "172.16.0.1 \u2192 port 1038",
+          "timestamp": "2017-07-07T14:54:00",
+          "title": "172.16.0.1 \u2192 port 80",
           "record_type": "flow",
-          "evidence_id": "FLOW-5A5EA69C8028",
+          "evidence_id": "FLOW-08C2DF9F8CB8",
           "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
-          "source_row": 183651,
+          "source_row": 147965,
           "technique": "Unmapped"
         },
         {
-          "timestamp": "2017-07-07T14:55:00",
-          "title": "172.16.0.1 \u2192 port 1218",
+          "timestamp": "2017-07-07T14:54:00",
+          "title": "172.16.0.1 \u2192 port 1082",
           "record_type": "flow",
-          "evidence_id": "FLOW-63AC74FB9CCE",
+          "evidence_id": "FLOW-41028607F510",
           "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
-          "source_row": 183653,
+          "source_row": 147966,
           "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:54:00",
+          "title": "172.16.0.1 \u2192 port 2161",
+          "record_type": "flow",
+          "evidence_id": "FLOW-3E83C351AE9F",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 147967,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:54:00",
+          "title": "172.16.0.1 \u2192 port 7402",
+          "record_type": "flow",
+          "evidence_id": "FLOW-81C9FE33B98A",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 147968,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:54:00",
+          "title": "172.16.0.1 \u2192 port 15660",
+          "record_type": "flow",
+          "evidence_id": "FLOW-34046B3EC7D4",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 147969,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:54:00",
+          "title": "172.16.0.1 \u2192 port 1095",
+          "record_type": "flow",
+          "evidence_id": "FLOW-218D6914D161",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 183641,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:54:00",
+          "title": "PortScan rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-597B373A7FFA",
+          "technique": {
+            "id": "T1046",
+            "name": "Network Service Discovery"
+          }
         },
         {
           "timestamp": "2017-07-07T14:55:00",
@@ -111,11 +1196,11 @@
         },
         {
           "timestamp": "2017-07-07T14:55:00",
-          "title": "172.16.0.1 \u2192 port 32773",
+          "title": "172.16.0.1 \u2192 port 1038",
           "record_type": "flow",
-          "evidence_id": "FLOW-DE7C1502C2A5",
+          "evidence_id": "FLOW-5A5EA69C8028",
           "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
-          "source_row": 229857,
+          "source_row": 183651,
           "technique": "Unmapped"
         },
         {
@@ -129,9 +1214,27 @@
         },
         {
           "timestamp": "2017-07-07T14:55:00",
+          "title": "172.16.0.1 \u2192 port 1218",
+          "record_type": "flow",
+          "evidence_id": "FLOW-63AC74FB9CCE",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 183653,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:55:00",
+          "title": "172.16.0.1 \u2192 port 32773",
+          "record_type": "flow",
+          "evidence_id": "FLOW-DE7C1502C2A5",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 229857,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:55:00",
           "title": "PortScan rule matched",
           "record_type": "alert",
-          "evidence_id": "ALT-67F2BEB6C51A",
+          "evidence_id": "ALT-976AF2FEDE2B",
           "technique": {
             "id": "T1046",
             "name": "Network Service Discovery"
@@ -140,10 +1243,99 @@
       ]
     },
     {
-      "incident_id": "INC-2B98E5DB02AE",
-      "total_flows": 8244,
-      "sampled_events": 7,
+      "incident_id": "INC-0A7AC1BD9701",
+      "total_flows": 126676,
+      "alert_count": 20,
+      "sampled_flows": 120,
       "events": [
+        {
+          "timestamp": "2017-07-07T15:56:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-13A2564A7137",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 18885,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:56:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-B082AC4666FE",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 18886,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:56:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-B889DC34FBE6",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 18887,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:56:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-D0B8FD522EAE",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 18888,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:56:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-B81AA29C144A",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 18889,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:56:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-D7CF0C983085",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 21322,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:56:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-B9AEEAC3E094",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:57:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-A5E210226279",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 22551,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:57:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-55D6C47029F7",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 22552,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:57:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-6557A92B58CE",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 22553,
+          "technique": "Unmapped"
+        },
         {
           "timestamp": "2017-07-07T15:57:00",
           "title": "172.16.0.1 \u2192 port 80",
@@ -166,15 +1358,6 @@
           "timestamp": "2017-07-07T15:57:00",
           "title": "172.16.0.1 \u2192 port 80",
           "record_type": "flow",
-          "evidence_id": "FLOW-55D6C47029F7",
-          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
-          "source_row": 22552,
-          "technique": "Unmapped"
-        },
-        {
-          "timestamp": "2017-07-07T15:57:00",
-          "title": "172.16.0.1 \u2192 port 80",
-          "record_type": "flow",
           "evidence_id": "FLOW-5B5A59641CE2",
           "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
           "source_row": 30794,
@@ -182,70 +1365,192 @@
         },
         {
           "timestamp": "2017-07-07T15:57:00",
-          "title": "172.16.0.1 \u2192 port 80",
-          "record_type": "flow",
-          "evidence_id": "FLOW-6557A92B58CE",
-          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
-          "source_row": 22553,
-          "technique": "Unmapped"
-        },
-        {
-          "timestamp": "2017-07-07T15:57:00",
-          "title": "172.16.0.1 \u2192 port 80",
-          "record_type": "flow",
-          "evidence_id": "FLOW-A5E210226279",
-          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
-          "source_row": 22551,
-          "technique": "Unmapped"
-        },
-        {
-          "timestamp": "2017-07-07T15:57:00",
           "title": "DoS rule matched",
           "record_type": "alert",
-          "evidence_id": "ALT-D3ACF33D1454",
-          "technique": "Unmapped"
-        }
-      ]
-    },
-    {
-      "incident_id": "INC-66A751FF249C",
-      "total_flows": 6977,
-      "sampled_events": 7,
-      "events": [
-        {
-          "timestamp": "2017-07-07T16:01:00",
-          "title": "172.16.0.1 \u2192 port 80",
-          "record_type": "flow",
-          "evidence_id": "FLOW-03B1FA44B1D5",
-          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
-          "source_row": 68666,
+          "evidence_id": "ALT-F902C23BB9A8",
           "technique": "Unmapped"
         },
         {
-          "timestamp": "2017-07-07T16:01:00",
+          "timestamp": "2017-07-07T15:58:00",
           "title": "172.16.0.1 \u2192 port 80",
           "record_type": "flow",
-          "evidence_id": "FLOW-07BF5C528446",
+          "evidence_id": "FLOW-910408EBB874",
           "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
-          "source_row": 61694,
+          "source_row": 33343,
           "technique": "Unmapped"
         },
         {
-          "timestamp": "2017-07-07T16:01:00",
+          "timestamp": "2017-07-07T15:58:00",
           "title": "172.16.0.1 \u2192 port 80",
           "record_type": "flow",
-          "evidence_id": "FLOW-24D5EE154B55",
+          "evidence_id": "FLOW-C1FA63AC6E0F",
           "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
-          "source_row": 61691,
+          "source_row": 33344,
           "technique": "Unmapped"
         },
         {
-          "timestamp": "2017-07-07T16:01:00",
+          "timestamp": "2017-07-07T15:58:00",
           "title": "172.16.0.1 \u2192 port 80",
           "record_type": "flow",
-          "evidence_id": "FLOW-5715F91290DE",
+          "evidence_id": "FLOW-F7D259B8F359",
           "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
-          "source_row": 61693,
+          "source_row": 33345,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:58:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-0F7BDB8C4FAD",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 33346,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:58:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-CFF79267F4FE",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 33347,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:58:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-8A054292D81F",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 39918,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:58:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-7F6E848DA54F",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:59:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-5667EE9430AB",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 43057,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:59:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-AA30CEED3B06",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 43058,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:59:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-871ADE27B452",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 43059,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:59:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-3DB743AFC93B",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 43060,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:59:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-C691AF818DDD",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 43061,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:59:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-AE1D36722B4A",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 49663,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T15:59:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-1851E0E6C331",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:00:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-ECD0CE64E3A9",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 52560,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:00:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-1E9064A9A4A9",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 52561,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:00:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-E5A75618839D",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 52562,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:00:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-7454CA3F06D5",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 52563,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:00:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-60F6F601291E",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 52564,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:00:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-D9D25EAA44AB",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 59092,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:00:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-722390362344",
           "technique": "Unmapped"
         },
         {
@@ -261,6 +1566,15 @@
           "timestamp": "2017-07-07T16:01:00",
           "title": "172.16.0.1 \u2192 port 80",
           "record_type": "flow",
+          "evidence_id": "FLOW-24D5EE154B55",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 61691,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:01:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
           "evidence_id": "FLOW-9402A360622B",
           "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
           "source_row": 61692,
@@ -268,18 +1582,38 @@
         },
         {
           "timestamp": "2017-07-07T16:01:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-5715F91290DE",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 61693,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:01:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-07BF5C528446",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 61694,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:01:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-03B1FA44B1D5",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 68666,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:01:00",
           "title": "DoS rule matched",
           "record_type": "alert",
-          "evidence_id": "ALT-2F38DEC39253",
+          "evidence_id": "ALT-038A91F002AD",
           "technique": "Unmapped"
-        }
-      ]
-    },
-    {
-      "incident_id": "INC-3B7D873771E4",
-      "total_flows": 6889,
-      "sampled_events": 7,
-      "events": [
+        },
         {
           "timestamp": "2017-07-07T16:02:00",
           "title": "172.16.0.1 \u2192 port 80",
@@ -287,15 +1621,6 @@
           "evidence_id": "FLOW-446C3EC3C49A",
           "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
           "source_row": 70968,
-          "technique": "Unmapped"
-        },
-        {
-          "timestamp": "2017-07-07T16:02:00",
-          "title": "172.16.0.1 \u2192 port 80",
-          "record_type": "flow",
-          "evidence_id": "FLOW-54E033A35CEF",
-          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
-          "source_row": 70972,
           "technique": "Unmapped"
         },
         {
@@ -311,9 +1636,9 @@
           "timestamp": "2017-07-07T16:02:00",
           "title": "172.16.0.1 \u2192 port 80",
           "record_type": "flow",
-          "evidence_id": "FLOW-67A8B03B0418",
+          "evidence_id": "FLOW-CC38CBDE4AD1",
           "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
-          "source_row": 77856,
+          "source_row": 70970,
           "technique": "Unmapped"
         },
         {
@@ -329,16 +1654,818 @@
           "timestamp": "2017-07-07T16:02:00",
           "title": "172.16.0.1 \u2192 port 80",
           "record_type": "flow",
-          "evidence_id": "FLOW-CC38CBDE4AD1",
+          "evidence_id": "FLOW-54E033A35CEF",
           "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
-          "source_row": 70970,
+          "source_row": 70972,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:02:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-67A8B03B0418",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 77856,
           "technique": "Unmapped"
         },
         {
           "timestamp": "2017-07-07T16:02:00",
           "title": "DoS rule matched",
           "record_type": "alert",
-          "evidence_id": "ALT-4237741DD78D",
+          "evidence_id": "ALT-0BB7C5A62F38",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:03:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-C543A6ECF23A",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 79328,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:03:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-21981098C8EB",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 79329,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:03:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-0152F5D52C8D",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 79330,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:03:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-07FE838C7ACE",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 79331,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:03:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-8035A3DA2FBA",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 79332,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:03:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-9BB1927F6116",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 86105,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:03:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-57A797E69832",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:04:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-152563FBC313",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 88119,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:04:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-9D8381E96042",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 88120,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:04:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-BA273EB40E7B",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 88121,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:04:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-F912A40A7B2D",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 88122,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:04:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-A967EC2FDDB8",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 88123,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:04:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-1EFA76BD5DB7",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 94482,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:04:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-FFBBB7820CF3",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:05:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-FD7A9D60153C",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 96214,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:05:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-1B30C08D3A2B",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 96215,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:05:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-49888DD2EE82",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 96216,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:05:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-8C8A08B143DB",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 96217,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:05:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-1611F5361A3A",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 96218,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:05:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-3C3098DDE514",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 102486,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:05:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-77A1D36061DB",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:06:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-F4EE6D470D8C",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 104759,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:06:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-67AC0D1044DE",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 104760,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:06:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-B19014D43D6E",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 104761,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:06:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-C9F3D296FDE4",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 104762,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:06:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-FDCB5085DDCD",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 104763,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:06:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-EE7F4F8972D0",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 110712,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:06:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-EB94D7CC25C3",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:07:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-0A590D7C9082",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 112983,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:07:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-B9A00BAD3E45",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 112984,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:07:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-4372DE5941BB",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 112985,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:07:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-6B74DAB6125A",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 112986,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:07:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-B3544159288A",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 112987,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:07:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-423250624746",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 119035,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:07:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-E1436E605F6C",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:08:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-2E6F71229990",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 121796,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:08:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-6B2A89FC93F4",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 121797,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:08:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-A1EFB435D289",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 121798,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:08:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-953E19EF4D9B",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 121799,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:08:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-516554933E34",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 121800,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:08:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-EAF5E2802D1D",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 128100,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:08:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-1E54FBB1DEBC",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:09:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-DA1480ED3C2F",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 130714,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:09:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-545BDB731755",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 130715,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:09:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-E55874371FFB",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 130716,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:09:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-0E0C04AF5480",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 130717,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:09:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-41B7184866C2",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 130718,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:09:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-3892B4FBB751",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 137179,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:09:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-001B6822FE8A",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:10:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-78D156B01FF3",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 139877,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:10:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-2DC8040715F2",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 139878,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:10:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-1070B4D379EC",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 139879,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:10:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-79A89289EB92",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 139880,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:10:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-24BE20735593",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 139881,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:10:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-3ED68280BA21",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 146140,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:10:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-7534FD15F8DE",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:11:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-FADCFE88CCD8",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 148423,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:11:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-BA70BC37F361",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 148424,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:11:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-7A469311A39B",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 148425,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:11:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-A56A34D8FE67",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 148426,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:11:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-3D8604BEE32D",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 148427,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:11:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-BC6EFDDDEC25",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 154722,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:11:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-A76CCC03A79C",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:12:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-E838CB7569F8",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 157856,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:12:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-A7A1B3B44B1E",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 157857,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:12:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-89B6ACA0BDAE",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 157858,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:12:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-388F304C4775",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 157859,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:12:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-9D2458B1A31D",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 157860,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:12:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-74F7F56D08EE",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 164407,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:12:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-E0A587ACBAD8",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:13:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-3BA7D24797DF",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 166731,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:13:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-C2337D748584",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 166732,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:13:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-88A820D69C0D",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 166733,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:13:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-7DAF375C522D",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 166734,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:13:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-BA6F8341C52F",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 166735,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:13:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-5D68D7D964C8",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 173133,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:13:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-F8ECA824945E",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:14:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-C26A1F973A32",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 177909,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:14:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-D9B4C5903CED",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 177910,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:14:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-DCC028991832",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 177911,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:14:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-907BDC76D5E7",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 177912,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:14:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-2F5D6B3E9D9F",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 177913,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:14:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-56FE2D81822B",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 184343,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:14:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-0D100D0FE4AA",
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:15:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-6FA5146F9E10",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 187183,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:15:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-395B20F158AD",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 187184,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:15:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-EFE28FE70E3A",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 187185,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:15:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-B64ED185B92D",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 187186,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:15:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-A9B075D264DA",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 187187,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:15:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-9D48E042F9DE",
+          "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+          "source_row": 193447,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T16:15:00",
+          "title": "DoS rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-359105678401",
           "technique": "Unmapped"
         }
       ]

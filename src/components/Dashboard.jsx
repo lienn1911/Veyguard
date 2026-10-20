@@ -2,16 +2,19 @@ import React from 'react';
 import Icon from './Icon.jsx';
 import data from '../real-alerts.json';
 
-export default function Dashboard({ onReview }) {
-  const portScans = data.alerts.filter((alert) => alert.type === 'PortScan').length;
-  const ddosReferences = data.alerts.filter((alert) => alert.ddos_reference).length;
+const nameFor = (type) => type === 'PortScan' ? 'Many ports checked' : 'Heavy network traffic';
+
+export default function Dashboard({ onReview, onReplay }) {
+  const scans = data.incidents.filter((incident) => data.alerts.some((alert) => alert.incident_id === incident.incident_id && alert.type === 'PortScan')).length;
+  const floods = data.incidents.length - scans;
+
   return <>
-    <div className="page-heading"><h1>Dashboard</h1><p>CIC-IDS2017 rule-based preview</p></div>
-    <section className="dashboard-metrics" aria-label="Dashboard summary">
-      {[['Flow groups', data.incidents.length], ['PortScan matches', portScans], ['DDoS references', ddosReferences]].map(([label, value]) => <div className="dashboard-metric" key={label}><span>{label}</span><strong>{value}</strong></div>)}
+    <div className="page-heading dashboard-page-heading"><div><h1>Dashboard</h1><p>Historical network activity · CIC-IDS2017 sample</p></div>{onReplay && <button type="button" onClick={onReplay}>Replay alert</button>}</div>
+    <section className="dashboard-metrics" aria-label="Cases in this preview">
+      {[['Cases to review', data.incidents.length], ['Many ports checked', scans], ['Heavy traffic', floods]].map(([label, value]) => <div className="dashboard-metric" key={label}><span>{label}</span><strong>{value}</strong></div>)}
     </section>
-    <div className="dashboard-grid"><section className="dashboard-panel"><div className="dashboard-panel-head"><h2>Detected flow groups</h2><button onClick={onReview}>Open Alert Review <Icon name="arrow" size={15} /></button></div>
-      {data.incidents.map((incident) => { const alert = data.alerts.find((item) => item.incident_id === incident.incident_id); return <div className="dashboard-flow" key={incident.incident_id}><span className={`alert-type ${alert.type.toLowerCase()}`}>{alert.type}</span><strong>{incident.source_ip} → {incident.destination_ip}{alert.ddos_reference && alert.type !== 'DDoS' ? ' · DDoS reference' : ''}</strong><span>{incident.flow_count.toLocaleString()} flows</span></div>; })}
-    </section><section className="dashboard-panel"><div className="dashboard-panel-head"><h2>Dataset scope</h2></div><div className="dashboard-scope"><strong>{data.provenance.dataset}</strong><span>{data.evaluation.groups_scanned.toLocaleString()} source/destination minute groups scanned</span><span>{data.evaluation.rule_matches.toLocaleString()} rule matches across three source files</span><p>The review shows selected cases from full one-minute groups. Dataset labels are displayed separately from rule matches.</p></div></section></div>
+    <div className="dashboard-grid"><section className="dashboard-panel"><div className="dashboard-panel-head"><h2>Cases to review</h2><button onClick={onReview}>View cases <Icon name="arrow" size={15} /></button></div>
+      {data.incidents.map((incident) => { const alerts = data.alerts.filter((item) => item.incident_id === incident.incident_id); const type = alerts[0].type; return <div className="dashboard-flow" key={incident.incident_id}><span className={`alert-type ${type.toLowerCase()}`}>{nameFor(type)}</span><strong>{incident.source_ip} → {incident.destination_ip}</strong><span>{alerts.length} alerts</span></div>; })}
+    </section><section className="dashboard-panel"><div className="dashboard-panel-head"><h2>About this preview</h2></div><div className="dashboard-scope"><strong>Past network activity, not live monitoring</strong><span>{data.incidents.length} example cases are available to explore.</span><p>Open a case to see the traffic, why an alert appeared, and what still needs a human decision.</p></div></section></div>
   </>;
 }

@@ -1,5 +1,6 @@
 import hashlib
 import json
+import os
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
@@ -7,7 +8,7 @@ from contextlib import closing
 
 from services.guardrails import validate_guardrails
 
-DB_PATH = Path(__file__).resolve().parents[1] / "data" / "audit.db"
+DB_PATH = Path(os.environ.get("SOC_TRIAGE_DB_PATH", Path(__file__).resolve().parents[1] / "data" / "audit.db"))
 
 SAFE_ACTIONS = {
     "REVIEW_NETWORK_FLOWS": "Review related network flows",
@@ -244,6 +245,9 @@ def get_case_note(incident_id, db_path=DB_PATH):
             FROM decisions
             WHERE incident_id = ? AND decision = 'APPROVED'
         """, (incident_id,)).fetchall()
+
+    if not rows:
+        raise ValueError("An approved investigation step is required before drafting a case note")
 
     return {
         "incident_id": incident_id,

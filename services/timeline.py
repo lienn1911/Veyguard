@@ -36,8 +36,8 @@ def reconstruct_timelines(result):
                 'evidence_id': alert_id,
                 'technique': TECHNIQUES.get(alert['type'], 'Unmapped'),
             })
-        events.sort(key=lambda event: (event['timestamp'], event['record_type'] != 'flow', event['evidence_id']))
-        timelines.append({'incident_id': incident['incident_id'], 'total_flows': incident['flow_count'], 'sampled_events': len(events), 'events': events})
+        events.sort(key=lambda event: (event['timestamp'], event.get('source_row', float('inf')), event['evidence_id']))
+        timelines.append({'incident_id': incident['incident_id'], 'total_flows': incident['flow_count'], 'alert_count': len(incident['alert_ids']), 'sampled_flows': len(incident['evidence_sample_ids']), 'events': events})
     return {'timelines': timelines}
 
 

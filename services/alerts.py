@@ -11,6 +11,7 @@ from pathlib import Path
 
 
 DEFAULT_MEMBERS = ('Wednesday-workingHours', 'Friday-WorkingHours-Afternoon-DDos', 'Friday-WorkingHours-Afternoon-PortScan')
+INCIDENT_GAP_MINUTES = 5
 
 
 def stable_id(prefix, *parts):
@@ -63,9 +64,9 @@ def read_flow(row, source_file, row_number):
 
 
 def classify_group(group):
-    if len(group['ports']) >= 100 and len(group['source_ports']) >= 10 and group['count'] >= 100:
+    if len(group['ports']) >= 100 and len(group['source_ports']) >= 2 * len(group['ports']) and group['count'] >= 100:
         return 'PortScan'
-    if group['count'] >= 1000 and group['packets'] >= 10000:
+    if group['count'] >= 1000 and group['packets'] >= 10000 and len(group['ports']) <= 10 and len(group['source_ports']) >= 10:
         return 'DoS'
     return None
 
@@ -84,7 +85,77 @@ def mark_distributed_floods(matches):
                 item['source_count'] = source_count
 
 
-def analyze_archive(path, limit_per_type=2):
+def group_alerts(alerts):
+    incidents = []
+    current = None
+    last_time = None
+    for alert in sorted(alerts, key=lambda item: (item['source_file'], item['source_ip'], item['destination_ip'], item['timestamp'], item['alert_id'])):
+        key = (alert['source_file'], alert['source_ip'], alert['destination_ip'])
+        time = datetime.fromisoformat(alert['timestamp'])
+        if current is None or current['_key'] != key or time - last_time > timedelta(minutes=INCIDENT_GAP_MINUTES):
+            current = {
+                'incident_id': stable_id('INC', *key, alert['timestamp']),
+                'source_ip': alert['source_ip'],
+                'destination_ip': alert['destination_ip'],
+                'window_start': alert['timestamp'],
+                'window_end': alert['timestamp'],
+                'alert_ids': [],
+                'evidence_sample_ids': [],
+                'flow_count': 0,
+                'source_file': alert['source_file'],
+                '_key': key,
+            }
+            incidents.append(current)
+        alert['incident_id'] = current['incident_id']
+        current['alert_ids'].append(alert['alert_id'])
+        current['evidence_sample_ids'].extend(alert['evidence_sample_ids'])
+        current['flow_count'] += alert['flow_count']
+        current['window_end'] = alert['timestamp']
+        last_time = time
+    for incident in incidents:
+        del incident['_key']
+    incidents.sort(key=lambda item: (item['window_start'], item['incident_id']))
+    return incidents
+
+
+def select_preview(incidents, alerts, flows, limit):
+    alerts_by_id = {alert['alert_id']: alert for alert in alerts}
+    chosen = []
+    seen = set()
+
+    def add(incident):
+        if incident and incident['incident_id'] not in seen and len(chosen) < limit:
+            chosen.append(incident)
+            seen.add(incident['incident_id'])
+
+    ranked = sorted(incidents, key=lambda item: (-item['flow_count'], item['window_start'], item['incident_id']))
+    for predicate in (
+        lambda alert: alert['type'] == 'PortScan',
+        lambda alert: alert['type'] == 'DoS' and not alert['ddos_reference'],
+        lambda alert: alert['ddos_reference'],
+    ):
+        add(next((incident for incident in ranked if any(predicate(alerts_by_id[alert_id]) for alert_id in incident['alert_ids'])), None))
+    for incident in ranked:
+        add(incident)
+    chosen.sort(key=lambda item: (item['window_start'], item['incident_id']))
+    chosen_alert_ids = {alert_id for incident in chosen for alert_id in incident['alert_ids']}
+    chosen_flow_ids = {flow_id for incident in chosen for flow_id in incident['evidence_sample_ids']}
+    return chosen, [alert for alert in alerts if alert['alert_id'] in chosen_alert_ids], [flow for flow in flows if flow['flow_id'] in chosen_flow_ids]
+
+
+def make_preview(result, limit):
+    incidents, alerts, flows = select_preview(result['incidents'], result['alerts'], result['flows'], limit)
+    return {
+        **result,
+        'provenance': {**result['provenance'], 'mode': 'preview'},
+        'evaluation': {**result['evaluation'], 'exported_incidents': len(incidents), 'exported_alerts': len(alerts)},
+        'incidents': incidents,
+        'alerts': alerts,
+        'flows': flows,
+    }
+
+
+def analyze_archive(path, preview_cases=None):
     groups = {}
     members_read = []
     with zipfile.ZipFile(path) as archive:
@@ -120,36 +191,9 @@ def analyze_archive(path, limit_per_type=2):
         matches.append(match)
     mark_distributed_floods(matches)
 
-    selected = []
-    for kind in ('PortScan', 'DoS', 'DDoS'):
-        candidates = [item for item in matches if item['type'] == kind]
-        candidates.sort(key=lambda item: (item['group']['count'], len(item['group']['ports'])), reverse=True)
-        seen_files = set()
-        for candidate in candidates:
-            source_file = candidate['key'][0]
-            if source_file in seen_files:
-                continue
-            selected.append(candidate)
-            seen_files.add(source_file)
-            if len(seen_files) >= limit_per_type:
-                break
-    reference_candidates = [item for item in matches if item['group']['labels'].get('DDoS', 0) > 0]
-    reference_candidates.sort(key=lambda item: item['group']['count'], reverse=True)
-    selected_keys = {item['key'] for item in selected}
-    ddos_reference_count = sum(item['group']['labels'].get('DDoS', 0) > 0 for item in selected)
-    for candidate in reference_candidates:
-        if ddos_reference_count >= 3:
-            break
-        if candidate['key'] not in selected_keys:
-            selected.append(candidate)
-            selected_keys.add(candidate['key'])
-            ddos_reference_count += 1
-    selected.sort(key=lambda item: (item['key'][3], item['key'][0], item['key'][1]))
-
     flows = []
     alerts = []
-    incidents = []
-    for item in selected:
+    for item in sorted(matches, key=lambda match: match['key']):
         source_file, source, destination, minute = item['key']
         group = item['group']
         evidence = group['samples'][:]
@@ -157,14 +201,13 @@ def analyze_archive(path, limit_per_type=2):
             evidence.append(group['last'])
         evidence.sort(key=lambda flow: (flow['timestamp'], flow['source_row']))
         flow_ids = [flow['flow_id'] for flow in evidence]
-        incident_id = stable_id('INC', source_file, source, destination, minute)
-        alert_id = stable_id('ALT', incident_id, item['type'])
+        alert_id = stable_id('ALT', source_file, source, destination, minute, item['type'])
         flows.extend(evidence)
         alerts.append({
             'alert_id': alert_id,
-            'incident_id': incident_id,
             'type': item['type'],
             'timestamp': evidence[-1]['timestamp'],
+            'source_file': source_file,
             'source_ip': source,
             'destination_ip': destination,
             'flow_count': group['count'],
@@ -174,35 +217,37 @@ def analyze_archive(path, limit_per_type=2):
             'evidence_sample_ids': flow_ids,
             'dataset_labels': dict(sorted(group['labels'].items())),
             'ddos_reference': group['labels'].get('DDoS', 0) > 0,
-            'rule_basis': f"{len(group['ports'])} destination ports, {len(group['source_ports'])} source ports in one minute" if item['type'] == 'PortScan' else f"{group['count']} flows, {int(group['packets'])} packets, {item['source_count']} independent source IPs in one minute" if item['type'] == 'DDoS' else f"{group['count']} flows and {int(group['packets'])} packets in one minute",
+            'rule_basis': f"{len(group['ports'])} destination ports, {len(group['source_ports'])} source ports in one minute" if item['type'] == 'PortScan' else f"{group['count']} flows, {int(group['packets'])} packets, {item.get('source_count', 1)} independent source IPs in one minute" if item['type'] == 'DDoS' else f"{group['count']} flows and {int(group['packets'])} packets in one minute",
         })
-        incidents.append({
-            'incident_id': incident_id,
-            'source_ip': source,
-            'destination_ip': destination,
-            'window_start': f'{minute}:00',
-            'alert_ids': [alert_id],
-            'evidence_sample_ids': flow_ids,
-            'flow_count': group['count'],
-            'source_file': source_file,
-        })
-    return {
-        'provenance': {'dataset': 'CIC-IDS2017 GeneratedLabelledFlows', 'archive': Path(path).name, 'files': members_read, 'scope': 'Selected full one-minute groups; sampled evidence records shown'},
-        'rules': {'window_seconds': 60, 'portscan_min_destination_ports': 100, 'portscan_min_source_ports': 10, 'portscan_min_flows': 100, 'dos_min_flows': 1000, 'dos_min_packets': 10000, 'ddos_min_sources': 3},
-        'evaluation': {'groups_scanned': len(groups), 'rule_matches': len(matches), 'preview_cases': len(selected)},
+    incidents = group_alerts(alerts)
+    result = {
+        'provenance': {'dataset': 'CIC-IDS2017 GeneratedLabelledFlows', 'archive': Path(path).name, 'files': members_read, 'mode': 'full', 'scope': 'All matching one-minute alerts; up to six sampled source flows per alert'},
+        'rules': {'window_seconds': 60, 'incident_gap_minutes': INCIDENT_GAP_MINUTES, 'portscan_min_destination_ports': 100, 'portscan_min_source_port_ratio': 2, 'portscan_min_flows': 100, 'dos_min_flows': 1000, 'dos_min_packets': 10000, 'dos_max_destination_ports': 10, 'dos_min_source_ports': 10, 'ddos_min_sources': 3},
+        'evaluation': {'groups_scanned': len(groups), 'rule_matches': len(matches), 'incidents': len(incidents), 'exported_incidents': len(incidents), 'exported_alerts': len(alerts)},
         'flows': flows,
         'alerts': alerts,
         'incidents': incidents,
     }
+    return make_preview(result, preview_cases) if preview_cases is not None else result
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Generate rule-based alert preview from CIC-IDS2017 labeled flows')
-    parser.add_argument('archive', type=Path)
+    parser = argparse.ArgumentParser(description='Generate rule-based alerts and incidents from CIC-IDS2017 labeled flows')
+    parser.add_argument('archive', type=Path, nargs='?')
     parser.add_argument('-o', '--output', type=Path, required=True)
-    parser.add_argument('--limit-per-type', type=int, default=2)
+    parser.add_argument('--preview-cases', type=int)
+    parser.add_argument('--preview-from', type=Path)
     args = parser.parse_args()
-    result = analyze_archive(args.archive, args.limit_per_type)
+    if args.preview_cases is not None and args.preview_cases < 1:
+        parser.error('--preview-cases must be positive')
+    if args.preview_from:
+        if args.archive or args.preview_cases is None:
+            parser.error('--preview-from requires --preview-cases and no archive')
+        result = make_preview(json.loads(args.preview_from.read_text(encoding='utf-8')), args.preview_cases)
+    else:
+        if not args.archive:
+            parser.error('archive is required without --preview-from')
+        result = analyze_archive(args.archive, args.preview_cases)
     args.output.write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')
 
 
