@@ -26,6 +26,22 @@ def validate_guardrails(result, incident_id, proposal):
     blocked = []
     review = []
 
+    if not isinstance(proposal, dict):
+        return {
+            "status": "BLOCKED",
+            "reasons": ["Invalid AI proposal format"],
+        }
+
+    allowed_fields = {
+        "verdict",
+        "evidence_ids",
+        "actions",
+        "proposed_priority",
+    }
+
+    if set(proposal) - allowed_fields:
+        blocked.append("Unexpected AI proposal fields")
+
     # 1. Find the selected incident
     incident = next(
         (
@@ -60,12 +76,15 @@ def validate_guardrails(result, incident_id, proposal):
     if len(incident_alerts) != len(incident["alert_ids"]):
         blocked.append("Incident references missing alerts")
 
+    if not incident_alerts:
+        blocked.append("Incident has no alerts")
+        
     if any(
             alert["incident_id"] != incident_id
             for alert in incident_alerts
     ):
         blocked.append("Alert belongs to another incident")
-        
+
     # 3. Collect valid evidence IDs for this incident
     valid_flows = set(incident["evidence_sample_ids"]) & flow_ids
 
