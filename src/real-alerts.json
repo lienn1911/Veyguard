@@ -17,18 +17,23 @@
     "portscan_min_destination_ports": 100,
     "portscan_min_source_port_ratio": 2,
     "portscan_min_flows": 100,
+    "portscan_high_density_min_destination_ports": 250,
+    "portscan_high_density_min_source_ports": 2,
     "dos_min_flows": 1000,
     "dos_min_packets": 10000,
     "dos_max_destination_ports": 10,
     "dos_min_source_ports": 10,
-    "ddos_min_sources": 3
+    "ddos_min_sources": 3,
+    "unclassified_review_enabled": false,
+    "unclassified_min_flows": 500,
+    "unclassified_min_packets": 5000
   },
   "evaluation": {
     "groups_scanned": 146835,
-    "rule_matches": 45,
-    "incidents": 4,
+    "rule_matches": 54,
+    "incidents": 6,
     "exported_incidents": 4,
-    "exported_alerts": 41
+    "exported_alerts": 45
   },
   "flows": [
     {
@@ -1592,6 +1597,240 @@
       "original_flow_id": "172.16.0.1-192.168.10.50-42889-80-6"
     },
     {
+      "flow_id": "FLOW-09B1DF7EED9F",
+      "timestamp": "2017-07-07T14:51:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "0",
+      "source_port": "0",
+      "packet_count": 8.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 87594,
+      "original_flow_id": "172.16.0.1-192.168.10.50-0-0-0"
+    },
+    {
+      "flow_id": "FLOW-17A3339EEBAE",
+      "timestamp": "2017-07-07T14:51:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "35952",
+      "packet_count": 9.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 87622,
+      "original_flow_id": "172.16.0.1-192.168.10.50-35952-80-6"
+    },
+    {
+      "flow_id": "FLOW-29DF12557140",
+      "timestamp": "2017-07-07T14:51:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "35954",
+      "packet_count": 4.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 87627,
+      "original_flow_id": "172.16.0.1-192.168.10.50-35954-80-6"
+    },
+    {
+      "flow_id": "FLOW-E30EC77D4D0D",
+      "timestamp": "2017-07-07T14:51:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "35958",
+      "packet_count": 4.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 87629,
+      "original_flow_id": "172.16.0.1-192.168.10.50-35958-80-6"
+    },
+    {
+      "flow_id": "FLOW-73CDE75355D7",
+      "timestamp": "2017-07-07T14:51:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "35956",
+      "packet_count": 19.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 87630,
+      "original_flow_id": "172.16.0.1-192.168.10.50-35956-80-6"
+    },
+    {
+      "flow_id": "FLOW-F525D88580C4",
+      "timestamp": "2017-07-07T14:51:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "1417",
+      "source_port": "57689",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 98794,
+      "original_flow_id": "172.16.0.1-192.168.10.50-57689-1417-6"
+    },
+    {
+      "flow_id": "FLOW-DB91F9221EF1",
+      "timestamp": "2017-07-07T14:52:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "32773",
+      "source_port": "51546",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 98795,
+      "original_flow_id": "172.16.0.1-192.168.10.50-51546-32773-6"
+    },
+    {
+      "flow_id": "FLOW-B2E0C0786879",
+      "timestamp": "2017-07-07T14:52:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "2002",
+      "source_port": "51546",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 98796,
+      "original_flow_id": "172.16.0.1-192.168.10.50-51546-2002-6"
+    },
+    {
+      "flow_id": "FLOW-B7CE43DAC7EA",
+      "timestamp": "2017-07-07T14:52:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "1839",
+      "source_port": "51546",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 98797,
+      "original_flow_id": "172.16.0.1-192.168.10.50-51546-1839-6"
+    },
+    {
+      "flow_id": "FLOW-ACFBB0FC586C",
+      "timestamp": "2017-07-07T14:52:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "5822",
+      "source_port": "51546",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 98798,
+      "original_flow_id": "172.16.0.1-192.168.10.50-51546-5822-6"
+    },
+    {
+      "flow_id": "FLOW-F180300F7663",
+      "timestamp": "2017-07-07T14:52:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "51546",
+      "packet_count": 3.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 98799,
+      "original_flow_id": "172.16.0.1-192.168.10.50-51546-80-6"
+    },
+    {
+      "flow_id": "FLOW-54C858B9755F",
+      "timestamp": "2017-07-07T14:52:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "9502",
+      "source_port": "64915",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 142921,
+      "original_flow_id": "172.16.0.1-192.168.10.50-64915-9502-6"
+    },
+    {
+      "flow_id": "FLOW-C4270F4D8E37",
+      "timestamp": "2017-07-07T14:53:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "2968",
+      "source_port": "36894",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 142934,
+      "original_flow_id": "172.16.0.1-192.168.10.50-36894-2968-6"
+    },
+    {
+      "flow_id": "FLOW-422FFC2E9FE4",
+      "timestamp": "2017-07-07T14:53:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "1148",
+      "source_port": "36894",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 142935,
+      "original_flow_id": "172.16.0.1-192.168.10.50-36894-1148-6"
+    },
+    {
+      "flow_id": "FLOW-5ED8339B607B",
+      "timestamp": "2017-07-07T14:53:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "6543",
+      "source_port": "36894",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 142936,
+      "original_flow_id": "172.16.0.1-192.168.10.50-36894-6543-6"
+    },
+    {
+      "flow_id": "FLOW-A064AA7BF66E",
+      "timestamp": "2017-07-07T14:53:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "19283",
+      "source_port": "36894",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 142937,
+      "original_flow_id": "172.16.0.1-192.168.10.50-36894-19283-6"
+    },
+    {
+      "flow_id": "FLOW-3BCDCA66B56D",
+      "timestamp": "2017-07-07T14:53:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "111",
+      "source_port": "36894",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 142939,
+      "original_flow_id": "172.16.0.1-192.168.10.50-36894-111-6"
+    },
+    {
+      "flow_id": "FLOW-2667179A8A9E",
+      "timestamp": "2017-07-07T14:53:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "2121",
+      "source_port": "59529",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 147130,
+      "original_flow_id": "172.16.0.1-192.168.10.50-59529-2121-6"
+    },
+    {
       "flow_id": "FLOW-08C2DF9F8CB8",
       "timestamp": "2017-07-07T14:54:00",
       "source_ip": "172.16.0.1",
@@ -1746,6 +1985,84 @@
       "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
       "source_row": 229857,
       "original_flow_id": "172.16.0.1-192.168.10.50-60232-32773-6"
+    },
+    {
+      "flow_id": "FLOW-285EEA4471DB",
+      "timestamp": "2017-07-07T14:56:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "1287",
+      "source_port": "36114",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 229863,
+      "original_flow_id": "172.16.0.1-192.168.10.50-36114-1287-6"
+    },
+    {
+      "flow_id": "FLOW-87B50935D507",
+      "timestamp": "2017-07-07T14:56:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "80",
+      "source_port": "54994",
+      "packet_count": 4.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 229864,
+      "original_flow_id": "172.16.0.1-192.168.10.50-54994-80-6"
+    },
+    {
+      "flow_id": "FLOW-D66D312867ED",
+      "timestamp": "2017-07-07T14:56:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "1863",
+      "source_port": "49458",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 229865,
+      "original_flow_id": "172.16.0.1-192.168.10.50-49458-1863-6"
+    },
+    {
+      "flow_id": "FLOW-96626A1E4E2A",
+      "timestamp": "2017-07-07T14:56:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "3168",
+      "source_port": "54352",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 229866,
+      "original_flow_id": "172.16.0.1-192.168.10.50-54352-3168-6"
+    },
+    {
+      "flow_id": "FLOW-8316B27D2B29",
+      "timestamp": "2017-07-07T14:56:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "8099",
+      "source_port": "53484",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 229867,
+      "original_flow_id": "172.16.0.1-192.168.10.50-53484-8099-6"
+    },
+    {
+      "flow_id": "FLOW-873DCDEA8F9C",
+      "timestamp": "2017-07-07T14:56:00",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "destination_port": "1755",
+      "source_port": "56954",
+      "packet_count": 2.0,
+      "dataset_label": "PortScan",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_row": 230856,
+      "original_flow_id": "172.16.0.1-192.168.10.50-56954-1755-6"
     },
     {
       "flow_id": "FLOW-745C5543C223",
@@ -3746,6 +4063,84 @@
       "incident_id": "INC-0A7AC1BD9701"
     },
     {
+      "alert_id": "ALT-42EFA95BAA3C",
+      "type": "PortScan",
+      "timestamp": "2017-07-07T14:51:00",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "flow_count": 10916,
+      "destination_port_count": 998,
+      "source_port_count": 16,
+      "source_count": 1,
+      "evidence_sample_ids": [
+        "FLOW-09B1DF7EED9F",
+        "FLOW-17A3339EEBAE",
+        "FLOW-29DF12557140",
+        "FLOW-E30EC77D4D0D",
+        "FLOW-73CDE75355D7",
+        "FLOW-F525D88580C4"
+      ],
+      "dataset_labels": {
+        "PortScan": 10916
+      },
+      "ddos_reference": false,
+      "rule_basis": "998 destination ports, 16 source ports in one minute",
+      "incident_id": "INC-168780F44274"
+    },
+    {
+      "alert_id": "ALT-5730B62A74DF",
+      "type": "PortScan",
+      "timestamp": "2017-07-07T14:52:00",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "flow_count": 43603,
+      "destination_port_count": 996,
+      "source_port_count": 44,
+      "source_count": 1,
+      "evidence_sample_ids": [
+        "FLOW-DB91F9221EF1",
+        "FLOW-B2E0C0786879",
+        "FLOW-B7CE43DAC7EA",
+        "FLOW-ACFBB0FC586C",
+        "FLOW-F180300F7663",
+        "FLOW-54C858B9755F"
+      ],
+      "dataset_labels": {
+        "PortScan": 43603
+      },
+      "ddos_reference": false,
+      "rule_basis": "996 destination ports, 44 source ports in one minute",
+      "incident_id": "INC-168780F44274"
+    },
+    {
+      "alert_id": "ALT-4B6C1C9535B8",
+      "type": "PortScan",
+      "timestamp": "2017-07-07T14:53:00",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "flow_count": 3957,
+      "destination_port_count": 996,
+      "source_port_count": 4,
+      "source_count": 1,
+      "evidence_sample_ids": [
+        "FLOW-C4270F4D8E37",
+        "FLOW-422FFC2E9FE4",
+        "FLOW-5ED8339B607B",
+        "FLOW-A064AA7BF66E",
+        "FLOW-3BCDCA66B56D",
+        "FLOW-2667179A8A9E"
+      ],
+      "dataset_labels": {
+        "PortScan": 3957
+      },
+      "ddos_reference": false,
+      "rule_basis": "996 destination ports, 4 source ports in one minute",
+      "incident_id": "INC-168780F44274"
+    },
+    {
       "alert_id": "ALT-597B373A7FFA",
       "type": "PortScan",
       "timestamp": "2017-07-07T14:54:00",
@@ -3769,7 +4164,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "997 destination ports, 12906 source ports in one minute",
-      "incident_id": "INC-EF9D2C7066EB"
+      "incident_id": "INC-168780F44274"
     },
     {
       "alert_id": "ALT-976AF2FEDE2B",
@@ -3795,7 +4190,33 @@
       },
       "ddos_reference": false,
       "rule_basis": "996 destination ports, 13497 source ports in one minute",
-      "incident_id": "INC-EF9D2C7066EB"
+      "incident_id": "INC-168780F44274"
+    },
+    {
+      "alert_id": "ALT-53816A277932",
+      "type": "PortScan",
+      "timestamp": "2017-07-07T14:56:00",
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "flow_count": 987,
+      "destination_port_count": 987,
+      "source_port_count": 952,
+      "source_count": 1,
+      "evidence_sample_ids": [
+        "FLOW-285EEA4471DB",
+        "FLOW-87B50935D507",
+        "FLOW-D66D312867ED",
+        "FLOW-96626A1E4E2A",
+        "FLOW-8316B27D2B29",
+        "FLOW-873DCDEA8F9C"
+      ],
+      "dataset_labels": {
+        "PortScan": 987
+      },
+      "ddos_reference": false,
+      "rule_basis": "987 destination ports, 952 source ports in one minute",
+      "incident_id": "INC-168780F44274"
     },
     {
       "alert_id": "ALT-4AF3D618FAA9",
@@ -4438,16 +4859,38 @@
       "source_file": "Wednesday-workingHours.pcap_ISCX.csv"
     },
     {
-      "incident_id": "INC-EF9D2C7066EB",
+      "incident_id": "INC-168780F44274",
       "source_ip": "172.16.0.1",
       "destination_ip": "192.168.10.50",
-      "window_start": "2017-07-07T14:54:00",
-      "window_end": "2017-07-07T14:55:00",
+      "window_start": "2017-07-07T14:51:00",
+      "window_end": "2017-07-07T14:56:00",
       "alert_ids": [
+        "ALT-42EFA95BAA3C",
+        "ALT-5730B62A74DF",
+        "ALT-4B6C1C9535B8",
         "ALT-597B373A7FFA",
-        "ALT-976AF2FEDE2B"
+        "ALT-976AF2FEDE2B",
+        "ALT-53816A277932"
       ],
       "evidence_sample_ids": [
+        "FLOW-09B1DF7EED9F",
+        "FLOW-17A3339EEBAE",
+        "FLOW-29DF12557140",
+        "FLOW-E30EC77D4D0D",
+        "FLOW-73CDE75355D7",
+        "FLOW-F525D88580C4",
+        "FLOW-DB91F9221EF1",
+        "FLOW-B2E0C0786879",
+        "FLOW-B7CE43DAC7EA",
+        "FLOW-ACFBB0FC586C",
+        "FLOW-F180300F7663",
+        "FLOW-54C858B9755F",
+        "FLOW-C4270F4D8E37",
+        "FLOW-422FFC2E9FE4",
+        "FLOW-5ED8339B607B",
+        "FLOW-A064AA7BF66E",
+        "FLOW-3BCDCA66B56D",
+        "FLOW-2667179A8A9E",
         "FLOW-08C2DF9F8CB8",
         "FLOW-41028607F510",
         "FLOW-3E83C351AE9F",
@@ -4459,9 +4902,15 @@
         "FLOW-5A5EA69C8028",
         "FLOW-E67F4F5AF4C4",
         "FLOW-63AC74FB9CCE",
-        "FLOW-DE7C1502C2A5"
+        "FLOW-DE7C1502C2A5",
+        "FLOW-285EEA4471DB",
+        "FLOW-87B50935D507",
+        "FLOW-D66D312867ED",
+        "FLOW-96626A1E4E2A",
+        "FLOW-8316B27D2B29",
+        "FLOW-873DCDEA8F9C"
       ],
-      "flow_count": 79030,
+      "flow_count": 138493,
       "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv"
     },
     {

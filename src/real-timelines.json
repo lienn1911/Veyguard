@@ -1107,11 +1107,203 @@
       ]
     },
     {
-      "incident_id": "INC-EF9D2C7066EB",
-      "total_flows": 79030,
-      "alert_count": 2,
-      "sampled_flows": 12,
+      "incident_id": "INC-168780F44274",
+      "total_flows": 138493,
+      "alert_count": 6,
+      "sampled_flows": 36,
       "events": [
+        {
+          "timestamp": "2017-07-07T14:51:00",
+          "title": "172.16.0.1 \u2192 port 0",
+          "record_type": "flow",
+          "evidence_id": "FLOW-09B1DF7EED9F",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 87594,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:51:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-17A3339EEBAE",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 87622,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:51:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-29DF12557140",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 87627,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:51:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-E30EC77D4D0D",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 87629,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:51:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-73CDE75355D7",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 87630,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:51:00",
+          "title": "172.16.0.1 \u2192 port 1417",
+          "record_type": "flow",
+          "evidence_id": "FLOW-F525D88580C4",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 98794,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:51:00",
+          "title": "PortScan rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-42EFA95BAA3C",
+          "technique": {
+            "id": "T1046",
+            "name": "Network Service Discovery"
+          }
+        },
+        {
+          "timestamp": "2017-07-07T14:52:00",
+          "title": "172.16.0.1 \u2192 port 32773",
+          "record_type": "flow",
+          "evidence_id": "FLOW-DB91F9221EF1",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 98795,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:52:00",
+          "title": "172.16.0.1 \u2192 port 2002",
+          "record_type": "flow",
+          "evidence_id": "FLOW-B2E0C0786879",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 98796,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:52:00",
+          "title": "172.16.0.1 \u2192 port 1839",
+          "record_type": "flow",
+          "evidence_id": "FLOW-B7CE43DAC7EA",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 98797,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:52:00",
+          "title": "172.16.0.1 \u2192 port 5822",
+          "record_type": "flow",
+          "evidence_id": "FLOW-ACFBB0FC586C",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 98798,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:52:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-F180300F7663",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 98799,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:52:00",
+          "title": "172.16.0.1 \u2192 port 9502",
+          "record_type": "flow",
+          "evidence_id": "FLOW-54C858B9755F",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 142921,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:52:00",
+          "title": "PortScan rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-5730B62A74DF",
+          "technique": {
+            "id": "T1046",
+            "name": "Network Service Discovery"
+          }
+        },
+        {
+          "timestamp": "2017-07-07T14:53:00",
+          "title": "172.16.0.1 \u2192 port 2968",
+          "record_type": "flow",
+          "evidence_id": "FLOW-C4270F4D8E37",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 142934,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:53:00",
+          "title": "172.16.0.1 \u2192 port 1148",
+          "record_type": "flow",
+          "evidence_id": "FLOW-422FFC2E9FE4",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 142935,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:53:00",
+          "title": "172.16.0.1 \u2192 port 6543",
+          "record_type": "flow",
+          "evidence_id": "FLOW-5ED8339B607B",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 142936,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:53:00",
+          "title": "172.16.0.1 \u2192 port 19283",
+          "record_type": "flow",
+          "evidence_id": "FLOW-A064AA7BF66E",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 142937,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:53:00",
+          "title": "172.16.0.1 \u2192 port 111",
+          "record_type": "flow",
+          "evidence_id": "FLOW-3BCDCA66B56D",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 142939,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:53:00",
+          "title": "172.16.0.1 \u2192 port 2121",
+          "record_type": "flow",
+          "evidence_id": "FLOW-2667179A8A9E",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 147130,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:53:00",
+          "title": "PortScan rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-4B6C1C9535B8",
+          "technique": {
+            "id": "T1046",
+            "name": "Network Service Discovery"
+          }
+        },
         {
           "timestamp": "2017-07-07T14:54:00",
           "title": "172.16.0.1 \u2192 port 80",
@@ -1235,6 +1427,70 @@
           "title": "PortScan rule matched",
           "record_type": "alert",
           "evidence_id": "ALT-976AF2FEDE2B",
+          "technique": {
+            "id": "T1046",
+            "name": "Network Service Discovery"
+          }
+        },
+        {
+          "timestamp": "2017-07-07T14:56:00",
+          "title": "172.16.0.1 \u2192 port 1287",
+          "record_type": "flow",
+          "evidence_id": "FLOW-285EEA4471DB",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 229863,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:56:00",
+          "title": "172.16.0.1 \u2192 port 80",
+          "record_type": "flow",
+          "evidence_id": "FLOW-87B50935D507",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 229864,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:56:00",
+          "title": "172.16.0.1 \u2192 port 1863",
+          "record_type": "flow",
+          "evidence_id": "FLOW-D66D312867ED",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 229865,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:56:00",
+          "title": "172.16.0.1 \u2192 port 3168",
+          "record_type": "flow",
+          "evidence_id": "FLOW-96626A1E4E2A",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 229866,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:56:00",
+          "title": "172.16.0.1 \u2192 port 8099",
+          "record_type": "flow",
+          "evidence_id": "FLOW-8316B27D2B29",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 229867,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:56:00",
+          "title": "172.16.0.1 \u2192 port 1755",
+          "record_type": "flow",
+          "evidence_id": "FLOW-873DCDEA8F9C",
+          "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+          "source_row": 230856,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-07-07T14:56:00",
+          "title": "PortScan rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-53816A277932",
           "technique": {
             "id": "T1046",
             "name": "Network Service Discovery"

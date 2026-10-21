@@ -3,6 +3,16 @@ import React, { useState } from 'react';
 const minuteOf = (timestamp) => timestamp.slice(0, 16);
 const count = (value) => new Intl.NumberFormat('en-US').format(value);
 const compact = (value) => new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(value);
+const attackReferences = {
+  PortScan: { id: 'T1046', name: 'Network Service Discovery' },
+  DDoS: { id: 'T1498', name: 'Network Denial of Service' },
+};
+
+function ruleCriteria(type, rules) {
+  if (type === 'DoS') return `Project rule: at least ${count(rules.dos_min_flows)} flows and ${count(rules.dos_min_packets)} packets in one minute, at most ${rules.dos_max_destination_ports} destination ports, and at least ${rules.dos_min_source_ports} source ports.`;
+  if (type === 'PortScan') return `Project rule: at least ${rules.portscan_min_flows} flows and ${rules.portscan_min_destination_ports} destination ports in one minute, plus either ${rules.portscan_min_source_port_ratio}× as many source ports or at least ${rules.portscan_high_density_min_destination_ports} destination ports with ${rules.portscan_high_density_min_source_ports} source ports.`;
+  return null;
+}
 
 function alertWindows(alerts, events) {
   const visibleMinutes = new Set(events.map((event) => minuteOf(event.timestamp)));
@@ -17,7 +27,7 @@ function alertWindows(alerts, events) {
   return [...windows.values()].sort((a, b) => a.key.localeCompare(b.key));
 }
 
-export default function Timeline({ events, allEvents = events, alerts = [], flows = [], onEvidence, onSelectMinute, evidencePanel }) {
+export default function Timeline({ events, allEvents = events, alerts = [], flows = [], rules = {}, selectedEvidence, onEvidence, onSelectMinute, evidencePanel }) {
   const [selectedKey, setSelectedKey] = useState(null);
   const [hoveredKey, setHoveredKey] = useState(null);
   const windows = alertWindows(alerts, events);
@@ -26,7 +36,6 @@ export default function Timeline({ events, allEvents = events, alerts = [], flow
   const focus = windows.find((item) => item.key === hoveredKey) || selected;
   const samples = selected ? allEvents.filter((event) => event.record_type === 'flow' && minuteOf(event.timestamp) === selected.key) : [];
   const flowById = new Map(flows.map((flow) => [flow.flow_id, flow]));
-  const techniques = selected ? [...new Map(allEvents.filter((event) => selected.alerts.some((alert) => alert.alert_id === event.evidence_id) && event.technique && typeof event.technique === 'object').map((event) => [event.technique.id, event.technique])).values()] : [];
 
   if (!windows.length) return <section className="traffic-timeline-empty">No alert minutes are available for this case.</section>;
 
@@ -65,10 +74,9 @@ export default function Timeline({ events, allEvents = events, alerts = [], flow
       {points.map((point) => <button type="button" key={point.key} className={`traffic-timeline-point${selected?.key === point.key ? ' selected' : ''}`} style={{ left: point.x, top: point.y }} aria-label={`${point.key.replace('T', ' ')}, ${count(point.records)} rule-matched traffic records; show details`} aria-pressed={selected?.key === point.key} title={`${point.key.replace('T', ' ')} · ${count(point.records)} records`} onMouseEnter={() => setHoveredKey(point.key)} onMouseLeave={() => setHoveredKey(null)} onFocus={() => setHoveredKey(point.key)} onBlur={() => setHoveredKey(null)} onClick={() => { setSelectedKey(point.key); onSelectMinute?.(); }} />)}
     </div></div>
     {selected && <div className="traffic-timeline-detail" aria-live="polite"><div className="traffic-timeline-detail-head"><h4>{selected.key.replace('T', ' ')}</h4><strong>{count(selected.records)} traffic records</strong></div>
-      <div className="traffic-timeline-facts"><span>{selected.alerts.length} {selected.alerts.length === 1 ? 'alert' : 'alerts'}</span><span>{samples.length} linked flow {samples.length === 1 ? 'record' : 'records'}</span>{techniques.map((item) => <span key={item.id}>MITRE {item.id} · {item.name}</span>)}</div>
-      <div className="traffic-timeline-records"><h5>Why it was flagged</h5>{selected.alerts.map((alert) => <div className="traffic-timeline-alert" key={alert.alert_id}><div><strong>{alert.type} · {alert.source_ip} → {alert.destination_ip}</strong><p>{alert.rule_basis}</p><small>{alert.alert_id}</small></div><button type="button" onClick={() => onEvidence(alert.alert_id)}>View alert evidence</button></div>)}</div>
-      {evidencePanel}
-      {samples.length > 0 && <div className="traffic-timeline-samples"><div className="traffic-timeline-section-head"><h5>Network flow evidence <span>{samples.length} records</span></h5><p>Linked source records for this minute. The traffic total above counts all rule-matched flows.</p></div><div>{samples.map((event) => { const flow = flowById.get(event.evidence_id); return <button type="button" key={event.evidence_id} onClick={() => onEvidence(event.evidence_id)}><span><strong>{flow ? `${flow.source_ip}${flow.source_port ? `:${flow.source_port}` : ''} → ${flow.destination_ip}${flow.destination_port ? `:${flow.destination_port}` : ''}` : event.title}</strong><small>{flow?.source_file}{flow?.source_row ? ` · row ${flow.source_row}` : ''}</small></span><small>{event.evidence_id}</small></button>; })}</div></div>}
+      <div className="traffic-timeline-facts"><span>{selected.alerts.length} {selected.alerts.length === 1 ? 'alert' : 'alerts'}</span><span>{samples.length} linked flow {samples.length === 1 ? 'record' : 'records'}</span></div>
+      <div className="traffic-timeline-records"><h5>Why it was flagged</h5>{selected.alerts.map((alert) => { const reference = attackReferences[alert.type]; const criteria = ruleCriteria(alert.type, rules); return <div className="traffic-timeline-alert" key={alert.alert_id}><div className="traffic-timeline-alert-row"><div><div className="traffic-timeline-alert-title"><span className={`alert-type-chip ${alert.type.toLowerCase()}`}>{alert.type}</span><strong>{alert.source_ip} → {alert.destination_ip}</strong></div><p>{alert.rule_basis}</p>{criteria && <p className="traffic-timeline-rule">{criteria}</p>}{alert.type === 'DoS' && <p className="traffic-timeline-mitre">ATT&CK technique not assigned: flow and packet counts alone do not show network exhaustion or a service outage.</p>}{reference && <p className="traffic-timeline-mitre">Possible ATT&CK behavior: <a href={`https://attack.mitre.org/techniques/${reference.id}/`} target="_blank" rel="noopener noreferrer">{reference.id} · {reference.name}</a>. This association is not a confirmed attack.</p>}</div><button type="button" onClick={() => onEvidence(alert.alert_id)}>View alert evidence</button></div>{selectedEvidence === alert.alert_id && evidencePanel}</div>; })}</div>
+      {samples.length > 0 && <div className="traffic-timeline-samples"><div className="traffic-timeline-section-head"><h5>Network flow evidence <span>{samples.length} records</span></h5><p>Linked source records for this minute. The traffic total above counts all rule-matched flows.</p></div><div>{samples.map((event) => { const flow = flowById.get(event.evidence_id); return <div className="traffic-timeline-flow" key={event.evidence_id}><button type="button" onClick={() => onEvidence(event.evidence_id)}><strong>{flow ? `${flow.source_ip}${flow.source_port ? `:${flow.source_port}` : ''} → ${flow.destination_ip}${flow.destination_port ? `:${flow.destination_port}` : ''}` : event.title}</strong></button>{selectedEvidence === event.evidence_id && evidencePanel}</div>; })}</div></div>}
     </div>}
   </section>;
 }

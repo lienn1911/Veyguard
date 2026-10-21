@@ -11,7 +11,7 @@ import zipfile
 from collections import Counter
 from pathlib import Path
 
-from services.alerts import DEFAULT_MEMBERS, classify_group, mark_distributed_floods, read_flow
+from services.alerts import DEFAULT_MEMBERS, RULE_THRESHOLDS, classify_group, mark_distributed_floods, read_flow
 
 
 def expected_type(labels):
@@ -67,10 +67,30 @@ def evaluate_archive(path):
         fp = sum(count for (truth, predicted), count in confusion.items() if predicted == kind and truth != kind)
         fn = sum(count for (truth, predicted), count in confusion.items() if truth == kind and predicted != kind)
         per_type[kind] = {'true_positive': tp, 'false_positive': fp, 'false_negative': fn,
+                          'false_positive_from_benign': confusion[('Benign', kind)],
+                          'other_attack_type_predictions': fp - confusion[('Benign', kind)],
+                          'missed_without_alert': confusion[(kind, 'No alert')],
                           'precision': round(tp / (tp + fp), 4) if tp + fp else None,
                           'recall': round(tp / (tp + fn), 4) if tp + fn else None}
-    return {'unit': 'source/destination/minute groups', 'groups_scanned': len(groups),
+    attack_types = {'PortScan', 'DoS', 'DDoS'}
+    attack_tp = sum(count for (truth, predicted), count in confusion.items()
+                    if truth in attack_types and predicted in attack_types)
+    attack_fp = sum(count for (truth, predicted), count in confusion.items()
+                    if truth == 'Benign' and predicted in attack_types)
+    attack_fn = sum(count for (truth, predicted), count in confusion.items()
+                    if truth in attack_types and predicted == 'No alert')
+    attack_detection = {
+        'true_positive': attack_tp, 'false_positive': attack_fp, 'false_negative': attack_fn,
+        'precision': round(attack_tp / (attack_tp + attack_fp), 4) if attack_tp + attack_fp else None,
+        'recall': round(attack_tp / (attack_tp + attack_fn), 4) if attack_tp + attack_fn else None,
+        'detected_by_label': {kind: sum(count for (truth, predicted), count in confusion.items()
+                                        if truth == kind and predicted in attack_types)
+                              for kind in ('PortScan', 'DoS', 'DDoS')},
+    }
+    return {'unit': 'source/destination/minute groups', 'files_evaluated': [Path(member).name for member in members],
+            'rules': dict(RULE_THRESHOLDS), 'groups_scanned': len(groups),
             'excluded_ambiguous_groups': dict(excluded), 'per_type': per_type,
+            'attack_detection': attack_detection,
             'confusion': [{'actual': actual, 'predicted': predicted, 'groups': count}
                           for (actual, predicted), count in sorted(confusion.items())]}
 

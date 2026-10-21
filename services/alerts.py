@@ -16,6 +16,8 @@ RULE_THRESHOLDS = {
     'portscan_min_destination_ports': 100,
     'portscan_min_source_port_ratio': 2,
     'portscan_min_flows': 100,
+    'portscan_high_density_min_destination_ports': 250,
+    'portscan_high_density_min_source_ports': 2,
     'dos_min_flows': 1000,
     'dos_min_packets': 10000,
     'dos_max_destination_ports': 10,
@@ -26,8 +28,10 @@ RULE_THRESHOLDS = {
 
 def portscan_rule(group):
     return (len(group['ports']) >= RULE_THRESHOLDS['portscan_min_destination_ports']
-            and len(group['source_ports']) >= RULE_THRESHOLDS['portscan_min_source_port_ratio'] * len(group['ports'])
-            and group['count'] >= RULE_THRESHOLDS['portscan_min_flows'])
+            and group['count'] >= RULE_THRESHOLDS['portscan_min_flows']
+            and (len(group['source_ports']) >= RULE_THRESHOLDS['portscan_min_source_port_ratio'] * len(group['ports'])
+                 or (len(group['ports']) >= RULE_THRESHOLDS['portscan_high_density_min_destination_ports']
+                     and len(group['source_ports']) >= RULE_THRESHOLDS['portscan_high_density_min_source_ports'])))
 
 
 def dos_rule(group):

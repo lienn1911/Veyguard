@@ -1531,29 +1531,33 @@ button:focus-visible{outline-color:#a889d9}
 .traffic-timeline-facts span{padding:6px 9px;border-radius:7px;background:#f3edf9;color:#694b9b;font-size:11px;font-weight:700}
 .traffic-timeline-records{padding:0 20px 15px}
 .traffic-timeline-records h5{margin:0 -20px;padding:13px 20px;border-top:1px solid #eee8f4;border-bottom:1px solid #eee8f4;background:#faf7fd;box-shadow:inset 3px 0 #a987d4;color:#4d3974;font-size:12px}
-.traffic-timeline-alert{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 0;border-top:1px solid #eee8f4}
+.traffic-timeline-alert{padding:12px 0;border-top:1px solid #eee8f4}
 .traffic-timeline-alert:first-of-type{border-top:0}
+.traffic-timeline-alert-row{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.traffic-timeline-alert-title{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
 .traffic-timeline-alert strong{font-size:12px}
 .traffic-timeline-alert p{margin:5px 0;color:#706181;font-size:11px}
-.traffic-timeline-alert small{color:#9887a7;font-size:10px}
-.traffic-timeline-alert button{flex:none;padding:8px 10px;border:1px solid #ddcfea;border-radius:8px;background:#f7f2fc;color:#6545a2;font:inherit;font-size:10px;font-weight:700;cursor:pointer}
+.traffic-timeline-alert .traffic-timeline-rule{margin-top:9px;color:#514069;line-height:1.5}
+.traffic-timeline-alert .traffic-timeline-mitre{margin-top:7px;color:#786889;line-height:1.5}
+.traffic-timeline-mitre a{color:#6545a2;font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.traffic-timeline-alert-row>button{flex:none;padding:8px 10px;border:1px solid #ddcfea;border-radius:8px;background:#f7f2fc;color:#6545a2;font:inherit;font-size:10px;font-weight:700;cursor:pointer}
 .traffic-timeline-samples{border-top:1px solid #eee8f4}
 .traffic-timeline-section-head{padding:13px 20px 12px;border-bottom:1px solid #eee8f4;background:#faf7fd;box-shadow:inset 3px 0 #a987d4}
 .traffic-timeline-samples h5{display:flex;justify-content:space-between;margin:0;color:#594180;font-size:12px;font-weight:700}
 .traffic-timeline-samples h5 span{color:#927da8}
 .traffic-timeline-section-head p{margin:7px 0 0;color:#8b7a9d;font-size:11px;line-height:1.5}
 .traffic-timeline-samples>div:not(.traffic-timeline-section-head){display:grid;padding:0 20px 12px}
-.traffic-timeline-samples button{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border:0;border-top:1px solid #f0ebf5;background:none;color:#4d3974;font:inherit;font-size:11px;text-align:left;cursor:pointer}
-.traffic-timeline-samples button:hover{color:#7653b7}
-.traffic-timeline-samples button span{display:grid;gap:4px;min-width:0}
-.traffic-timeline-samples button strong{font-size:11px;overflow-wrap:anywhere}
-.traffic-timeline-samples button small{color:#9484a4;overflow-wrap:anywhere}
+.traffic-timeline-flow{border-top:1px solid #f0ebf5}
+.traffic-timeline-flow>button{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;padding:9px 0;border:0;background:none;color:#4d3974;font:inherit;font-size:11px;text-align:left;cursor:pointer}
+.traffic-timeline-flow>button:hover{color:#7653b7}
+.traffic-timeline-flow>button strong{font-size:11px;overflow-wrap:anywhere}
 .traffic-timeline-empty{padding:35px;border:1px dashed #ddcfea;border-radius:12px;color:#8b7a9d;font-size:12px;text-align:center}
 .iris-stream-content .process-evidence{position:static;top:auto;right:auto;z-index:auto;width:100%;max-height:none;overflow:visible;margin:18px 0 0;border-color:#e9e1f1;background:#faf7fd;color:#3d2c66;box-shadow:none}
-.traffic-timeline-detail .process-evidence{width:calc(100% - 40px);margin:0 20px 18px}
+.traffic-timeline-detail .process-evidence{width:100%;margin:12px 0 0}
+.traffic-timeline-flow .process-evidence{margin-bottom:16px}
 .iris-stream-content .process-evidence dt{color:#8b7a9d}
 .iris-stream-content .process-evidence>div button{color:#7254b5}
 .iris-stream-content .process-evidence details{border-top-color:#e9e1f1;color:#79688f}
 @media(max-width:560px){.iris-stream-content .process-evidence dl{grid-template-columns:84px minmax(0,1fr)}}
-@media(max-width:760px){.traffic-timeline-detail-head,.traffic-timeline-alert{align-items:flex-start;flex-direction:column}.traffic-timeline-detail-head>strong{white-space:normal}}
+@media(max-width:760px){.traffic-timeline-detail-head,.traffic-timeline-alert-row{align-items:flex-start;flex-direction:column}.traffic-timeline-detail-head>strong{white-space:normal}}
 @media(prefers-reduced-motion:reduce){.traffic-timeline-point::after{transition:none}}
