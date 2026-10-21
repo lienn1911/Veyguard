@@ -2,7 +2,9 @@
 
 ## Demo sign-in
 
-The local UI opens on a demo sign-in screen. Use `administrator` / `Demo@1234`. The demo session lasts for the current browser session. Use the account menu at the bottom of the sidebar to sign out. This is a UI demonstration only: the sample data is bundled with the frontend and the local API is not protected by this sign-in.
+The local UI opens on a single-user sign-in screen. On first use, sign in as `administrator` / `Demo@1234`, then use the account menu at the bottom of the sidebar to change that password. The local API verifies the password and protects its routes with an eight-hour, HttpOnly session cookie and CSRF checks on writes. Changing the password signs out every session. The bundled historical preview JSON remains a static frontend asset, so this local demo is not a production access-control boundary for the dataset.
+
+The password hash is stored in Git-ignored `data/auth/account.json`, using a unique salt and scrypt. New passwords must have 15–128 characters; common choices are blocked, and five failed login or current-password attempts cause a fifteen-minute lockout. The lockout and active sessions are in this single local API process, so restarting it clears them and signs everyone out.
 
 Alert generation, incident grouping, and timeline reconstruction use the official CIC-IDS2017 `GeneratedLabelledFlows.zip`. Suggested investigation checks, analyst decisions, case-note drafts, and audit logging run in a local Python service. The AI check can now run the merged triage agent against a case's evidence; its default mock provider is explicitly labelled as a demo simulation.
 
@@ -57,6 +59,8 @@ Open Investigations to see the case list, then open the PortScan case. The five 
 The dataset label is shown separately from the rule result. It is a reference for evaluation, not the reason the rule fired. A PortScan rule match is a candidate incident; triage and any verdict belong to the other modules. Source timestamps have only minute precision, so events within one minute are ordered by CSV row where available.
 
 AI check displays Pending until an analyst selects **Run AI check**. The merged agent reads case evidence through allowlisted tools, validates cited evidence IDs, and stores a proposed verdict separately from analyst decisions. By default `AI_PROVIDER=mock`, so its output is a **demo simulation**, not a live model assessment. For a live provider, copy `.env.example` to `.env`, set `AI_PROVIDER=groq` or `gemini` and the matching API key, then run `python -m services.preflight` before the demo. Next Steps continues to show deterministic, evidence-linked investigation checks based on rule matches. An analyst approves or rejects every check and enters a name before submitting. The local service inserts decisions and audit events into SQLite and returns a case-note draft only when at least one check is approved. No security action is executed.
+
+You can also configure live AI from **AI settings** in the sidebar: select Groq or Gemini, enter the model ID and API key, use **Test connection**, then **Save settings**. The key is stored only by the loopback Python service in `data/ai-settings.json` (Git-ignored); the browser receives only a configured/not-configured flag. Saved UI settings take precedence over `.env` and apply to the next AI check without restarting. Restart `start.cmd` once after updating the application code so the settings endpoints are available.
 
 The guardrails reject evidence IDs outside the case, prevent unsupported verdicts, and require explicit analyst confirmation for a Likely Benign verdict on an attack alert. The safety evaluator separately counts attack/benign merges, low-priority attack assignments, and attack closure recommendations from a supplied evaluation-case JSON array. A zero count on a test set would not establish zero operational risk.
 

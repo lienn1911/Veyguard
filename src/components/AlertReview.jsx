@@ -9,6 +9,7 @@ import timelineData from '../real-timelines.json';
 
 const views = ['Overview', 'Timeline', 'Evidence', 'AI check', 'Recommendations'];
 const shortTime = (value) => value.replace('T', ' ').slice(0, 16);
+const formatRuleBasis = (value) => value?.replace(/\b\d{4,}\b/g, (number) => Number(number).toLocaleString('en-US'));
 const caseName = (type) => type === 'PortScan' ? 'Many ports checked' : type === 'DDoS' ? 'Distributed traffic surge' : type === 'DoS' ? 'Heavy network traffic' : type === 'NeedsReview' ? 'Unclassified activity · needs review' : type;
 const alertReason = (alert) => alert.type === 'PortScan'
   ? `${alert.destination_port_count.toLocaleString()} service ports checked in one minute`
@@ -16,16 +17,19 @@ const alertReason = (alert) => alert.type === 'PortScan'
   : alert.type === 'NeedsReview' ? 'High-volume activity without a known attack-rule match; analyst review needed'
   : 'Unusually heavy traffic in one minute';
 const aiVerdicts = new Set(['Likely Attack', 'Likely Benign', 'Needs Review']);
+const StepArrow = ({ back = false }) => <span className={`case-step-arrow${back ? ' back' : ''}`} aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-6-6 6 6-6 6" /></svg></span>;
 
 function caseAssessment(incident, response) {
-  if (!response) return { label: 'Checking…' };
-  if (response.status === 'unavailable') return { label: 'Unavailable' };
-  if (response.status === 'running' || response.status === 'analysing') return { label: 'Analysing' };
-  if (response.status !== 'ready') return { label: 'Pending' };
+  if (!response) return { label: 'Checking…', tone: 'pending' };
+  if (response.mode === 'mock' || response.status === 'not_configured') return { label: 'Not configured', tone: 'pending' };
+  if (response.status === 'unavailable') return { label: 'Unavailable', tone: 'unavailable' };
+  if (response.status === 'running' || response.status === 'analysing') return { label: 'Analysing', tone: 'analysing' };
+  if (response.status !== 'ready') return { label: 'Pending', tone: 'pending' };
   const result = response.assessment;
   const evidence = new Set([...incident.alert_ids, ...incident.evidence_sample_ids]);
-  if (!aiVerdicts.has(result?.verdict) || !Array.isArray(result.evidence_ids) || !result.evidence_ids.some((id) => evidence.has(id))) return { label: 'Unavailable' };
-  return { label: result.verdict, confidence: typeof result.confidence === 'number' && result.confidence >= 0 && result.confidence <= 1 ? `${Math.round(result.confidence * 100)}%` : null };
+  if (!aiVerdicts.has(result?.verdict) || !Array.isArray(result.evidence_ids) || !result.evidence_ids.some((id) => evidence.has(id))) return { label: 'Unavailable', tone: 'unavailable' };
+  const tone = result.verdict === 'Likely Attack' ? 'attack' : result.verdict === 'Likely Benign' ? 'benign' : 'review';
+  return { label: result.verdict, tone, confidence: typeof result.confidence === 'number' && result.confidence >= 0 && result.confidence <= 1 ? `${Math.round(result.confidence * 100)}%` : typeof result.confidence === 'string' ? result.confidence : null };
 }
 
 export default function AlertReview({ mode, selectedId, onSelectCase, onCases, username }) {
@@ -101,7 +105,7 @@ export default function AlertReview({ mode, selectedId, onSelectCase, onCases, u
     const caseAlerts = data.alerts.filter((alert) => alert.incident_id === item.incident_id);
     const state = stateFor(item.incident_id);
     const ai = caseAssessment(item, assessments[item.incident_id]);
-    return <button type="button" className="iris-cases-row" key={item.incident_id} onClick={() => { setView(0); setQuery(''); onSelectCase(item.incident_id); }}><span className="case-queue-name"><strong>Case #{index + 1} <span>· {caseName(caseAlerts[0]?.type)}</span></strong><small>{item.source_ip} → {item.destination_ip}</small></span><time>{shortTime(item.window_start)}</time><span className="case-queue-status">{state?.status || (queueError ? 'Unavailable' : 'Loading…')}</span><span className="case-ai-assessment">{ai.label}{ai.confidence && <small>{ai.confidence}</small>}</span><span className="case-alert-count">{caseAlerts.length} alerts</span></button>;
+    return <button type="button" className="iris-cases-row" key={item.incident_id} onClick={() => { setView(0); setQuery(''); onSelectCase(item.incident_id); }}><span className="case-queue-name"><strong>Case #{index + 1} <span>· {caseName(caseAlerts[0]?.type)}</span></strong><small>{item.source_ip} → {item.destination_ip}</small></span><time>{shortTime(item.window_start)}</time><span className="case-queue-status">{state?.status || (queueError ? 'Unavailable' : 'Loading…')}</span><span className={`case-ai-assessment ${ai.tone}`}><span className="case-ai-label">{ai.label}</span>{ai.confidence && <small>{ai.confidence} confidence</small>}</span><span className="case-alert-count">{caseAlerts.length} alerts</span></button>;
   })}</div></section>;
 
   return <div className="iris-review">
@@ -118,7 +122,7 @@ export default function AlertReview({ mode, selectedId, onSelectCase, onCases, u
         {incident && <div className="iris-stream-content">
           <div className="iris-stream-heading"><h2>{views[view]}</h2><small>{sectionIndex === 1 || sectionIndex === 2 ? `${alerts.length} alerts · ${flows.length} linked flow records` : ''}</small></div>
 
-          {view === 0 && <div className="case-overview"><div className="case-overview-lead"><span className={`alert-type-chip ${alerts[0]?.type?.toLowerCase()}`}>{alerts[0]?.type || 'Unknown'}</span><h3>What happened</h3><p>{alerts[0] ? `${alertReason(alerts[0])}. The rule matched ${alerts.length} time${alerts.length === 1 ? '' : 's'} between ${shortTime(incident.window_start)} and ${shortTime(incident.window_end)} UTC.` : 'No alerts linked to this case.'}</p></div><div className="case-overview-metrics"><div><span>Alerts</span><strong>{alerts.length}</strong></div><div><span>Traffic records</span><strong>{incident.flow_count.toLocaleString()}</strong></div><div><span>Source → destination</span><strong>{incident.source_ip} → {incident.destination_ip}</strong></div></div><section><h3>Why it was flagged</h3><p>{alerts[0]?.rule_basis || 'No rule basis available.'}</p></section><div className="case-overview-footer"><p>A rule match is not an analyst verdict. Check the event order and supporting records before deciding next steps.</p><button type="button" onClick={() => selectView(1)}>Continue to Timeline <Icon name="arrow" size={14} /></button></div></div>}
+          {view === 0 && <div className="case-overview"><div className="case-overview-lead"><div className="case-overview-title"><h3>What happened</h3><span className={`alert-type-chip ${alerts[0]?.type?.toLowerCase()}`}>{alerts[0]?.type || 'Unknown'}</span></div><p>{alerts[0] ? `${alertReason(alerts[0])}. The rule matched ${alerts.length} time${alerts.length === 1 ? '' : 's'} between ${shortTime(incident.window_start)} and ${shortTime(incident.window_end)} UTC.` : 'No alerts linked to this case.'}</p></div><div className="case-overview-metrics"><div><span>Alerts</span><strong>{alerts.length}</strong></div><div><span>Traffic records</span><strong>{incident.flow_count.toLocaleString()}</strong></div><div><span>Source → destination</span><strong>{incident.source_ip} → {incident.destination_ip}</strong></div></div><section className="case-overview-reason"><h3>Why it was flagged</h3><p>{formatRuleBasis(alerts[0]?.rule_basis) || 'No rule basis available.'}</p></section><div className="case-overview-footer"><p>A rule match is not an analyst verdict. Check the event order and supporting records before deciding next steps.</p></div></div>}
 
           {sectionIndex === 1 && <div className="case-evidence"><p className="case-evidence-intro">{matchingAlerts.length} rule matches and {matchingFlows.length} linked flow records. Open a group to inspect individual records and their source IDs.</p><details open={matchingAlerts.length <= 3}><summary><span>Rule matches</span><strong>{matchingAlerts.length} alerts</strong></summary><div className="iris-activity-list">{matchingAlerts.map((alert) => <button type="button" className="iris-activity" key={alert.alert_id} onClick={() => setSelectedEvidence(alert.alert_id)}><span className="iris-activity-avatar alert"><Icon name="alert" size={18} /></span><span className="iris-activity-copy"><strong>{alertReason(alert)}</strong><span>{alert.flow_count.toLocaleString()} traffic records · {alert.alert_id}</span></span><time>{alert.timestamp.slice(11, 16)}</time></button>)}{matchingAlerts.length === 0 && <p className="iris-list-note">No matching alerts</p>}</div></details><details><summary><span>Network flow evidence</span><strong>{matchingFlows.length} linked records</strong></summary><div className="iris-activity-list">{matchingFlows.map((flow) => <button type="button" className="iris-activity" key={flow.flow_id} onClick={() => setSelectedEvidence(flow.flow_id)}><span className="iris-activity-avatar"><Icon name="flow" size={18} /></span><span className="iris-activity-copy"><strong>{flow.source_ip} → {flow.destination_ip}</strong><span>Port {flow.destination_port} · {flow.flow_id}</span></span><time>{flow.timestamp.slice(11, 16)}</time></button>)}{matchingFlows.length === 0 && <p className="iris-list-note">No matching flows</p>}</div></details><CaseNotes incidentId={incident.incident_id} username={username} evidenceIds={[...incident.alert_ids, ...incident.evidence_sample_ids]} onEvidence={setSelectedEvidence} /></div>}
 
@@ -126,6 +130,7 @@ export default function AlertReview({ mode, selectedId, onSelectCase, onCases, u
           {view === 3 && <TriagePreview incidentId={incident.incident_id} alerts={alerts} flows={flows} onEvidence={setSelectedEvidence} />}
           {view === 4 && <NextSteps incidentId={incident.incident_id} analystName={username} onEvidence={setSelectedEvidence} onReviewed={refreshQueue} />}
           {view !== 1 && evidencePanel}
+          <nav className="case-step-actions" aria-label="Case step navigation"><button type="button" onClick={() => view === 0 ? onCases() : selectView(view - 1)}><StepArrow back /><span>{view === 0 ? 'Cases' : views[view - 1]}</span></button><span>{view + 1} / {views.length}</span><button type="button" onClick={() => view === views.length - 1 ? onCases() : selectView(view + 1)}><span>{view === views.length - 1 ? 'Cases' : views[view + 1]}</span><StepArrow /></button></nav>
         </div>}
       </div>
     </div>

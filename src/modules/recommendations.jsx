@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { apiFetch } from '../apiFetch.js';
 
 const endpoint = (id, action) => `/api/cases/${encodeURIComponent(id)}/${action}`;
 
@@ -36,7 +37,7 @@ export default function NextSteps({ incidentId, analystName, onEvidence, onRevie
     setSaving(true);
     setError('');
     try {
-      const response = await fetch(endpoint(incidentId, 'approval'), {
+      const response = await apiFetch(endpoint(incidentId, 'approval'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ analyst, decisions }),

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { apiFetch } from '../apiFetch.js';
 
 const endpoint = (id) => `/api/cases/${encodeURIComponent(id)}/notes`;
 
@@ -27,7 +28,7 @@ export default function CaseNotes({ incidentId, username, evidenceIds, onEvidenc
     setSaving(true);
     setError('');
     try {
-      const response = await fetch(endpoint(incidentId), {
+      const response = await apiFetch(endpoint(incidentId), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ analyst: username, evidence_id: evidenceId, text }),

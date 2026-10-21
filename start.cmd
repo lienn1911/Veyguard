@@ -33,7 +33,8 @@ if defined SOC_TRIAGE_CHECK_ONLY (
   exit /b 0
 )
 if not exist data mkdir data
-start "" /min powershell.exe -NoProfile -WindowStyle Hidden -Command "Start-Process -FilePath 'python.exe' -ArgumentList '-m','services.api' -WorkingDirectory '%~dp0' -WindowStyle Hidden -RedirectStandardOutput 'data/api.out.log' -RedirectStandardError 'data/api.err.log'"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\restart-api.ps1" -ProjectRoot "%~dp0."
+if errorlevel 1 goto :api_start_failed
 if not defined SOC_DESK_PORT set "SOC_DESK_PORT=5174"
 echo Starting SOC Desk at http://127.0.0.1:%SOC_DESK_PORT%
 if not defined SOC_TRIAGE_NO_BROWSER start "" /min powershell.exe -NoProfile -WindowStyle Hidden -Command "Start-Sleep -Seconds 3; Start-Process 'http://127.0.0.1:%SOC_DESK_PORT%'"
@@ -44,6 +45,10 @@ if errorlevel 1 (
   pause
 )
 exit /b
+:api_start_failed
+echo SOC Desk API could not start. Review the error above and data\api.err.log.
+pause
+exit /b 1
 :missing_node
 echo Node.js was not found. Install the LTS version from https://nodejs.org/en/download
 pause

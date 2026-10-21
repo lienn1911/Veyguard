@@ -9,13 +9,19 @@ than values.
 from __future__ import annotations
 
 import os
+import json
+import re
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
+from threading import RLock
 
 from dotenv import load_dotenv
 
 ROOT = Path(__file__).resolve().parent.parent
 ENV_FILE = ROOT / ".env"
+UI_SETTINGS_FILE = ROOT / "data" / "ai-settings.json"
+_ui_lock = RLock()
 
 # ``override=False`` keeps real environment variables authoritative, which is
 # what CI and container deployments expect.
@@ -74,6 +80,55 @@ def _path(name: str, default: str) -> Path:
     return value if value.is_absolute() else ROOT / value
 
 
+def _ui_settings() -> dict:
+    with _ui_lock:
+        if not UI_SETTINGS_FILE.exists():
+            return {}
+        try:
+            value = json.loads(UI_SETTINGS_FILE.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise ConfigError("Saved AI settings could not be read") from exc
+        if not isinstance(value, dict):
+            raise ConfigError("Saved AI settings are invalid")
+        return value
+
+
+def proposed_ai_settings(provider: str, model: str, api_key: str = "") -> tuple["Settings", dict]:
+    if provider not in IMPLEMENTED_PROVIDERS:
+        raise ConfigError("Choose Groq, Gemini, or Demo simulation")
+    if provider == "mock":
+        model = PROVIDER_DEFAULT_MODELS["mock"]
+    if not isinstance(model, str) or not re.fullmatch(r"[A-Za-z0-9._:/-]{1,120}", model):
+        raise ConfigError("Model ID contains invalid characters")
+    if not isinstance(api_key, str) or len(api_key) > 512 or any(ord(char) < 33 or ord(char) > 126 for char in api_key):
+        raise ConfigError("API key must contain printable characters without spaces")
+    saved = _ui_settings()
+    keys = dict(saved.get("api_keys") or {})
+    models = dict(saved.get("models") or {})
+    if api_key:
+        keys[provider] = api_key
+    models[provider] = model
+    candidate = {"provider": provider, "api_keys": keys, "models": models}
+    settings = load_settings(override=candidate)
+    if not settings.ready:
+        raise ConfigError(settings.blocking_reason() or "AI provider is not configured")
+    return settings, candidate
+
+
+def save_ai_settings(candidate: dict) -> None:
+    UI_SETTINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with _ui_lock:
+        fd, name = tempfile.mkstemp(prefix=".ai-settings-", dir=UI_SETTINGS_FILE.parent)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as handle:
+                json.dump(candidate, handle)
+            os.chmod(name, 0o600)
+            os.replace(name, UI_SETTINGS_FILE)
+        finally:
+            if os.path.exists(name):
+                os.unlink(name)
+
+
 @dataclass(frozen=True)
 class Settings:
     provider: str
@@ -127,8 +182,7 @@ class Settings:
             var = PROVIDER_KEY_VARS.get(self.provider)
             return (
                 f"{var} is not set. Add it to .env to run live triage with "
-                f"{self.provider}/{self.model}, or set AI_PROVIDER=mock to demo "
-                "the workflow without credentials."
+                f"{self.provider}/{self.model}. You can enter the key in AI settings."
             )
         return None
 
@@ -149,8 +203,9 @@ class Settings:
         }
 
 
-def load_settings() -> Settings:
-    provider = (_str("AI_PROVIDER", "mock") or "mock").lower()
+def load_settings(*, override: dict | None = None) -> Settings:
+    ui = _ui_settings() if override is None else override
+    provider = str(ui.get("provider") or _str("AI_PROVIDER", "mock") or "mock").lower()
     if provider not in PROVIDER_DEFAULT_MODELS:
         raise ConfigError(
             f"Unknown AI_PROVIDER {provider!r}. Supported: {', '.join(PROVIDER_DEFAULT_MODELS)}"
@@ -162,12 +217,14 @@ def load_settings() -> Settings:
         "openrouter": _str("OPENROUTER_API_KEY"),
         "mock": "",
     }
+    api_keys.update({key: value for key, value in (ui.get("api_keys") or {}).items() if key in api_keys and isinstance(value, str)})
     models = {
         "groq": _str("GROQ_MODEL", PROVIDER_DEFAULT_MODELS["groq"]),
         "gemini": _str("GEMINI_MODEL", PROVIDER_DEFAULT_MODELS["gemini"]),
         "openrouter": _str("OPENROUTER_MODEL", PROVIDER_DEFAULT_MODELS["openrouter"]),
         "mock": PROVIDER_DEFAULT_MODELS["mock"],
     }
+    models.update({key: value for key, value in (ui.get("models") or {}).items() if key in models and isinstance(value, str)})
 
     max_steps = _int("AI_MAX_STEPS", 6)
     if not 1 <= max_steps <= 12:

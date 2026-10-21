@@ -4,6 +4,7 @@
  * The browser only ever talks to our own backend (via the Vite proxy in dev).
  * LLM credentials stay server-side; nothing here knows about a provider key.
  */
+import { apiFetch } from '../apiFetch.js';
 
 const BASE = import.meta.env.VITE_API_BASE ?? '';
 const DEFAULT_TIMEOUT = 90000;
@@ -22,7 +23,7 @@ async function request(path, { method = 'GET', body, timeout = DEFAULT_TIMEOUT }
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
   try {
-    const response = await fetch(`${BASE}${path}`, {
+    const response = await apiFetch(`${BASE}${path}`, {
       method,
       headers: body ? { 'Content-Type': 'application/json' } : undefined,
       body: body ? JSON.stringify(body) : undefined,

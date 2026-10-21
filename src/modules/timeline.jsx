@@ -40,7 +40,7 @@ export default function Timeline({ events, allEvents = events, alerts = [], flow
   if (!windows.length) return <section className="traffic-timeline-empty">No alert minutes are available for this case.</section>;
 
   const width = Math.max(720, windows.length * 52);
-  const height = 276;
+  const height = 292;
   const left = 84;
   const right = width - 28;
   const top = 28;
@@ -62,14 +62,16 @@ export default function Timeline({ events, allEvents = events, alerts = [], flow
   const guide = points.find((item) => item.key === focus?.key);
   const labels = [...new Set([0, Math.floor((points.length - 1) / 2), points.length - 1])];
 
-  return <section className="traffic-timeline" aria-label="Interactive alert history graph">
+  return <section className="traffic-timeline" aria-label="Interactive alert history graph. Horizontal axis: time in UTC. Vertical axis: rule-matched traffic records per minute.">
     <div className="traffic-timeline-chart-scroll"><div className="traffic-timeline-chart" style={{ width, height }}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
         <defs><linearGradient id="traffic-history-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#815cc2" stopOpacity=".24" /><stop offset="100%" stopColor="#815cc2" stopOpacity=".02" /></linearGradient></defs>
         {[0, .5, 1].map((fraction) => { const y = bottom - fraction * (bottom - top); return <g key={fraction}><line x1={left} x2={right} y1={y} y2={y} stroke="#e9e1f1" strokeDasharray="4 5" /><text x={left - 24} y={y + 4} textAnchor="end" fill="#8b7a9d" fontSize="11">{compact(Math.round(maxValue * fraction))}</text></g>; })}
+        <text x="17" y={(top + bottom) / 2} transform={`rotate(-90 17 ${(top + bottom) / 2})`} textAnchor="middle" fill="#705f87" fontSize="11" fontWeight="600">Traffic records / min</text>
         {segments.filter((segment) => segment.length > 1).map((segment) => { const line = segment.map((point) => `${point.x},${point.y}`).join(' '); return <g key={segment[0].key}><polygon points={`${segment[0].x},${bottom} ${line} ${segment.at(-1).x},${bottom}`} fill="url(#traffic-history-fill)" /><polyline points={line} fill="none" stroke="#7653b7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></g>; })}
         {guide && <line x1={guide.x} x2={guide.x} y1={top} y2={bottom} stroke="#a88bd0" strokeWidth="1" strokeDasharray="3 4" />}
         {labels.map((index) => <text key={index} x={points[index].x} y="252" textAnchor={index === 0 && points.length > 1 ? 'start' : index === points.length - 1 && points.length > 1 ? 'end' : 'middle'} fill="#887796" fontSize="11">{points[index].key.slice(11)}</text>)}
+        <text x={(left + right) / 2} y="280" textAnchor="middle" fill="#705f87" fontSize="11" fontWeight="600">Time (UTC)</text>
       </svg>
       {points.map((point) => <button type="button" key={point.key} className={`traffic-timeline-point${selected?.key === point.key ? ' selected' : ''}`} style={{ left: point.x, top: point.y }} aria-label={`${point.key.replace('T', ' ')}, ${count(point.records)} rule-matched traffic records; show details`} aria-pressed={selected?.key === point.key} title={`${point.key.replace('T', ' ')} · ${count(point.records)} records`} onMouseEnter={() => setHoveredKey(point.key)} onMouseLeave={() => setHoveredKey(null)} onFocus={() => setHoveredKey(point.key)} onBlur={() => setHoveredKey(null)} onClick={() => { setSelectedKey(point.key); onSelectMinute?.(); }} />)}
     </div></div>

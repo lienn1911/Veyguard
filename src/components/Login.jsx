@@ -1,26 +1,31 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Icon from './Icon.jsx';
 
-export default function Login({ onLogin }) {
+export default function Login({ onLogin, notice }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const loginTimer = useRef(null);
-
-  useEffect(() => () => window.clearTimeout(loginTimer.current), []);
-
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault();
-    if (username.trim() !== 'administrator' || password !== 'Demo@1234') {
-      setError('Incorrect demo username or password.');
-      return;
-    }
     setError('');
     setSubmitting(true);
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    loginTimer.current = window.setTimeout(() => onLogin('administrator'), reducedMotion ? 0 : 550);
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-SOC-Desk-Auth': '1' },
+        body: JSON.stringify({ username: username.trim(), password }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error === 'Unknown endpoint' ? 'An old SOC Desk API is running. Restart start.cmd.' : payload.error || 'Local API unavailable. Restart start.cmd.');
+      setPassword('');
+      onLogin(payload.username, payload.csrf_token);
+    } catch (failure) {
+      setError(failure.message || 'Could not reach the local API. Restart start.cmd.');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return <main className="login-page">
@@ -53,6 +58,7 @@ export default function Login({ onLogin }) {
       </section>
       <div className="login-form-side">
         <h1 className="login-heading">Sign in to your account</h1>
+        {notice && <p className="login-notice" role="status">{notice}</p>}
         <form onSubmit={submit}>
           <label htmlFor="login-user">Username</label>
           <div className="login-input"><input id="login-user" autoComplete="username" value={username} onChange={(event) => setUsername(event.target.value)} required placeholder="Enter your username" /></div>

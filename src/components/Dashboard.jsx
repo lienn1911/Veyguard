@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { apiFetch } from '../apiFetch.js';
 import Icon from './Icon.jsx';
 import data from '../real-alerts.json';
 
@@ -49,7 +50,7 @@ export default function Dashboard({ onReview, onAlerts, username }) {
     setCompleting(task.id);
     setTaskError('');
     try {
-      const response = await fetch(`/api/tasks/${encodeURIComponent(task.id)}/complete`, {
+      const response = await apiFetch(`/api/tasks/${encodeURIComponent(task.id)}/complete`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ analyst: username }),

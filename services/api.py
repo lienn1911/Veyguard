@@ -1,4 +1,5 @@
 import json
+import secrets
 import sqlite3
 from contextlib import closing
 from datetime import datetime, timezone
@@ -8,10 +9,13 @@ from urllib.parse import parse_qs, unquote, urlsplit
 
 from services.recommendations import DB_PATH, generate_recommendations, get_case_note, init_db, log_event, save_decision
 from services.case_notes import add_note, list_notes
-from services.config import load_settings
+from services.config import ConfigError, load_settings, proposed_ai_settings, save_ai_settings
+from services.ai_settings import test_connection
+from services.providers import describe_providers
 from services.data_store import Dataset
 from services.triage import TriageService
 from services.audit_log import AuditLog as AIAuditLog, summarize as summarize_ai_audit
+from services import auth
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -28,11 +32,17 @@ def ai_service():
     return _ai_service
 
 
+def public_ai_settings(settings):
+    return {"current": settings.describe(), "providers": [item for item in describe_providers(settings) if item["implemented"] and item["id"] != "mock"]}
+
+
 def ai_assessment(incident_id):
     service = ai_service()
+    if service.settings.is_mock:
+        return {'status': 'not_configured', 'assessment': None, 'mode': 'mock'}
     stored = service.latest(incident_id)
     latest = stored.get('latest') if stored else None
-    if not latest:
+    if not latest or latest.get('provider') != service.settings.provider or latest.get('model') != service.settings.model:
         return {'status': 'pending', 'assessment': None, 'mode': service.status()['mode']}
     if latest['status'] != 'ok':
         return {'status': 'unavailable', 'assessment': None, 'mode': service.status()['mode'], 'error': latest.get('error')}
@@ -117,21 +127,50 @@ def complete_task(recommendation_id, analyst):
 
 
 class Handler(BaseHTTPRequestHandler):
-    def send_json(self, status, payload):
+    def send_json(self, status, payload, extra_headers=None):
         body = json.dumps(payload).encode('utf-8')
         self.send_response(status)
         self.send_header('Content-Type', 'application/json; charset=utf-8')
         self.send_header('Content-Length', str(len(body)))
+        self.send_header('Cache-Control', 'no-store')
+        for name, value in (extra_headers or {}).items():
+            self.send_header(name, value)
         origin = self.headers.get('Origin')
-        if origin in {'http://127.0.0.1:5173', 'http://127.0.0.1:5174'}:
+        if origin in {'http://127.0.0.1:5173', 'http://127.0.0.1:5174', 'http://localhost:5173', 'http://localhost:5174'}:
             self.send_header('Access-Control-Allow-Origin', origin)
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type, X-SOC-Desk-Settings, X-SOC-Desk-Auth, X-CSRF-Token')
         self.end_headers()
         self.wfile.write(body)
 
     def do_OPTIONS(self):
         self.send_json(204, {})
+
+    def request_body(self, max_size=4096):
+        if self.headers.get('Content-Type', '').split(';')[0].strip() != 'application/json':
+            raise ValueError('JSON request required')
+        length = int(self.headers.get('Content-Length', '0'))
+        if length < 2 or length > max_size:
+            raise ValueError('Invalid request size')
+        payload = json.loads(self.rfile.read(length))
+        if not isinstance(payload, dict):
+            raise ValueError('Invalid request data')
+        return payload
+
+    def allowed_origin(self):
+        origin = self.headers.get('Origin')
+        return not origin or origin in {'http://127.0.0.1:5173', 'http://127.0.0.1:5174', 'http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:8765'}
+
+    def require_session(self):
+        session = auth.current_session(self.headers.get('Cookie'))
+        if not session:
+            self.send_json(401, {'error': 'Please sign in again.'})
+        return session
+
+    def require_csrf(self, session):
+        token = self.headers.get('X-CSRF-Token', '')
+        if not token or not secrets.compare_digest(token, session['csrf']):
+            raise auth.AuthError('Session token is missing or expired.', 403)
 
     def route(self):
         parts = urlsplit(self.path).path.strip('/').split('/')
@@ -142,6 +181,15 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
             path = urlsplit(self.path)
+            if path.path == '/api/auth/session':
+                session = auth.current_session(self.headers.get('Cookie'))
+                self.send_json(200, {'authenticated': bool(session), 'username': session['username'] if session else None, 'csrf_token': session['csrf'] if session else None})
+                return
+            if not self.require_session():
+                return
+            if path.path == '/api/ai/settings':
+                self.send_json(200, public_ai_settings(load_settings()))
+                return
             if path.path == '/api/audit':
                 raw_limit = parse_qs(path.query).get('limit', ['100'])[0]
                 limit = max(1, min(int(raw_limit), 500))
@@ -189,6 +237,57 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         try:
+            if not self.allowed_origin():
+                self.send_json(403, {'error': 'Untrusted origin'})
+                return
+            path = urlsplit(self.path).path
+            if path == '/api/auth/login':
+                if self.headers.get('X-SOC-Desk-Auth') != '1':
+                    raise auth.AuthError('Invalid login request.', 403)
+                payload = self.request_body()
+                token, session = auth.login(payload.get('username'), payload.get('password'))
+                self.send_json(200, {'username': session['username'], 'csrf_token': session['csrf']}, {'Set-Cookie': auth.session_cookie(token)})
+                return
+            session = self.require_session()
+            if not session:
+                return
+            if path == '/api/auth/logout':
+                self.require_csrf(session)
+                auth.logout(self.headers.get('Cookie'))
+                self.send_json(200, {'signed_out': True}, {'Set-Cookie': auth.clear_cookie()})
+                return
+            if path == '/api/auth/change-password':
+                self.require_csrf(session)
+                payload = self.request_body()
+                auth.change_password(session, payload.get('current_password'), payload.get('new_password'))
+                self.send_json(200, {'changed': True}, {'Set-Cookie': auth.clear_cookie()})
+                return
+            self.require_csrf(session)
+            settings_path = urlsplit(self.path).path
+            if settings_path in {'/api/ai/settings', '/api/ai/settings/test'}:
+                origin = self.headers.get('Origin')
+                if origin and origin not in {'http://127.0.0.1:5173', 'http://127.0.0.1:5174', 'http://localhost:5173', 'http://localhost:5174'}:
+                    self.send_json(403, {'error': 'Untrusted origin'})
+                    return
+                if self.headers.get('X-SOC-Desk-Settings') != '1' or self.headers.get('Content-Type', '').split(';')[0].strip() != 'application/json':
+                    self.send_json(400, {'error': 'Invalid settings request'})
+                    return
+                length = int(self.headers.get('Content-Length', '0'))
+                if length < 2 or length > 2048:
+                    raise ValueError('Invalid request size')
+                request = json.loads(self.rfile.read(length))
+                if not isinstance(request, dict):
+                    raise ValueError('Invalid settings request')
+                settings, candidate = proposed_ai_settings(request.get('provider'), request.get('model'), request.get('api_key', ''))
+                if settings_path.endswith('/test'):
+                    result = test_connection(settings)
+                    self.send_json(200 if result['ok'] else 422, result)
+                else:
+                    save_ai_settings(candidate)
+                    global _ai_service
+                    _ai_service = None
+                    self.send_json(200, public_ai_settings(settings))
+                return
             task_parts = urlsplit(self.path).path.strip('/').split('/')
             if len(task_parts) == 4 and task_parts[:2] == ['api', 'tasks'] and task_parts[3] == 'complete':
                 length = int(self.headers.get('Content-Length', '0'))
@@ -203,6 +302,9 @@ class Handler(BaseHTTPRequestHandler):
                 if not any(item['incident_id'] == incident_id for item in json.loads(DATA.read_text(encoding='utf-8'))['incidents']):
                     raise ValueError('Unknown case')
                 try:
+                    if ai_service().settings.is_mock:
+                        self.send_json(409, {'status': 'not_configured', 'assessment': None, 'error': {'message': 'Connect a live AI provider in Settings before running AI check.'}})
+                        return
                     result = ai_service().investigate(incident_id)
                     self.send_json(200 if result['status'] == 'ok' else 502, ai_assessment(incident_id))
                 except Exception as error:
@@ -255,7 +357,9 @@ class Handler(BaseHTTPRequestHandler):
                 note['approved_checks'] = [{'id': item['id'], 'text': item['description']} for item in recommendations if decisions[item['id']] == 'approved']
                 log_event(incident_id, 'CASE_NOTE_DRAFTED', {'analyst_id': analyst.strip(), 'evidence_ids': sorted({e for item in recommendations if decisions[item['id']] == 'approved' for e in item['evidence_ids']})})
             self.send_json(200, {'note': note, 'events': audit_events(incident_id)})
-        except (ValueError, json.JSONDecodeError) as error:
+        except auth.AuthError as error:
+            self.send_json(error.status, {'error': str(error)}, {'Retry-After': str(error.retry_after)} if error.retry_after else None)
+        except (ValueError, ConfigError, json.JSONDecodeError) as error:
             self.send_json(400, {'error': str(error)})
 
 
