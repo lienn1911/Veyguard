@@ -85,8 +85,12 @@ def analyze_archive(path, minute='2023-03-15T11:56', destination='172.0.0.19'):
     }
     incident = {
         'incident_id': incident_id,
+        'type': 'DDoS',
         'source_ip': 'Multiple sources',
+        'source_ips': sorted(contributors),
         'destination_ip': destination,
+        'destination_ips': [destination],
+        'related_incident_ids': [],
         'window_start': evidence[0]['timestamp'],
         'window_end': evidence[-1]['timestamp'],
         'alert_ids': [alert_id],

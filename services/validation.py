@@ -144,7 +144,7 @@ def collect_numbers(value: Any, into: set[float] | None = None) -> set[float]:
     return numbers
 
 
-def check_numeric_claims(text: str, evidence_numbers: set[float]) -> list[Issue]:
+def check_numeric_claims(text: str, evidence_numbers: set[float], canonical_numbers: set[float] | None = None) -> list[Issue]:
     """Flag figures that are presented as observed but never appeared in evidence."""
     issues: list[Issue] = []
     seen: set[str] = set()
@@ -159,7 +159,9 @@ def check_numeric_claims(text: str, evidence_numbers: set[float]) -> list[Issue]
         except ValueError:
             continue
         # Tolerate rounding to whole numbers for fractional aggregates.
-        if value in evidence_numbers or float(round(value)) in evidence_numbers:
+        visible = value in evidence_numbers or float(round(value)) in evidence_numbers
+        stored = canonical_numbers is None or value in canonical_numbers or float(round(value)) in canonical_numbers
+        if visible and stored:
             continue
         level = "error" if value >= _FABRICATION_THRESHOLD else "warning"
         issues.append(
@@ -167,8 +169,8 @@ def check_numeric_claims(text: str, evidence_numbers: set[float]) -> list[Issue]
                 code="UNSUPPORTED_STATISTIC",
                 level=level,
                 message=(
-                    f'The explanation states "{raw} {keyword}", but that figure does not appear '
-                    "in any retrieved evidence."
+                    f'The explanation states "{raw} {keyword}", but that figure is not supported '
+                    "by both retrieved evidence and stored case statistics."
                 ),
             )
         )
@@ -195,6 +197,7 @@ def validate_proposal(
     evidence_ids: dict[str, str],
     evidence_numbers: set[float],
     tool_call_count: int,
+    canonical_numbers: set[float] | None = None,
 ) -> ValidationReport:
     issues: list[Issue] = []
 
@@ -318,7 +321,7 @@ def validate_proposal(
         [reason, payload.get("limitations") or ""]
         + [finding["observation"] for finding in findings]
     )
-    issues.extend(check_numeric_claims(claim_text, evidence_numbers))
+    issues.extend(check_numeric_claims(claim_text, evidence_numbers, canonical_numbers))
 
     if tool_call_count == 0:
         issues.append(

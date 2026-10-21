@@ -10,6 +10,11 @@ const EVENT_LABELS = {
   'triage.rejected': { label: 'Proposal rejected by backend', tone: 'warn' },
   'triage.error': { label: 'Investigation failed', tone: 'error' },
   'analyst.decision': { label: 'Analyst decision', tone: 'ok' },
+  'ANALYST_DECISION': { label: 'Investigation step reviewed', tone: 'ok' },
+  'CASE_NOTE_DRAFTED': { label: 'Case note drafted', tone: 'info' },
+  'ANALYST_NOTE_ADDED': { label: 'Analyst note added', tone: 'info' },
+  'INVESTIGATION_STEP_COMPLETED': { label: 'Approved step completed', tone: 'ok' },
+  'CASE_ASSIGNED': { label: 'Case assigned', tone: 'info' },
 };
 
 function eventDetail(entry) {
@@ -63,13 +68,12 @@ export default function AuditLog({ mode, refreshToken }) {
   const verified = state.verification?.ok;
 
   return (
-    <section className="page">
+    <section className="page audit-log-page">
       <header className="page-head">
         <div>
-          <p className="eyebrow">AI investigation trail</p>
           <h1>Audit log</h1>
           <p className="page-sub">
-            Recorded AI investigations and AI verdict decisions. Each entry is hash-chained so edits are detectable.
+            Recorded AI investigations, analyst decisions, approvals and case notes. Each entry is hash-chained so edits are detectable.
           </p>
         </div>
         <div className="page-actions">
@@ -114,7 +118,7 @@ export default function AuditLog({ mode, refreshToken }) {
           <div className="panel-head">
             <div>
               <h2>Events</h2>
-              <p>Source: AI triage audit log. Case-review approvals are kept in the case review record.</p>
+              <p>AI and analyst actions share one append-only audit trail.</p>
             </div>
             <span className="chip chip-muted">{state.entries.length} latest</span>
           </div>

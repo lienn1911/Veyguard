@@ -7,6 +7,7 @@ from pathlib import Path
 from contextlib import closing
 
 from services.guardrails import validate_guardrails
+from services.unified_audit import append as append_audit, append_in_transaction, initialize as initialize_audit
 
 DB_PATH = Path(os.environ.get("SOC_TRIAGE_DB_PATH", Path(__file__).resolve().parents[1] / "data" / "audit.db"))
 
@@ -70,24 +71,15 @@ def init_db(db_path=DB_PATH):
 
     finally:
         db.close()
+    initialize_audit(db_path)
 
 
 # 2. Save audit event
 def log_event(incident_id, event, details, db_path=DB_PATH):
     init_db(db_path)
-
-    with closing(sqlite3.connect(db_path)) as db, db:
-        db.execute(
-            """INSERT INTO audit_log
-               (timestamp, incident_id, event, details)
-               VALUES (?, ?, ?, ?)""",
-            (
-                datetime.now(timezone.utc).isoformat(),
-                incident_id,
-                event,
-                json.dumps(details),
-            ),
-        )
+    append_audit(db_path, event, incident_id=incident_id,
+                 actor=f"analyst:{details.get('analyst_id', 'unknown')}" if isinstance(details, dict) else 'system:recommendations',
+                 payload=details if isinstance(details, dict) else {'items': details})
 
 
 # 3. Generate safe recommendations
@@ -148,20 +140,18 @@ def generate_recommendations(data, incident_id, db_path=DB_PATH):
             f"{incident_id}:{action}".encode()
         ).hexdigest()[:12].upper()
 
+        action_evidence = (
+            incident["evidence_sample_ids"] if action == "REVIEW_NETWORK_FLOWS"
+            else incident["alert_ids"] if action == "CHECK_RELATED_ALERTS"
+            else evidence
+        )
         recommendations.append({
             "id": f"REC-{rec_id}",
             "incident_id": incident_id,
             "action": action,
             "description": SAFE_ACTIONS[action],
-            "evidence_ids": evidence,
+            "evidence_ids": action_evidence,
         })
-
-    log_event(
-        incident_id,
-        "RECOMMENDATIONS_GENERATED",
-        recommendations,
-        db_path,
-    )
 
     return recommendations
 
@@ -225,22 +215,11 @@ def save_decision(
                 json.dumps(rec["evidence_ids"]),
                 decision, analyst_id,
             ))
-
-            db.execute("""
-                INSERT INTO audit_log
-                (timestamp, incident_id, event, details)
-                VALUES (?, ?, ?, ?)
-            """, (
-                datetime.now(timezone.utc).isoformat(),
-                incident_id,
-                "ANALYST_DECISION",
-                json.dumps({
-                    "recommendation_id": recommendation_id,
-                    "decision": decision,
-                    "analyst_id": analyst_id,
-                    "safety_status": safety["status"],
-                }),
-            ))
+            append_in_transaction(db, 'ANALYST_DECISION', incident_id=incident_id,
+                                  actor=f'analyst:{analyst_id}', payload={
+                                      'recommendation_id': recommendation_id, 'decision': decision,
+                                      'analyst_id': analyst_id, 'safety_status': safety['status'],
+                                  })
 
         except sqlite3.IntegrityError:
             raise ValueError(

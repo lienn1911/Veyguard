@@ -78,7 +78,8 @@ def _collect_tool_results(messages: Sequence[dict]) -> dict[str, dict]:
 # --------------------------------------------------------------------------- #
 def _verdict_text(results: dict[str, dict]) -> str:
     details = (results.get("get_incident_details") or {}).get("data") or {}
-    alerts = ((results.get("get_related_alerts") or {}).get("data") or {}).get("alerts") or []
+    alert_data = (results.get("get_related_alerts") or {}).get("data") or {}
+    alerts = alert_data.get("alerts") or []
     flows = ((results.get("get_network_flows") or {}).get("data") or {}).get("flows") or []
     stats = (results.get("get_incident_statistics") or {}).get("data") or {}
 
@@ -105,7 +106,7 @@ def _verdict_text(results: dict[str, dict]) -> str:
         )
 
     alert = alerts[0]
-    category = alert.get("type") or "Unknown"
+    category = alert_data.get("rule_type") or alert.get("type") or "Unknown"
     group = stats.get("group_totals") or {}
     flow_count = group.get("flows") or alert.get("flow_count") or 0
     ports = group.get("destination_ports") or alert.get("destination_port_count") or 0
@@ -142,7 +143,7 @@ def _verdict_text(results: dict[str, dict]) -> str:
                 "observation": (
                     f"Sampled flow {flow.get('source_ip')} to {flow.get('destination_ip')}:"
                     f"{flow.get('destination_port')} carries {flow.get('packet_count')} packets "
-                    f"(CSV row {flow.get('source_row')})."
+                    f"(evidence {flow.get('flow_id')})."
                 ),
                 "evidence_ids": [flow.get("flow_id")],
             }

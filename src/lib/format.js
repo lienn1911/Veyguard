@@ -19,6 +19,12 @@ export function formatNumber(value) {
   return Number(value).toLocaleString('en-US');
 }
 
+export function formatConfidence(value) {
+  if (value === null || value === undefined || value === '') return '';
+  const label = typeof value === 'number' ? `${Math.round(value * 100)}%` : String(value);
+  return `${label.charAt(0).toUpperCase()}${label.slice(1)} Confidence`;
+}
+
 export function formatTimestamp(value) {
   if (!value) return '—';
   return String(value).replace('T', ' ').slice(0, 16);

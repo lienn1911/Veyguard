@@ -4,6 +4,7 @@ from contextlib import closing
 from datetime import datetime, timezone
 
 from services.recommendations import DB_PATH, init_db
+from services.unified_audit import append_in_transaction
 
 
 def list_notes(incident_id, db_path=DB_PATH):
@@ -37,11 +38,8 @@ def add_note(data, incident_id, analyst, evidence_id, text, db_path=DB_PATH):
             'INSERT INTO case_notes (incident_id, analyst_id, evidence_id, text, created_at) VALUES (?, ?, ?, ?, ?)',
             (incident_id, analyst.strip(), evidence_id, text.strip(), timestamp),
         )
-        db.execute(
-            'INSERT INTO audit_log (timestamp, incident_id, event, details) VALUES (?, ?, ?, ?)',
-            (timestamp, incident_id, 'ANALYST_NOTE_ADDED', json.dumps({
-                'note_id': cursor.lastrowid, 'analyst_id': analyst.strip(), 'evidence_id': evidence_id,
-            })),
-        )
-    return {'id': cursor.lastrowid, 'analyst': analyst.strip(), 'evidence_id': evidence_id,
+        note_id = cursor.lastrowid
+        append_in_transaction(db, 'ANALYST_NOTE_ADDED', incident_id=incident_id, actor=f'analyst:{analyst.strip()}',
+                              payload={'note_id': note_id, 'analyst_id': analyst.strip(), 'evidence_id': evidence_id})
+    return {'id': note_id, 'analyst': analyst.strip(), 'evidence_id': evidence_id,
             'text': text.strip(), 'time': timestamp}

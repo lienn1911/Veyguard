@@ -17,12 +17,21 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
 
 #: Fields that leak the ground-truth label and must never reach a provider.
 LABEL_FIELDS = ("dataset_label", "dataset_labels", "ddos_reference", "reference_label")
+
+# Explicit model-facing schema: adding fields to the stored alert must not
+# silently expose dataset provenance, labels, or analyst-only annotations.
+AGENT_ALERT_FIELDS = (
+    "alert_id", "incident_id", "type", "timestamp", "source_ip",
+    "destination_ip", "flow_count", "destination_port_count",
+    "source_port_count", "source_count", "evidence_sample_ids", "rule_basis",
+)
 
 #: Attack categories that trigger the Module 5 human-confirmation rule.
 ATTACK_CATEGORIES = ("PortScan", "DoS", "DDoS")
@@ -94,9 +103,10 @@ class Dataset:
             for incident in alerts_payload.get("incidents", [])
             if "incident_id" in incident
         }
-        self._alert_by_incident = {
-            alert["incident_id"]: alert for alert in self.alerts.values() if "incident_id" in alert
-        }
+        self._alert_by_incident = {}
+        for alert in self.alerts.values():
+            if "incident_id" in alert:
+                self._alert_by_incident.setdefault(alert["incident_id"], alert)
         self._timeline_by_incident = {
             timeline["incident_id"]: timeline
             for timeline in self._timelines_payload.get("timelines", [])
@@ -157,11 +167,7 @@ class Dataset:
         record = self.record(incident_id)
         if record is None:
             return []
-        ids = [
-            flow_id
-            for flow_id in (record.alert.get("evidence_sample_ids") or [])
-            if flow_id in self.flows
-        ]
+        ids = [flow_id for flow_id in record.incident.get('evidence_sample_ids') or [] if flow_id in self.flows]
         return [self.flows[flow_id] for flow_id in ids]
 
     # ------------------------------------------------------------ agent view
@@ -174,10 +180,11 @@ class Dataset:
             "window_seconds": (self._alerts_payload.get("rules") or {}).get("window_seconds", 60),
             "source_ip": incident.get("source_ip"),
             "destination_ip": incident.get("destination_ip"),
-            "source_file": incident.get("source_file"),
+            "source_ips": list(incident.get('source_ips') or [incident.get('source_ip')]),
+            "destination_ips": list(incident.get('destination_ips') or [incident.get('destination_ip')]),
             "aggregated_flow_count": incident.get("flow_count"),
             "alert_ids": list(incident.get("alert_ids") or []),
-            "evidence_sample_size": len(alert.get("evidence_sample_ids") or []),
+            "evidence_sample_size": len(incident.get("evidence_sample_ids") or []),
             "data_scope_note": (
                 "Aggregated counts come from Module 1 over the full one-minute window. "
                 "Only a sample of individual flow records is retained as evidence."
@@ -186,8 +193,9 @@ class Dataset:
 
     def agent_alerts(self, incident_id: str) -> list[dict]:
         record = self.require(incident_id)
-        alert = strip_labels(record.alert)
-        return [copy.deepcopy(alert)]
+        return [{key: copy.deepcopy(self.alerts[alert_id][key])
+                 for key in AGENT_ALERT_FIELDS if key in self.alerts[alert_id]}
+                for alert_id in record.incident.get('alert_ids') or [] if alert_id in self.alerts]
 
     def agent_flows(self, incident_id: str, limit: int = 6) -> list[dict]:
         flows = self.evidence_flows(incident_id)[: max(1, min(limit, 20))]
@@ -200,8 +208,6 @@ class Dataset:
                 "destination_ip": flow.get("destination_ip"),
                 "destination_port": flow.get("destination_port"),
                 "packet_count": flow.get("packet_count"),
-                "source_file": flow.get("source_file"),
-                "source_row": flow.get("source_row"),
             }
             for flow in flows
         ]
@@ -209,6 +215,7 @@ class Dataset:
     def agent_statistics(self, incident_id: str) -> dict:
         record = self.require(incident_id)
         alert = record.alert
+        case_alerts = [self.alerts[alert_id] for alert_id in record.incident.get('alert_ids') or [] if alert_id in self.alerts]
         flows = self.evidence_flows(incident_id)
         dest_ports = [flow.get("destination_port") for flow in flows]
         src_ports = [flow.get("source_port") for flow in flows]
@@ -217,11 +224,14 @@ class Dataset:
             "incident_id": incident_id,
             "window_seconds": (self._alerts_payload.get("rules") or {}).get("window_seconds", 60),
             "group_totals": {
-                "flows": alert.get("flow_count"),
-                "destination_ports": alert.get("destination_port_count"),
-                "source_ports": alert.get("source_port_count"),
-                "independent_sources": alert.get("source_count"),
+                "flows": record.incident.get("flow_count"),
+                "alert_minutes": len(case_alerts),
             },
+            "alert_totals": [{"alert_id": item.get("alert_id"), "flows": item.get("flow_count"),
+                              "destination_ports": item.get("destination_port_count"),
+                              "source_ports": item.get("source_port_count"),
+                              "independent_sources": item.get("source_count")}
+                             for item in case_alerts],
             "sampled": {
                 "flows_returned": len(flows),
                 "distinct_destination_ports": len(set(dest_ports)),
@@ -231,10 +241,34 @@ class Dataset:
             },
             "rule_basis": alert.get("rule_basis"),
             "scope_note": (
-                "group_totals describe the full one-minute aggregation produced by Module 1. "
+                "alert_totals describe individual one-minute groups; group_totals.flows is the case sum. "
                 "sampled describes only the individual flow records retrieved as evidence."
             ),
         }
+
+    def canonical_statistic_numbers(self, incident_id: str) -> set[float]:
+        """Numbers backed by stored aggregates or computed from linked sample flows."""
+        record = self.require(incident_id)
+        numbers = {float(record.incident.get('flow_count') or 0)}
+        for alert_id in record.incident.get('alert_ids') or []:
+            alert = self.alerts.get(alert_id)
+            if not alert:
+                continue
+            for field in ('flow_count', 'destination_port_count', 'source_port_count', 'source_count'):
+                if isinstance(alert.get(field), (int, float)):
+                    numbers.add(float(alert[field]))
+            # The raw aggregate packet total is retained in the rule basis.
+            for match in re.finditer(r'([\d,]+)\s+packets?', alert.get('rule_basis') or '', re.IGNORECASE):
+                numbers.add(float(match.group(1).replace(',', '')))
+        samples = self.evidence_flows(incident_id)
+        numbers.add(float(len(samples)))
+        packets = [float(flow.get('packet_count') or 0) for flow in samples]
+        numbers.update(packets)
+        numbers.add(float(len({flow.get('destination_port') for flow in samples})))
+        numbers.add(float(len({flow.get('source_port') for flow in samples})))
+        if packets:
+            numbers.add(float(round(sum(packets) / len(packets), 2)))
+        return numbers
 
     # ---------------------------------------------------------- analyst view
     def analyst_incident(self, incident_id: str) -> dict:
@@ -253,7 +287,7 @@ class Dataset:
             "destination_port_count": alert.get("destination_port_count"),
             "source_port_count": alert.get("source_port_count"),
             "source_count": alert.get("source_count"),
-            "evidence_sample_ids": list(alert.get("evidence_sample_ids") or []),
+            "evidence_sample_ids": list(incident.get("evidence_sample_ids") or []),
             # Explicitly separated evaluation data - never used by the agent.
             "reference_label": {
                 "values": alert.get("dataset_labels") or {},
@@ -267,6 +301,10 @@ class Dataset:
         alert = record.alert
         return {
             "incident_id": incident_id,
+            "alerts": [{"alert_id": item.get('alert_id'), "type": item.get('type'),
+                        "rule_basis": item.get('rule_basis'), "flow_count": item.get('flow_count'),
+                        "timestamp": item.get('timestamp')}
+                       for item in self.agent_alerts(incident_id)],
             "alert": {
                 "alert_id": alert.get("alert_id"),
                 "type": alert.get("type"),
@@ -282,7 +320,7 @@ class Dataset:
                 for flow in flows
             ],
             "counts": {
-                "registered_evidence": len(flows) + (1 if alert.get("alert_id") else 0),
+                "registered_evidence": len(flows) + len(record.incident.get('alert_ids') or []),
                 "flow_records": len(flows),
             },
         }

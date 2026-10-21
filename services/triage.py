@@ -61,6 +61,8 @@ class Trace:
         return len(self.tool_calls)
 
     def add(self, step: int, outcome: ToolOutcome, duration_ms: float) -> None:
+        data = outcome.data if isinstance(outcome.data, dict) else {}
+        items = data.get("alerts") if outcome.tool == "get_related_alerts" else data.get("flows") if outcome.tool == "get_network_flows" else None
         entry = {
             "step": step,
             "tool": outcome.tool,
@@ -69,6 +71,7 @@ class Trace:
             "duration_ms": round(duration_ms, 2),
             "error": outcome.error,
             "blocked": outcome.blocked,
+            "result_count": len(items) if isinstance(items, list) else None,
         }
         self.tool_calls.append(entry)
         if outcome.ok and outcome.data is not None:
@@ -346,6 +349,7 @@ class TriageService:
             incident_id=incident_id,
             evidence_ids=self.dataset.evidence_ids(incident_id),
             evidence_numbers=evidence_numbers,
+            canonical_numbers=self.dataset.canonical_statistic_numbers(incident_id),
             tool_call_count=trace.executed,
         )
 
@@ -536,6 +540,11 @@ class TriageService:
 
         if decision == "rejected" and not (note or "").strip():
             raise ValueError("A rejection requires a note explaining the analyst's reasoning.")
+        if decision == "confirmed" and proposal.get("verdict") == "Likely Benign" and latest.get("requires_confirmation") and not (note or "").strip():
+            raise ValueError("Confirming a Likely Benign verdict for an attack alert requires a written reason.")
+        previous = (stored.get("decision") or {}).get("status")
+        if previous in ("confirmed", "rejected"):
+            raise ValueError("This AI proposal already has an analyst decision. Run a new AI check to review again.")
 
         payload = {
             "status": decision,

@@ -122,12 +122,18 @@ def group_alerts(alerts):
     incidents = []
     current = None
     last_time = None
-    for alert in sorted(alerts, key=lambda item: (item['source_file'], item['source_ip'], item['destination_ip'], item['timestamp'], item['alert_id'])):
-        key = (alert['source_file'], alert['source_ip'], alert['destination_ip'])
+    def grouping_key(alert):
+        kind = alert['type']
+        anchor = alert['source_ip'] if kind == 'PortScan' else alert['destination_ip']
+        return (alert['source_file'], kind, anchor)
+
+    for alert in sorted(alerts, key=lambda item: (grouping_key(item), item['timestamp'], item['alert_id'])):
+        key = grouping_key(alert)
         time = datetime.fromisoformat(alert['timestamp'])
         if current is None or current['_key'] != key or time - last_time > timedelta(minutes=INCIDENT_GAP_MINUTES):
             current = {
-                'incident_id': stable_id('INC', *key, alert['timestamp']),
+                'incident_id': stable_id('INC', alert['source_file'], alert['source_ip'], alert['destination_ip'], alert['timestamp']),
+                'type': alert['type'],
                 'source_ip': alert['source_ip'],
                 'destination_ip': alert['destination_ip'],
                 'window_start': alert['timestamp'],
@@ -137,8 +143,12 @@ def group_alerts(alerts):
                 'flow_count': 0,
                 'source_file': alert['source_file'],
                 '_key': key,
+                '_sources': set(),
+                '_destinations': set(),
             }
             incidents.append(current)
+        current['_sources'].add(alert['source_ip'])
+        current['_destinations'].add(alert['destination_ip'])
         alert['incident_id'] = current['incident_id']
         current['alert_ids'].append(alert['alert_id'])
         current['evidence_sample_ids'].extend(alert['evidence_sample_ids'])
@@ -146,8 +156,24 @@ def group_alerts(alerts):
         current['window_end'] = alert['timestamp']
         last_time = time
     for incident in incidents:
+        incident['source_ip'] = next(iter(incident['_sources'])) if len(incident['_sources']) == 1 else 'Multiple sources'
+        incident['destination_ip'] = next(iter(incident['_destinations'])) if len(incident['_destinations']) == 1 else 'Multiple destinations'
+        incident['source_ips'] = sorted(incident.pop('_sources'))
+        incident['destination_ips'] = sorted(incident.pop('_destinations'))
+        incident['related_incident_ids'] = []
         del incident['_key']
     incidents.sort(key=lambda item: (item['window_start'], item['incident_id']))
+    for index, first in enumerate(incidents):
+        for second in incidents[index + 1:]:
+            if first['type'] == second['type'] or first['source_file'] != second['source_file']:
+                continue
+            separated = (datetime.fromisoformat(first['window_start']) - datetime.fromisoformat(second['window_end']) > timedelta(minutes=INCIDENT_GAP_MINUTES)
+                         or datetime.fromisoformat(second['window_start']) - datetime.fromisoformat(first['window_end']) > timedelta(minutes=INCIDENT_GAP_MINUTES))
+            shared_address = (set(first['source_ips']) & set(second['source_ips'])
+                              or set(first['destination_ips']) & set(second['destination_ips']))
+            if not separated and shared_address:
+                first['related_incident_ids'].append(second['incident_id'])
+                second['related_incident_ids'].append(first['incident_id'])
     return incidents
 
 
@@ -171,6 +197,9 @@ def select_preview(incidents, alerts, flows, limit):
     for incident in ranked:
         add(incident)
     chosen.sort(key=lambda item: (item['window_start'], item['incident_id']))
+    chosen_ids = {item['incident_id'] for item in chosen}
+    chosen = [{**item, 'related_incident_ids': [related for related in item.get('related_incident_ids', []) if related in chosen_ids]}
+              for item in chosen]
     chosen_alert_ids = {alert_id for incident in chosen for alert_id in incident['alert_ids']}
     chosen_flow_ids = {flow_id for incident in chosen for flow_id in incident['evidence_sample_ids']}
     return chosen, [alert for alert in alerts if alert['alert_id'] in chosen_alert_ids], [flow for flow in flows if flow['flow_id'] in chosen_flow_ids]

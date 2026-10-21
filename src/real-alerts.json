@@ -4721,6 +4721,7 @@
   "incidents": [
     {
       "incident_id": "INC-303BE523B8D9",
+      "type": "DoS",
       "source_ip": "172.16.0.1",
       "destination_ip": "192.168.10.50",
       "window_start": "2017-07-05T10:43:00",
@@ -4856,10 +4857,18 @@
         "FLOW-121F6CDD6BFD"
       ],
       "flow_count": 230726,
-      "source_file": "Wednesday-workingHours.pcap_ISCX.csv"
+      "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ips": [
+        "172.16.0.1"
+      ],
+      "destination_ips": [
+        "192.168.10.50"
+      ],
+      "related_incident_ids": []
     },
     {
       "incident_id": "INC-168780F44274",
+      "type": "PortScan",
       "source_ip": "172.16.0.1",
       "destination_ip": "192.168.10.50",
       "window_start": "2017-07-07T14:51:00",
@@ -4911,10 +4920,18 @@
         "FLOW-873DCDEA8F9C"
       ],
       "flow_count": 138493,
-      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv"
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ips": [
+        "172.16.0.1"
+      ],
+      "destination_ips": [
+        "192.168.10.50"
+      ],
+      "related_incident_ids": []
     },
     {
       "incident_id": "INC-0A7AC1BD9701",
+      "type": "DoS",
       "source_ip": "172.16.0.1",
       "destination_ip": "192.168.10.50",
       "window_start": "2017-07-07T15:56:00",
@@ -5064,7 +5081,14 @@
         "FLOW-9D48E042F9DE"
       ],
       "flow_count": 126676,
-      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"
+      "source_file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "source_ips": [
+        "172.16.0.1"
+      ],
+      "destination_ips": [
+        "192.168.10.50"
+      ],
+      "related_incident_ids": []
     },
     {
       "incident_id": "INC-8CA20303B050",
@@ -5084,7 +5108,17 @@
         "FLOW-89561911B38E"
       ],
       "flow_count": 710279,
-      "source_file": "normal_synflood_ddos/nsg.csv"
+      "source_file": "normal_synflood_ddos/nsg.csv",
+      "type": "DDoS",
+      "source_ips": [
+        "172.0.0.13",
+        "172.0.0.6",
+        "172.0.0.7"
+      ],
+      "destination_ips": [
+        "172.0.0.19"
+      ],
+      "related_incident_ids": []
     }
   ]
 }

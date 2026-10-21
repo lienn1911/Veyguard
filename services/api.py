@@ -15,6 +15,7 @@ from services.providers import describe_providers
 from services.data_store import Dataset
 from services.triage import TriageService
 from services.audit_log import AuditLog as AIAuditLog, summarize as summarize_ai_audit
+from services.unified_audit import append_in_transaction, entries as audit_entries, initialize as initialize_audit
 from services import auth
 
 
@@ -44,9 +45,23 @@ def ai_assessment(incident_id):
     latest = stored.get('latest') if stored else None
     if not latest or latest.get('provider') != service.settings.provider or latest.get('model') != service.settings.model:
         return {'status': 'pending', 'assessment': None, 'mode': service.status()['mode']}
+    trace = latest.get('investigation') or {}
+    investigation = {
+        'steps': trace.get('steps', 0),
+        'tool_calls': [{
+            'tool': call.get('tool'), 'step': call.get('step'), 'ok': call.get('ok'),
+            'blocked': call.get('blocked'), 'duration_ms': call.get('duration_ms'),
+            'error_code': (call.get('error') or {}).get('code'),
+            'result_count': call.get('result_count'),
+            'arguments': {key: value for key, value in (call.get('arguments') or {}).items()
+                          if key in ('incident_id', 'limit')},
+        } for call in trace.get('tool_calls', [])],
+    }
+    run = {'provider': latest.get('provider'), 'model': latest.get('model'),
+           'run_id': latest.get('run_id'), 'investigation': investigation}
     if latest['status'] != 'ok':
-        return {'status': 'unavailable', 'assessment': None, 'mode': service.status()['mode'], 'error': latest.get('error')}
-    return {'status': 'ready', 'mode': service.status()['mode'], 'assessment': {
+        return {'status': 'unavailable', 'assessment': None, 'mode': service.status()['mode'], 'error': latest.get('error'), **run}
+    return {'status': 'ready', 'mode': service.status()['mode'], **run, 'decision': (stored.get('decision') or {'status': 'pending'}), 'assessment': {
         'verdict': latest['verdict'], 'confidence': latest['confidence'], 'summary': latest['reason'],
         'evidence_ids': latest['evidence_ids'], 'findings': latest['findings'], 'limitations': latest['limitations'],
         'requires_confirmation': latest['requires_confirmation'], 'run_id': latest['run_id'],
@@ -54,14 +69,8 @@ def ai_assessment(incident_id):
 
 
 def audit_events(incident_id):
-    init_db()
-    with closing(sqlite3.connect(DB_PATH)) as db:
-        rows = db.execute('SELECT timestamp, event, details FROM audit_log WHERE incident_id = ? ORDER BY id', (incident_id,)).fetchall()
-    events = []
-    for timestamp, event, details in rows:
-        detail = json.loads(details)
-        events.append({'time': timestamp, 'action': event, **(detail if isinstance(detail, dict) else {})})
-    return events
+    return [{'time': item['ts'], 'action': item['event'], **item['payload'], 'actor': item['actor']}
+            for item in audit_entries(DB_PATH, incident_id=incident_id)]
 
 
 def saved_decisions(incident_id):
@@ -78,14 +87,55 @@ def case_summary(data, incident_id):
 
 def case_queue(data):
     init_db()
+    initialize_audit(DB_PATH)
     with closing(sqlite3.connect(DB_PATH)) as db:
         db.execute('CREATE TABLE IF NOT EXISTS case_assignments (incident_id TEXT PRIMARY KEY, analyst_id TEXT NOT NULL, assigned_at TEXT NOT NULL)')
         owners = dict(db.execute('SELECT incident_id, analyst_id FROM case_assignments'))
-        activity = dict(db.execute('SELECT incident_id, MAX(timestamp) FROM audit_log GROUP BY incident_id'))
-        reviewed = {row[0] for row in db.execute('SELECT DISTINCT incident_id FROM decisions')}
+        activity = dict(db.execute('SELECT incident_id, MAX(ts) FROM audit_events GROUP BY incident_id')) if db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='audit_events'").fetchone() else {}
+        analyst_activity = {row[0] for row in db.execute("SELECT DISTINCT incident_id FROM audit_events WHERE event = 'ANALYST_NOTE_ADDED'")}
+        check_decisions = {}
+        for incident_id, decision in db.execute('SELECT incident_id, decision FROM decisions'):
+            check_decisions.setdefault(incident_id, []).append(decision)
+        completed = {row[0]: row[1] for row in db.execute('''
+            SELECT d.incident_id, COUNT(t.recommendation_id)
+            FROM decisions d LEFT JOIN task_completions t ON t.recommendation_id = d.recommendation_id
+            WHERE d.decision = 'APPROVED'
+            GROUP BY d.incident_id
+        ''')}
+    triage = ai_service()
+    expected_checks = {incident['incident_id']: len(generate_recommendations(data, incident['incident_id']))
+                       for incident in data['incidents']}
+    def checks_complete(incident_id):
+        return len(check_decisions.get(incident_id, [])) == expected_checks[incident_id]
+    def status_for(incident_id):
+        checks = check_decisions.get(incident_id, [])
+        if checks:
+            if not checks_complete(incident_id):
+                return 'Review in progress'
+            approved = checks.count('APPROVED')
+            if approved == len(checks):
+                return 'Approved steps completed' if completed.get(incident_id, 0) == approved else 'Next steps approved'
+            if approved:
+                return 'Partially approved'
+            return 'Next steps rejected'
+        stored = triage.latest(incident_id) or {}
+        ai_decision = (stored.get('decision') or {}).get('status')
+        if ai_decision == 'confirmed':
+            return 'AI assessment confirmed'
+        if ai_decision == 'rejected':
+            return 'AI assessment rejected'
+        if incident_id in owners or incident_id in analyst_activity:
+            return 'In review'
+        latest = stored.get('latest') or {}
+        if (not triage.settings.is_mock and latest.get('status') == 'ok'
+                and latest.get('provider') == triage.settings.provider
+                and latest.get('model') == triage.settings.model):
+            return 'AI ready for review'
+        return 'Not reviewed'
     return {
         incident['incident_id']: {
-            'status': 'Next steps reviewed' if incident['incident_id'] in reviewed else 'In review' if incident['incident_id'] in owners else 'Not reviewed',
+            'status': status_for(incident['incident_id']),
+            'review_complete': checks_complete(incident['incident_id']),
             'owner': owners.get(incident['incident_id']),
             'last_activity': activity.get(incident['incident_id']),
         }
@@ -120,9 +170,8 @@ def complete_task(recommendation_id, analyst):
         if db.execute('SELECT 1 FROM task_completions WHERE recommendation_id = ?', (recommendation_id,)).fetchone():
             raise ValueError('Task already completed')
         db.execute('INSERT INTO task_completions VALUES (?, ?, ?)', (recommendation_id, analyst.strip(), timestamp))
-        db.execute('INSERT INTO audit_log (timestamp, incident_id, event, details) VALUES (?, ?, ?, ?)',
-                   (timestamp, row[0], 'INVESTIGATION_STEP_COMPLETED',
-                    json.dumps({'recommendation_id': recommendation_id, 'analyst_id': analyst.strip()})))
+        append_in_transaction(db, 'INVESTIGATION_STEP_COMPLETED', incident_id=row[0], actor=f'analyst:{analyst.strip()}',
+                              payload={'recommendation_id': recommendation_id, 'analyst_id': analyst.strip()})
     return row[0]
 
 
@@ -214,7 +263,7 @@ class Handler(BaseHTTPRequestHandler):
                 if note:
                     note['summary'] = case_summary(data, incident_id)
                     note['approved_checks'] = [{'id': item['id'], 'text': item['description']} for item in recommendations if decisions.get(item['id']) == 'approved']
-                self.send_json(200, {'incident_id': incident_id, 'checks': [{'id': item['id'], 'text': item['description'], 'evidence_ids': item['evidence_ids']} for item in recommendations], 'decisions': decisions, 'note': note})
+                self.send_json(200, {'incident_id': incident_id, 'checks': [{'id': item['id'], 'action': item['action'], 'text': item['description'], 'evidence_ids': item['evidence_ids']} for item in recommendations], 'decisions': decisions, 'note': note})
             elif action == 'audit':
                 if not any(item['incident_id'] == incident_id for item in data['incidents']):
                     raise ValueError('Unknown case')
@@ -310,13 +359,21 @@ class Handler(BaseHTTPRequestHandler):
                 except Exception as error:
                     self.send_json(503, {'status': 'unavailable', 'assessment': None, 'error': {'message': str(error)}})
                 return
-            if action not in {'approval', 'assign', 'notes'}:
+            if action not in {'approval', 'assign', 'notes', 'ai-decision'}:
                 raise ValueError('Unknown endpoint')
             length = int(self.headers.get('Content-Length', '0'))
             if length < 1 or length > 16384:
                 raise ValueError('Invalid request size')
             request = json.loads(self.rfile.read(length))
             data = json.loads(DATA.read_text(encoding='utf-8'))
+            if action == 'ai-decision':
+                if not any(item['incident_id'] == incident_id for item in data['incidents']):
+                    raise ValueError('Unknown case')
+                if request.get('analyst') != session['username']:
+                    raise ValueError('The signed-in analyst must match the reviewer')
+                decision = ai_service().decide(incident_id, decision=request.get('decision'), analyst=session['username'], note=request.get('note'))
+                self.send_json(200, {'decision': decision['decision'], 'assessment': ai_assessment(incident_id)})
+                return
             if action == 'notes':
                 note = add_note(data, incident_id, request.get('analyst'), request.get('evidence_id'), request.get('text'))
                 self.send_json(200, {'note': note})
@@ -334,7 +391,8 @@ class Handler(BaseHTTPRequestHandler):
                     if db.execute('SELECT 1 FROM case_assignments WHERE incident_id = ?', (incident_id,)).fetchone():
                         raise ValueError('Case is already assigned')
                     db.execute('INSERT INTO case_assignments VALUES (?, ?, ?)', (incident_id, analyst.strip(), timestamp))
-                    db.execute('INSERT INTO audit_log (timestamp, incident_id, event, details) VALUES (?, ?, ?, ?)', (timestamp, incident_id, 'CASE_ASSIGNED', json.dumps({'analyst_id': analyst.strip()})))
+                    append_in_transaction(db, 'CASE_ASSIGNED', incident_id=incident_id, actor=f'analyst:{analyst.strip()}',
+                                          payload={'analyst_id': analyst.strip()})
                 self.send_json(200, {'case': case_queue(data)[incident_id]})
                 return
             recommendations = generate_recommendations(data, incident_id)

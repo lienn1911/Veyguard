@@ -11,13 +11,14 @@ function shortDateTime(value) {
 
 export default function Dashboard({ onReview, onAlerts, username }) {
   const incidents = data.incidents;
-  const alerts = data.alerts;
   const [tasks, setTasks] = useState([]);
   const [taskError, setTaskError] = useState('');
   const [taskLoading, setTaskLoading] = useState(true);
   const [completing, setCompleting] = useState(null);
   const [awaitingApproval, setAwaitingApproval] = useState(null);
   const [aiReady, setAiReady] = useState(null);
+  const [aiReadyIds, setAiReadyIds] = useState([]);
+  const [caseQueue, setCaseQueue] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -33,7 +34,7 @@ export default function Dashboard({ onReview, onAlerts, username }) {
     let active = true;
     fetch('/api/cases/queue')
       .then((response) => { if (!response.ok) throw new Error('Queue unavailable'); return response.json(); })
-      .then((result) => { if (active) setAwaitingApproval(Object.values(result.cases || {}).filter((item) => item.status !== 'Next steps reviewed').length); })
+      .then((result) => { if (active) { setCaseQueue(result.cases || {}); setAwaitingApproval(Object.values(result.cases || {}).filter((item) => !item.review_complete).length); } })
       .catch(() => { if (active) setAwaitingApproval(null); });
     Promise.all(incidents.map(async (incident) => {
       try {
@@ -42,7 +43,7 @@ export default function Dashboard({ onReview, onAlerts, username }) {
       } catch {
         return null;
       }
-    })).then((results) => { if (active) setAiReady(results.filter((result) => result?.status === 'ready' && result.assessment).length || null); });
+    })).then((results) => { if (active) { const readyIds = incidents.filter((_, index) => results[index]?.status === 'ready' && results[index]?.assessment && (!results[index]?.decision || results[index].decision.status === 'pending')).map((item) => item.incident_id); setAiReadyIds(readyIds); setAiReady(results.every((result) => result === null) ? null : readyIds.length); } });
     return () => { active = false; };
   }, [incidents]);
 
@@ -65,6 +66,8 @@ export default function Dashboard({ onReview, onAlerts, username }) {
     }
   }
 
+  const attentionCases = caseQueue ? incidents.filter((incident) => aiReadyIds.includes(incident.incident_id) || !caseQueue[incident.incident_id]?.review_complete).sort((a, b) => Number(aiReadyIds.includes(b.incident_id)) - Number(aiReadyIds.includes(a.incident_id))).slice(0, 3) : [];
+
   return <div className="iris-home">
     <section className="welcome-strip">
       <div className="welcome-stats">
@@ -73,14 +76,14 @@ export default function Dashboard({ onReview, onAlerts, username }) {
         <button onClick={() => onReview()}><strong>{aiReady ?? '—'}</strong><span className="blue"><Icon name="alert" size={15} /> AI READY FOR REVIEW</span></button>
       </div>
     </section>
-    <div className="home-grid home-overview-grid top-row">
-      <section className="home-card cases-card"><header><h2><span className="blue"><Icon name="layers" size={20} /></span>Investigations</h2><button onClick={() => onReview()}>View all <Icon name="arrow" size={15} /></button></header>
-        <div className="home-card-body">{incidents.slice(0, 3).map((incident, i) => <button className="home-case home-overview-row" key={incident.incident_id} onClick={() => onReview(incident.incident_id)}><span className="home-row-index">#{i + 1}</span><span className="home-row-content"><strong>{incident.source_ip} → {incident.destination_ip}</strong><small>{shortDateTime(incident.window_start)}</small></span><span className="home-row-trailing">{incident.alert_ids.length} alerts</span></button>)}</div>
-      </section>
-      <section className="home-card alerts-card"><header><h2><span className="red"><Icon name="bell" size={20} /></span>Alerts</h2><button onClick={() => onAlerts()}>View all <Icon name="arrow" size={15} /></button></header>
-        <div className="home-card-body">{alerts.slice(0, 4).map((alert) => <button className="home-case home-overview-row" key={alert.alert_id} onClick={() => onAlerts(alert)}><span className="home-alert-type">{alert.type}</span><span className="home-row-content"><strong>{alert.source_ip} → {alert.destination_ip}</strong><small>{shortDateTime(alert.timestamp)}</small></span></button>)}</div>
-      </section>
-    </div>
+    <section className="home-card home-attention-card">
+      <header><h2><span className="blue"><Icon name="layers" size={20} /></span>Needs attention</h2><div className="home-attention-links"><button type="button" onClick={() => onAlerts()}>Browse alerts <Icon name="arrow" size={15} /></button><button type="button" onClick={() => onReview()}>All cases <Icon name="arrow" size={15} /></button></div></header>
+      <div className="home-card-body">
+        {!caseQueue && <p className="home-attention-empty">Case status is unavailable until the local API is running.</p>}
+        {caseQueue && attentionCases.length === 0 && <p className="home-attention-empty">No cases currently need review.</p>}
+        {attentionCases.map((incident) => <button className="home-case home-overview-row" key={incident.incident_id} onClick={() => onReview(incident.incident_id)}><span className="home-row-index">#{incidents.indexOf(incident) + 1}</span><span className="home-row-content"><strong>{incident.source_ip} → {incident.destination_ip}</strong><small>{shortDateTime(incident.window_start)} · {incident.alert_ids.length} alerts</small></span><span className="home-row-trailing">{aiReadyIds.includes(incident.incident_id) ? 'AI ready for review' : 'Review next steps'}</span></button>)}
+      </div>
+    </section>
     {(tasks.length > 0 || taskError) && <section className="home-card tasks-card"><header><h2><span className="green"><Icon name="check" size={20} /></span>Pending investigation steps</h2></header>{taskError && <p className="task-error" role="alert">{taskError}</p>}{tasks.length > 0 && <div className="home-card-body">{tasks.map((task) => <div className="home-task" key={task.id}><button type="button" onClick={() => onReview(task.incident_id)}><strong>{task.text}</strong><small>Open case →</small></button><button type="button" className="task-done" disabled={completing === task.id} onClick={() => finishTask(task)}>{completing === task.id ? 'Saving…' : 'Mark done'}</button></div>)}</div>}</section>}
   </div>;
 }

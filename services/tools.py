@@ -244,10 +244,34 @@ class ToolRegistry:
 
     # ------------------------------------------------------------- handlers
     def _incident_details(self, incident_id: str, _: dict) -> dict:
-        return self.dataset.agent_incident_details(incident_id)
+        details = self.dataset.agent_incident_details(incident_id)
+        # Alert IDs and their per-minute measurements are returned by the next
+        # tool; repeating them here costs tokens on every subsequent model turn.
+        details.pop("alert_ids", None)
+        return details
 
     def _related_alerts(self, incident_id: str, _: dict) -> dict:
-        return {"incident_id": incident_id, "alerts": self.dataset.agent_alerts(incident_id)}
+        alerts = self.dataset.agent_alerts(incident_id)
+        sources = {item.get("source_ip") for item in alerts}
+        destinations = {item.get("destination_ip") for item in alerts}
+        compact = []
+        for item in alerts:
+            row = {key: item[key] for key in (
+                "alert_id", "timestamp", "flow_count", "destination_port_count",
+                "source_port_count", "source_count", "rule_basis",
+            ) if key in item}
+            if len(sources) > 1:
+                row["source_ip"] = item.get("source_ip")
+            if len(destinations) > 1:
+                row["destination_ip"] = item.get("destination_ip")
+            compact.append(row)
+        return {
+            "incident_id": incident_id,
+            "rule_type": alerts[0].get("type") if alerts else None,
+            "source_ip": next(iter(sources)) if len(sources) == 1 else "Multiple sources",
+            "destination_ip": next(iter(destinations)) if len(destinations) == 1 else "Multiple destinations",
+            "alerts": compact,
+        }
 
     def _network_flows(self, incident_id: str, arguments: dict) -> dict:
         limit = int(arguments.get("limit") or 6)
@@ -263,4 +287,12 @@ class ToolRegistry:
         }
 
     def _statistics(self, incident_id: str, _: dict) -> dict:
-        return self.dataset.agent_statistics(incident_id)
+        statistics = self.dataset.agent_statistics(incident_id)
+        # The related-alert tool already returns each minute's counts and rule
+        # basis. Keep only case totals and sample-derived statistics here.
+        return {
+            "incident_id": incident_id,
+            "group_totals": statistics["group_totals"],
+            "sampled": statistics["sampled"],
+            "scope_note": statistics["scope_note"],
+        }

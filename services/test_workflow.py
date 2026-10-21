@@ -30,6 +30,10 @@ class WorkflowTests(unittest.TestCase):
         self.assertTrue(recs)
         self.assertTrue(all(set(rec['evidence_ids']) <= allowed for rec in recs))
         self.assertTrue(all(rec['action'].startswith(('REVIEW_', 'CHECK_', 'ESCALATE_')) for rec in recs))
+        by_action = {rec['action']: rec for rec in recs}
+        self.assertEqual(by_action['REVIEW_NETWORK_FLOWS']['evidence_ids'], DATA['incidents'][0]['evidence_sample_ids'])
+        self.assertEqual(by_action['CHECK_RELATED_ALERTS']['evidence_ids'], DATA['incidents'][0]['alert_ids'])
+        self.assertFalse(self.db.exists())
 
     def test_case_note_requires_approval(self):
         rec = generate_recommendations(DATA, CASE_ID, self.db)[0]
@@ -38,7 +42,7 @@ class WorkflowTests(unittest.TestCase):
         save_decision(DATA, CASE_ID, rec['id'], 'APPROVED', 'Test Analyst', 'Needs Review', self.db)
         self.assertEqual(len(get_case_note(CASE_ID, self.db)['approved_steps']), 1)
         with closing(sqlite3.connect(self.db)) as db:
-            events = [row[0] for row in db.execute('SELECT event FROM audit_log ORDER BY id')]
+            events = [row[0] for row in db.execute('SELECT event FROM audit_events ORDER BY seq')]
         self.assertIn('ANALYST_DECISION', events)
 
     def test_approved_step_becomes_pending_task_until_analyst_completes_it(self):
@@ -51,7 +55,7 @@ class WorkflowTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'already completed'):
                 complete_task(rec['id'], 'Test Analyst')
         with closing(sqlite3.connect(self.db)) as db:
-            events = [row[0] for row in db.execute('SELECT event FROM audit_log ORDER BY id')]
+            events = [row[0] for row in db.execute('SELECT event FROM audit_events ORDER BY seq')]
         self.assertIn('INVESTIGATION_STEP_COMPLETED', events)
 
     def test_case_note_links_only_its_own_evidence_and_is_audited(self):
@@ -61,7 +65,7 @@ class WorkflowTests(unittest.TestCase):
         note = add_note(DATA, CASE_ID, 'Test Analyst', evidence_id, 'Observed activity', self.db)
         self.assertEqual(list_notes(CASE_ID, self.db), [note])
         with closing(sqlite3.connect(self.db)) as db:
-            events = [row[0] for row in db.execute('SELECT event FROM audit_log ORDER BY id')]
+            events = [row[0] for row in db.execute('SELECT event FROM audit_events ORDER BY seq')]
         self.assertEqual(events, ['ANALYST_NOTE_ADDED'])
 
     def test_unrelated_evidence_and_closure_are_blocked(self):
