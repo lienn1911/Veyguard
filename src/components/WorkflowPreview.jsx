@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 const endpoint = (id) => `/api/cases/${encodeURIComponent(id)}/ai-assessment`;
 const verdicts = new Set(['Likely Attack', 'Likely Benign', 'Needs Review']);
+const apiError = (payload) => typeof payload?.error === 'string' ? payload.error : payload?.error?.message;
 
 export function TriagePreview({ incidentId, alerts, flows, onEvidence }) {
   const [result, setResult] = useState(null);
@@ -39,7 +40,12 @@ export function TriagePreview({ incidentId, alerts, flows, onEvidence }) {
     try {
       const response = await fetch(endpoint(incidentId), { method: 'POST' });
       const payload = await response.json();
-      if (!response.ok || payload.status !== 'ready') throw new Error(payload.error?.message || 'Analysis could not be completed.');
+      if (!response.ok || payload.status !== 'ready') {
+        const message = apiError(payload);
+        throw new Error(message === 'Unknown endpoint'
+          ? 'The running API is outdated. Restart start.cmd, then try again.'
+          : message || 'Analysis could not be completed.');
+      }
       setMode(payload.mode || '');
       setResult(payload.assessment);
       setState('ready');

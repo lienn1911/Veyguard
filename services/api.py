@@ -4,13 +4,14 @@ from contextlib import closing
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import unquote, urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 
 from services.recommendations import DB_PATH, generate_recommendations, get_case_note, init_db, log_event, save_decision
 from services.case_notes import add_note, list_notes
 from services.config import load_settings
 from services.data_store import Dataset
 from services.triage import TriageService
+from services.audit_log import AuditLog as AIAuditLog, summarize as summarize_ai_audit
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -140,6 +141,16 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         try:
+            path = urlsplit(self.path)
+            if path.path == '/api/audit':
+                raw_limit = parse_qs(path.query).get('limit', ['100'])[0]
+                limit = max(1, min(int(raw_limit), 500))
+                log = AIAuditLog(load_settings().audit_path)
+                self.send_json(200, {'entries': summarize_ai_audit(log.entries(limit=limit)), 'verification': log.verify()})
+                return
+            if path.path == '/api/audit/verify':
+                self.send_json(200, AIAuditLog(load_settings().audit_path).verify())
+                return
             if urlsplit(self.path).path == '/api/tasks':
                 self.send_json(200, {'tasks': pending_tasks()})
                 return

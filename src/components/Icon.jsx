@@ -2,7 +2,7 @@ import React from 'react';
 import {
   ArrowRight, BellRing, Check, Home, Layers, MenuFold, MenuUnfold,
   NetworkTree, Search, Shield, Star, Attention, HamburgerButton, Close,
-  User, Lock, PreviewOpen, PreviewClose,
+  User, Lock, PreviewOpen, PreviewClose, Refresh,
 } from '@icon-park/react';
 
 const icons = {
@@ -13,6 +13,10 @@ const icons = {
   layers: Layers,
   menu: HamburgerButton,
   network: NetworkTree,
+  audit: Layers,
+  database: Layers,
+  refresh: Refresh,
+  checkCircle: Check,
   search: Search,
   shield: Shield,
   star: Star,

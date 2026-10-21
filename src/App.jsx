@@ -7,6 +7,7 @@ import AlertMascot from './components/AlertMascot.jsx';
 import data from './real-alerts.json';
 import Icon from './components/Icon.jsx';
 import Login from './components/Login.jsx';
+import AuditLog from './components/AuditLog.jsx';
 
 const featuredCase = data.incidents.find((incident) => data.alerts.some((alert) => alert.incident_id === incident.incident_id && alert.type === 'PortScan'));
 const alertNotificationEnabled = false;
@@ -123,7 +124,10 @@ export default function App() {
         {searchOpen && <div className="search-backdrop" onMouseDown={() => setSearchOpen(false)}><div className="search-panel" role="dialog" aria-modal="true" aria-label="Search cases and alerts" onMouseDown={(event) => event.stopPropagation()}><div className="search-panel-input"><Icon name="search" size={19} /><input ref={searchInput} aria-label="Search cases and alerts" placeholder="Search by case, alert, IP or ID" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') { if (caseResults[0]) openCase(caseResults[0].incident_id); else if (alertResults[0]) openAlert(alertResults[0]); } }} /><button type="button" onClick={() => setSearchOpen(false)} aria-label="Close search"><Icon name="close" size={18} /></button></div><div className="search-results">{searchTerm ? <>{caseResults.length > 0 && <><h2>Cases</h2>{caseResults.map((incident) => <button type="button" key={incident.incident_id} onClick={() => openCase(incident.incident_id)}><strong>{caseTitle(incident)}</strong><span>{incident.source_ip} → {incident.destination_ip}</span></button>)}</>}{alertResults.length > 0 && <><h2>Alerts</h2>{alertResults.map((alert) => <button type="button" key={alert.alert_id} onClick={() => openAlert(alert)}><strong>{alert.type} · {alert.alert_id}</strong><span>{alert.source_ip} → {alert.destination_ip}</span></button>)}</>}{caseResults.length + alertResults.length === 0 && <p>No matching cases or alerts</p>}</> : <p>Search by IP address, alert type, or record ID.</p>}</div></div></div>}
 
         <main className={`main-content${page === 'review' || page === 'cases' || page === 'alerts' ? ' investigation-main-content' : ''}`}>
-          {page === 'alerts' ? (
+          {(page === 'cases' || page === 'alerts') && <nav className={`investigation-switch${page === 'alerts' ? ' show-alerts' : ''}`} aria-label="Investigation views"><button type="button" className={page === 'cases' ? 'active' : ''} aria-current={page === 'cases' ? 'page' : undefined} onClick={() => selectPage('cases')}>Cases</button><button type="button" className={page === 'alerts' ? 'active' : ''} aria-current={page === 'alerts' ? 'page' : undefined} onClick={() => selectPage('alerts')}>Alerts</button></nav>}
+          {page === 'audit' ? (
+            <AuditLog mode="live" />
+          ) : page === 'alerts' ? (
             <AlertQueue onOpenCase={openCase} selectedAlertId={selectedAlertId} />
           ) : page === 'review' || page === 'cases' ? (
             <AlertReview mode={page} selectedId={selectedCaseId} onSelectCase={openCase} onCases={() => selectPage('cases')} username={username} />

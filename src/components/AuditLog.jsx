@@ -66,11 +66,10 @@ export default function AuditLog({ mode, refreshToken }) {
     <section className="page">
       <header className="page-head">
         <div>
-          <p className="eyebrow">Module 2 trail</p>
+          <p className="eyebrow">AI investigation trail</p>
           <h1>Audit log</h1>
           <p className="page-sub">
-            Append-only record of investigations and analyst decisions, hash-chained so edits are
-            detectable.
+            Recorded AI investigations and AI verdict decisions. Each entry is hash-chained so edits are detectable.
           </p>
         </div>
         <div className="page-actions">
@@ -115,7 +114,7 @@ export default function AuditLog({ mode, refreshToken }) {
           <div className="panel-head">
             <div>
               <h2>Events</h2>
-              <p>Source: services.audit_log · Module 4 owns the project-wide audit log</p>
+              <p>Source: AI triage audit log. Case-review approvals are kept in the case review record.</p>
             </div>
             <span className="chip chip-muted">{state.entries.length} latest</span>
           </div>
