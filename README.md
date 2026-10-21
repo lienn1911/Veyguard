@@ -30,6 +30,12 @@ Consecutive alerts with the same source IP, destination IP, and source CSV are g
 
 The detector does not read dataset labels when matching or grouping alerts. Labels are kept for evaluation and for choosing representative preview cases. In this dataset, the DDoS attack exposes one visible source IP, so its flood alerts remain DoS rule matches with a separate DDoS dataset reference. This does not establish distributed origins from the available fields.
 
+### Checking detection quality and extending rules
+
+Run `python -m services.evaluate_detection data/GeneratedLabelledFlows.zip -o data/detection-evaluation.json` on the **complete** archive. The report compares each source/destination/minute group's rule result with its dataset label and shows a confusion table plus per-type precision and recall. Mixed-label groups are reported separately rather than forced into one truth class. The three chosen preview cases cannot be used for this evaluation: they were selected because they matched the rules. This is an offline historical check, not a claim of live SOC accuracy. For stronger validation, repeat on an independent dataset or traffic capture, inspect false positives and missed groups, then tune thresholds only on separate development data before rerunning the held-out check.
+
+Named rule predicates and thresholds live in `services/alerts.py` (`DETECTION_RULES` and `RULE_THRESHOLDS`). A new evidence-backed type can be added there without changing the case grouping or evidence-linking code. Regenerate the alert and timeline exports after a rule change. Optional `--include-unclassified` exports high-volume unmatched groups as `NeedsReview` candidates (at least 500 flows and 5,000 packets in a minute); this is a coarse review heuristic with potentially many false positives, **not** zero-day detection. The Alerts filter picks up types present in the export automatically. This option is off for the current preview until its false-positive rate is measured.
+
 ## Timeline
 
 `services/timeline.py` orders sampled source records and every alert in each incident by timestamp and CSV row. Each event carries an evidence ID that resolves to a flow or alert in the matching JSON export. PortScan alerts map to MITRE ATT&CK T1046; DDoS alerts map to T1498; events without sufficient evidence are Unmapped. The source timestamps have minute precision. Friday afternoon CSV hours are normalized to afternoon according to their filename.

@@ -3,8 +3,7 @@ import Icon from './Icon.jsx';
 
 const items = [
   { label: 'Home', icon: 'home', page: 'dashboard' },
-  { section: 'INVESTIGATION' },
-  { label: 'Cases', icon: 'network', page: 'cases' },
+  { label: 'Investigations', icon: 'network', page: 'cases' },
   { label: 'Alerts', icon: 'bell', page: 'alerts' },
 ];
 

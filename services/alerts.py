@@ -12,6 +12,39 @@ from pathlib import Path
 
 DEFAULT_MEMBERS = ('Wednesday-workingHours', 'Friday-WorkingHours-Afternoon-DDos', 'Friday-WorkingHours-Afternoon-PortScan')
 INCIDENT_GAP_MINUTES = 5
+RULE_THRESHOLDS = {
+    'portscan_min_destination_ports': 100,
+    'portscan_min_source_port_ratio': 2,
+    'portscan_min_flows': 100,
+    'dos_min_flows': 1000,
+    'dos_min_packets': 10000,
+    'dos_max_destination_ports': 10,
+    'dos_min_source_ports': 10,
+    'ddos_min_sources': 3,
+}
+
+
+def portscan_rule(group):
+    return (len(group['ports']) >= RULE_THRESHOLDS['portscan_min_destination_ports']
+            and len(group['source_ports']) >= RULE_THRESHOLDS['portscan_min_source_port_ratio'] * len(group['ports'])
+            and group['count'] >= RULE_THRESHOLDS['portscan_min_flows'])
+
+
+def dos_rule(group):
+    return (group['count'] >= RULE_THRESHOLDS['dos_min_flows']
+            and group['packets'] >= RULE_THRESHOLDS['dos_min_packets']
+            and len(group['ports']) <= RULE_THRESHOLDS['dos_max_destination_ports']
+            and len(group['source_ports']) >= RULE_THRESHOLDS['dos_min_source_ports'])
+
+
+# Add a named predicate here to support another evidence-backed traffic rule.
+# The first matching rule wins; DDoS is derived from simultaneous DoS sources.
+DETECTION_RULES = (('PortScan', portscan_rule), ('DoS', dos_rule))
+
+
+def needs_review_candidate(group):
+    """High-volume group that misses known rules; a review prompt, never an attack verdict."""
+    return group['count'] >= 500 and group['packets'] >= 5000
 
 
 def stable_id(prefix, *parts):
@@ -64,11 +97,7 @@ def read_flow(row, source_file, row_number):
 
 
 def classify_group(group):
-    if len(group['ports']) >= 100 and len(group['source_ports']) >= 2 * len(group['ports']) and group['count'] >= 100:
-        return 'PortScan'
-    if group['count'] >= 1000 and group['packets'] >= 10000 and len(group['ports']) <= 10 and len(group['source_ports']) >= 10:
-        return 'DoS'
-    return None
+    return next((name for name, predicate in DETECTION_RULES if predicate(group)), None)
 
 
 def mark_distributed_floods(matches):
@@ -79,7 +108,7 @@ def mark_distributed_floods(matches):
             grouped_sources[(source_file, destination, minute)].append(match)
     for items in grouped_sources.values():
         source_count = len({item['key'][1] for item in items})
-        if source_count >= 3:
+        if source_count >= RULE_THRESHOLDS['ddos_min_sources']:
             for item in items:
                 item['type'] = 'DDoS'
                 item['source_count'] = source_count
@@ -155,7 +184,7 @@ def make_preview(result, limit):
     }
 
 
-def analyze_archive(path, preview_cases=None):
+def analyze_archive(path, preview_cases=None, include_unclassified=False):
     groups = {}
     members_read = []
     with zipfile.ZipFile(path) as archive:
@@ -185,6 +214,8 @@ def analyze_archive(path, preview_cases=None):
     matches = []
     for key, group in groups.items():
         kind = classify_group(group)
+        if not kind and include_unclassified and needs_review_candidate(group):
+            kind = 'NeedsReview'
         if not kind:
             continue
         match = {'key': key, 'group': group, 'type': kind}
@@ -217,12 +248,12 @@ def analyze_archive(path, preview_cases=None):
             'evidence_sample_ids': flow_ids,
             'dataset_labels': dict(sorted(group['labels'].items())),
             'ddos_reference': group['labels'].get('DDoS', 0) > 0,
-            'rule_basis': f"{len(group['ports'])} destination ports, {len(group['source_ports'])} source ports in one minute" if item['type'] == 'PortScan' else f"{group['count']} flows, {int(group['packets'])} packets, {item.get('source_count', 1)} independent source IPs in one minute" if item['type'] == 'DDoS' else f"{group['count']} flows and {int(group['packets'])} packets in one minute",
+            'rule_basis': f"{len(group['ports'])} destination ports, {len(group['source_ports'])} source ports in one minute" if item['type'] == 'PortScan' else f"{group['count']} flows, {int(group['packets'])} packets, {item.get('source_count', 1)} independent source IPs in one minute" if item['type'] == 'DDoS' else f"{group['count']} flows and {int(group['packets'])} packets in one minute; no known attack rule matched — analyst review needed" if item['type'] == 'NeedsReview' else f"{group['count']} flows and {int(group['packets'])} packets in one minute",
         })
     incidents = group_alerts(alerts)
     result = {
         'provenance': {'dataset': 'CIC-IDS2017 GeneratedLabelledFlows', 'archive': Path(path).name, 'files': members_read, 'mode': 'full', 'scope': 'All matching one-minute alerts; up to six sampled source flows per alert'},
-        'rules': {'window_seconds': 60, 'incident_gap_minutes': INCIDENT_GAP_MINUTES, 'portscan_min_destination_ports': 100, 'portscan_min_source_port_ratio': 2, 'portscan_min_flows': 100, 'dos_min_flows': 1000, 'dos_min_packets': 10000, 'dos_max_destination_ports': 10, 'dos_min_source_ports': 10, 'ddos_min_sources': 3},
+        'rules': {'window_seconds': 60, 'incident_gap_minutes': INCIDENT_GAP_MINUTES, **RULE_THRESHOLDS, 'unclassified_review_enabled': include_unclassified, 'unclassified_min_flows': 500, 'unclassified_min_packets': 5000},
         'evaluation': {'groups_scanned': len(groups), 'rule_matches': len(matches), 'incidents': len(incidents), 'exported_incidents': len(incidents), 'exported_alerts': len(alerts)},
         'flows': flows,
         'alerts': alerts,
@@ -237,17 +268,18 @@ def main():
     parser.add_argument('-o', '--output', type=Path, required=True)
     parser.add_argument('--preview-cases', type=int)
     parser.add_argument('--preview-from', type=Path)
+    parser.add_argument('--include-unclassified', action='store_true', help='add high-volume unmatched groups as NeedsReview candidates (not attack detections)')
     args = parser.parse_args()
     if args.preview_cases is not None and args.preview_cases < 1:
         parser.error('--preview-cases must be positive')
     if args.preview_from:
-        if args.archive or args.preview_cases is None:
+        if args.archive or args.preview_cases is None or args.include_unclassified:
             parser.error('--preview-from requires --preview-cases and no archive')
         result = make_preview(json.loads(args.preview_from.read_text(encoding='utf-8')), args.preview_cases)
     else:
         if not args.archive:
             parser.error('archive is required without --preview-from')
-        result = analyze_archive(args.archive, args.preview_cases)
+        result = analyze_archive(args.archive, args.preview_cases, args.include_unclassified)
     args.output.write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')
 
 

@@ -9,11 +9,24 @@ import timelineData from '../real-timelines.json';
 
 const views = ['Activity', 'Alerts', 'AI check', 'Timeline', 'Next steps'];
 const shortTime = (value) => value.replace('T', ' ').slice(0, 16);
-const caseName = (type) => type === 'PortScan' ? 'Many ports checked' : type === 'DDoS' ? 'Distributed traffic surge' : 'Heavy network traffic';
+const caseName = (type) => type === 'PortScan' ? 'Many ports checked' : type === 'DDoS' ? 'Distributed traffic surge' : type === 'DoS' ? 'Heavy network traffic' : type === 'NeedsReview' ? 'Unclassified activity · needs review' : type;
 const alertReason = (alert) => alert.type === 'PortScan'
   ? `${alert.destination_port_count.toLocaleString()} service ports checked in one minute`
   : alert.type === 'DDoS' ? `${alert.source_count} sources sent heavy traffic in one minute`
+  : alert.type === 'NeedsReview' ? 'High-volume activity without a known attack-rule match; analyst review needed'
   : 'Unusually heavy traffic in one minute';
+const aiVerdicts = new Set(['Likely Attack', 'Likely Benign', 'Needs Review']);
+
+function caseAssessment(incident, response) {
+  if (!response) return { label: 'Checking…' };
+  if (response.status === 'unavailable') return { label: 'Unavailable' };
+  if (response.status === 'running' || response.status === 'analysing') return { label: 'Analysing' };
+  if (response.status !== 'ready') return { label: 'Pending' };
+  const result = response.assessment;
+  const evidence = new Set([...incident.alert_ids, ...incident.evidence_sample_ids]);
+  if (!aiVerdicts.has(result?.verdict) || !Array.isArray(result.evidence_ids) || !result.evidence_ids.some((id) => evidence.has(id))) return { label: 'Unavailable' };
+  return { label: result.verdict, confidence: typeof result.confidence === 'number' && result.confidence >= 0 && result.confidence <= 1 ? `${Math.round(result.confidence * 100)}%` : null };
+}
 
 export default function AlertReview({ mode, selectedId, onSelectCase, onCases, username }) {
   const [view, setView] = useState(0);
@@ -22,6 +35,7 @@ export default function AlertReview({ mode, selectedId, onSelectCase, onCases, u
   const [selectedEvidence, setSelectedEvidence] = useState(null);
   const [queue, setQueue] = useState(null);
   const [queueError, setQueueError] = useState('');
+  const [assessments, setAssessments] = useState({});
   const incident = data.incidents.find((item) => item.incident_id === selectedId);
   const alerts = data.alerts.filter((item) => item.incident_id === selectedId);
   const flows = data.flows.filter((flow) => incident?.evidence_sample_ids.includes(flow.flow_id));
@@ -44,22 +58,25 @@ export default function AlertReview({ mode, selectedId, onSelectCase, onCases, u
     return () => { active = false; };
   }, [mode, selectedId]);
 
-  async function assignSelf() {
-    if (!incident || !username) return;
-    try {
-      const response = await fetch(`/api/cases/${encodeURIComponent(incident.incident_id)}/assign`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ analyst: username }),
-      });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'Assignment failed');
-      setQueue((current) => ({ ...current, [incident.incident_id]: result.case }));
-      setQueueError('');
-    } catch (error) {
-      setQueueError(error.message);
+  useEffect(() => {
+    if (mode !== 'cases') return;
+    let active = true;
+    async function loadAssessments() {
+      const entries = await Promise.all(data.incidents.map(async (item) => {
+        try {
+          const response = await fetch(`/api/cases/${encodeURIComponent(item.incident_id)}/ai-assessment`);
+          if (!response.ok) throw new Error('AI status unavailable');
+          return [item.incident_id, await response.json()];
+        } catch {
+          return [item.incident_id, { status: 'unavailable' }];
+        }
+      }));
+      if (active) setAssessments(Object.fromEntries(entries));
     }
-  }
+    loadAssessments();
+    const refresh = window.setInterval(loadAssessments, 15000);
+    return () => { active = false; window.clearInterval(refresh); };
+  }, [mode]);
 
   async function refreshQueue() {
     try {
@@ -84,20 +101,21 @@ export default function AlertReview({ mode, selectedId, onSelectCase, onCases, u
     setSelectedEvidence(null);
   }
 
-  if (mode === 'cases' || !incident) return <section className="iris-cases-page"><header><h1>Cases</h1><p>{data.incidents.length} investigations · {data.alerts.length} related alerts</p></header>{queueError && <p className="case-queue-error" role="status">{queueError}</p>}<div className="iris-cases-table"><div className="iris-cases-columns"><span>Case</span><span>First seen · UTC</span><span>Review status</span><span>Assigned analyst</span><span>Alerts</span></div>{data.incidents.map((item, index) => {
+  if (mode === 'cases' || !incident) return <section className="iris-cases-page"><header><h1>Investigations</h1><p>{data.incidents.length} cases · {data.alerts.length} related alerts</p></header>{queueError && <p className="case-queue-error" role="status">{queueError}</p>}<div className="iris-cases-table"><div className="iris-cases-columns"><span>Case</span><span>First seen · UTC</span><span>Review status</span><span>AI assessment</span><span>Alerts</span></div>{data.incidents.map((item, index) => {
     const caseAlerts = data.alerts.filter((alert) => alert.incident_id === item.incident_id);
     const state = stateFor(item.incident_id);
-    return <button type="button" className="iris-cases-row" key={item.incident_id} onClick={() => { setView(0); setQuery(''); onSelectCase(item.incident_id); }}><span className="case-queue-name"><strong>Case #{index + 1} <span>· {caseName(caseAlerts[0]?.type)}</span></strong><small>{item.source_ip} → {item.destination_ip}</small></span><time>{shortTime(item.window_start)}</time><span className="case-queue-status">{state?.status || (queueError ? 'Unavailable' : 'Loading…')}</span><span>{state?.owner || 'Unassigned'}</span><span className="case-alert-count">{caseAlerts.length} alerts</span></button>;
+    const ai = caseAssessment(item, assessments[item.incident_id]);
+    return <button type="button" className="iris-cases-row" key={item.incident_id} onClick={() => { setView(0); setQuery(''); onSelectCase(item.incident_id); }}><span className="case-queue-name"><strong>Case #{index + 1} <span>· {caseName(caseAlerts[0]?.type)}</span></strong><small>{item.source_ip} → {item.destination_ip}</small></span><time>{shortTime(item.window_start)}</time><span className="case-queue-status">{state?.status || (queueError ? 'Unavailable' : 'Loading…')}</span><span className="case-ai-assessment">{ai.label}{ai.confidence && <small>{ai.confidence}</small>}</span><span className="case-alert-count">{caseAlerts.length} alerts</span></button>;
   })}</div></section>;
 
   return <div className="iris-review">
-    <nav className="iris-case-tabs" aria-label="Case sections"><button type="button" onClick={onCases}>Cases</button>{views.map((label, index) => <button type="button" key={label} className={view === index ? 'selected' : ''} aria-current={view === index ? 'page' : undefined} onClick={() => selectView(index)}>{label === 'Activity' ? 'Stream' : label === 'Timeline' ? 'Timelines' : label}</button>)}</nav>
     <header className="iris-case-header">
-      <span className="iris-header-icon"><Icon name="shield" size={23} /></span>
-      <div className="iris-header-title"><span>{incident.incident_id}</span><h1>Case #{data.incidents.findIndex((item) => item.incident_id === incident.incident_id) + 1} · {caseName(alerts[0]?.type)}</h1><small>{shortTime(incident.window_start)}–{shortTime(incident.window_end)} UTC · {alerts.length} alerts · {incident.source_ip} → {incident.destination_ip}</small></div>
-      <div className="case-review-controls"><span className="iris-header-badge">{caseState?.status || 'Historical sample'}</span><small>{caseState?.owner || 'Unassigned'}</small>{caseState && !caseState.owner && <button type="button" onClick={assignSelf}>Assign to me</button>}</div>
+      <div className="iris-header-title"><h1>Case #{data.incidents.findIndex((item) => item.incident_id === incident.incident_id) + 1} · {caseName(alerts[0]?.type)}</h1><small>{alerts.length} alerts · {incident.source_ip} → {incident.destination_ip}</small></div>
+      <div className="case-review-controls"><span className="iris-header-badge">{caseState?.status || 'Historical sample'}</span></div>
     </header>
 
+    <div className="case-detail-workspace">
+    <nav className="iris-case-tabs" aria-label="Case sections"><button type="button" className="complete" onClick={onCases}><span className="case-step-dot" aria-hidden="true" />Investigations</button>{views.map((label, index) => <button type="button" key={label} className={index === view ? 'selected' : index < view ? 'complete' : ''} aria-current={view === index ? 'step' : undefined} onClick={() => selectView(index)}><span className="case-step-dot" aria-hidden="true" />{label === 'Activity' ? 'Stream' : label === 'Timeline' ? 'Timelines' : label}</button>)}</nav>
     <div className="iris-review-body">
       <div className="iris-stream">
         {(view === 0 || view === 1 || view === 3) && <div className="iris-stream-search">{view === 0 && <div className="case-stream-filters" aria-label="Activity filter">{['All activity', 'Network flows'].map((label) => <button type="button" key={label} className={recordFilter === label ? 'selected' : ''} onClick={() => setRecordFilter(label)}>{label}</button>)}</div>}<input aria-label={`Search ${views[view].toLowerCase()}`} placeholder={`Search ${views[view].toLowerCase()}…`} value={query} onChange={(event) => setQuery(event.target.value)} /></div>}
@@ -113,6 +131,7 @@ export default function AlertReview({ mode, selectedId, onSelectCase, onCases, u
           {view === 4 && <NextSteps incidentId={incident.incident_id} analystName={username} onEvidence={setSelectedEvidence} onReviewed={refreshQueue} />}
         </div>}
       </div>
+    </div>
     </div>
 
     {evidence && <div className="evidence-detail process-evidence" aria-live="polite"><div><strong>Record details</strong><button type="button" onClick={() => setSelectedEvidence(null)} aria-label="Close record details"><Icon name="close" size={18} /></button></div><dl><dt>Time</dt><dd>{evidence.timestamp.replace('T', ' ')}</dd><dt>From</dt><dd>{evidence.source_ip}{evidence.source_port ? `:${evidence.source_port}` : ''}</dd><dt>To</dt><dd>{evidence.destination_ip}{evidence.destination_port ? `:${evidence.destination_port}` : ''}</dd><dt>Record ID</dt><dd>{selectedEvidence}</dd>{evidence.rule_basis && <><dt>Detection details</dt><dd>{evidence.rule_basis}</dd></>}</dl><details><summary>Technical source</summary><p>{evidence.source_file}{evidence.source_row ? ` · row ${evidence.source_row}` : ''}</p>{evidenceEvent && <p>MITRE mapping: {typeof evidenceEvent.technique === 'string' ? evidenceEvent.technique : `${evidenceEvent.technique.id} · ${evidenceEvent.technique.name}`}</p>}</details></div>}
