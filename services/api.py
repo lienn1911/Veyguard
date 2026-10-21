@@ -8,10 +8,38 @@ from urllib.parse import unquote, urlsplit
 
 from services.recommendations import DB_PATH, generate_recommendations, get_case_note, init_db, log_event, save_decision
 from services.case_notes import add_note, list_notes
+from services.config import load_settings
+from services.data_store import Dataset
+from services.triage import TriageService
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / 'src' / 'real-alerts.json'
+_ai_service = None
+
+
+def ai_service():
+    global _ai_service
+    if _ai_service is None:
+        settings = load_settings()
+        dataset = Dataset.load(settings.alerts_path, settings.timelines_path)
+        _ai_service = TriageService(settings, dataset)
+    return _ai_service
+
+
+def ai_assessment(incident_id):
+    service = ai_service()
+    stored = service.latest(incident_id)
+    latest = stored.get('latest') if stored else None
+    if not latest:
+        return {'status': 'pending', 'assessment': None, 'mode': service.status()['mode']}
+    if latest['status'] != 'ok':
+        return {'status': 'unavailable', 'assessment': None, 'mode': service.status()['mode'], 'error': latest.get('error')}
+    return {'status': 'ready', 'mode': service.status()['mode'], 'assessment': {
+        'verdict': latest['verdict'], 'confidence': latest['confidence'], 'summary': latest['reason'],
+        'evidence_ids': latest['evidence_ids'], 'findings': latest['findings'], 'limitations': latest['limitations'],
+        'requires_confirmation': latest['requires_confirmation'], 'run_id': latest['run_id'],
+    }}
 
 
 def audit_events(incident_id):
@@ -139,7 +167,10 @@ class Handler(BaseHTTPRequestHandler):
             elif action == 'ai-assessment':
                 if not any(item['incident_id'] == incident_id for item in data['incidents']):
                     raise ValueError('Unknown case')
-                self.send_json(200, {'status': 'pending', 'assessment': None})
+                try:
+                    self.send_json(200, ai_assessment(incident_id))
+                except Exception as error:
+                    self.send_json(503, {'status': 'unavailable', 'assessment': None, 'error': {'message': str(error)}})
             else:
                 raise ValueError('Unknown endpoint')
         except ValueError as error:
@@ -157,6 +188,15 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json(200, {'incident_id': incident_id, 'tasks': pending_tasks()})
                 return
             incident_id, action = self.route()
+            if action == 'ai-assessment':
+                if not any(item['incident_id'] == incident_id for item in json.loads(DATA.read_text(encoding='utf-8'))['incidents']):
+                    raise ValueError('Unknown case')
+                try:
+                    result = ai_service().investigate(incident_id)
+                    self.send_json(200 if result['status'] == 'ok' else 502, ai_assessment(incident_id))
+                except Exception as error:
+                    self.send_json(503, {'status': 'unavailable', 'assessment': None, 'error': {'message': str(error)}})
+                return
             if action not in {'approval', 'assign', 'notes'}:
                 raise ValueError('Unknown endpoint')
             length = int(self.headers.get('Content-Length', '0'))
