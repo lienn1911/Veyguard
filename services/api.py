@@ -1,4 +1,5 @@
 import json
+import os
 import secrets
 import sqlite3
 from contextlib import closing
@@ -208,7 +209,10 @@ class Handler(BaseHTTPRequestHandler):
 
     def allowed_origin(self):
         origin = self.headers.get('Origin')
-        return not origin or origin in {'http://127.0.0.1:5173', 'http://127.0.0.1:5174', 'http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:8765'}
+        allowed = {'http://127.0.0.1:5173', 'http://127.0.0.1:5174', 'http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:8765'}
+        extra = os.environ.get('SOC_TRIAGE_EXTRA_ORIGINS', '')
+        allowed.update(o.strip() for o in extra.split(',') if o.strip())
+        return not origin or origin in allowed
 
     def require_session(self):
         session = auth.current_session(self.headers.get('Cookie'))

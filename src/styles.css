@@ -1567,6 +1567,19 @@ button:focus-visible{outline-color:#a889d9}
 .page .event-error,.page .event-warn{background:#fff0ef;color:#a34a4a}
 @media(max-width:760px){.page-head{flex-direction:column}.page-actions{flex-wrap:wrap}}
 
+.audit-filter{display:flex;align-items:center;gap:8px}
+.audit-filter-label{color:#826bb0;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.audit-filter select{padding:9px 11px;border:1px solid #dccfea;border-radius:8px;background:#fff;color:#463963;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.audit-filter select:focus{outline:2px solid #d9c9f0;outline-offset:1px}
+.audit-group-cell{padding:0!important}
+.audit-group-toggle{display:flex;align-items:center;gap:12px;width:100%;padding:14px 15px;border:0;background:#faf8fc;color:#35265f;font:inherit;font-size:12px;text-align:left;cursor:pointer}
+.audit-group-row:hover .audit-group-toggle,.audit-group-row.is-open .audit-group-toggle{background:#f1ebf8}
+.audit-group-id{font-weight:700;color:#62449e}
+.audit-group-meta{flex:1;min-width:0;color:#8a7b9e;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.audit-group-time{color:#887a99;font-family:Consolas,'Courier New',monospace;font-size:10px;white-space:nowrap}
+.audit-event-row td{background:#fff}
+.audit-group-row+.audit-event-row td{border-top:1px solid #e9e1f0}
+
 .traffic-timeline{display:grid;gap:16px;color:#35265f}
 .ai-review-controls{display:grid;gap:10px;margin-top:18px;padding-top:17px;border-top:1px solid #ece4f3;color:#493271;font-size:12px}
 .ai-review-controls label{font-weight:700}
