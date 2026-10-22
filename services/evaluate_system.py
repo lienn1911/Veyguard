@@ -29,7 +29,7 @@ def chronological_minute_split(groups, train_fraction=0.6, calibration_fraction=
     }
 
 
-def build_report(detector_report=None, evaluation_cases=None):
+def build_report(detector_report=None, evaluation_cases=None, baseline_report=None):
     result = {
         'calibration_unit': 'source IP / destination IP / minute group',
         'case_false_positive_unit': 'case with only Benign-labeled groups',
@@ -49,20 +49,29 @@ def build_report(detector_report=None, evaluation_cases=None):
         }
     if evaluation_cases is not None:
         result['workflow_safety'] = evaluate_safety(evaluation_cases)
+    if baseline_report is not None:
+        result['rate_sweep'] = {
+            'status': 'offline normal-only baseline evaluated; not deployed as the detector',
+            'method': baseline_report['method'],
+            'split': baseline_report['split'],
+            'targets': baseline_report['targets'],
+        }
     return result
 
 
 def main():
     parser = argparse.ArgumentParser(description='Summarize rule recall and three workflow safety indicators')
     parser.add_argument('--detector-report', type=Path)
+    parser.add_argument('--baseline-report', type=Path, help='Output from services.evaluate_baseline')
     parser.add_argument('--cases', type=Path, help='JSON array of reviewed evaluation cases')
     parser.add_argument('-o', '--output', type=Path)
     args = parser.parse_args()
     detector = json.loads(args.detector_report.read_text(encoding='utf-8')) if args.detector_report else None
+    baseline = json.loads(args.baseline_report.read_text(encoding='utf-8')) if args.baseline_report else None
     cases = json.loads(args.cases.read_text(encoding='utf-8')) if args.cases else None
     if cases is not None and not isinstance(cases, list):
         parser.error('--cases must contain a JSON array')
-    report = json.dumps(build_report(detector, cases), indent=2) + '\n'
+    report = json.dumps(build_report(detector, cases, baseline), indent=2) + '\n'
     if args.output:
         args.output.write_text(report, encoding='utf-8')
     else:

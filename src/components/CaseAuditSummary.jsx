@@ -5,6 +5,7 @@ const labels = {
   CASE_NOTE_DRAFTED: 'Case note drafted',
   ANALYST_NOTE_ADDED: 'Analyst note added',
   INVESTIGATION_STEP_COMPLETED: 'Approved step completed',
+  CASE_RECORD_SAVED: 'Case summary saved',
   'analyst.decision': 'AI proposal reviewed',
   'triage.started': 'AI investigation started',
   'triage.tool_call': 'Evidence tool used',
@@ -20,6 +21,7 @@ function eventDetail(event) {
   if (event.action === 'triage.rejected') return (event.issues || []).slice(0, 2).join(' ');
   if (event.action === 'triage.error') return [event.code, event.message].filter(Boolean).join(' · ');
   if (event.action === 'analyst.decision') return [event.decision, event.note].filter(Boolean).join(' · ');
+  if (event.action === 'CASE_RECORD_SAVED') return [event.ai_verdict || 'No AI verdict', `${event.approved_checks} approved`, `${event.rejected_checks} rejected`].join(' · ');
   return [event.decision, event.note].filter(Boolean).join(' · ');
 }
 
@@ -47,7 +49,7 @@ export default function CaseAuditSummary({ incidentId, refreshToken, showAll = f
   }, [incidentId, refreshToken, showAll, aiOnly]);
 
   return <section className="case-audit-summary" aria-label={aiOnly ? 'AI audit trail for this case' : 'Recent case activity'}>
-    <h3>{aiOnly ? 'AI audit trail for this case' : showAll ? 'Activity' : 'Recent activity'}</h3>
+    <h3>{aiOnly ? 'How the agent investigated' : showAll ? 'Activity' : 'Recent activity'}</h3>
     {activity.status === 'loading' && <p>Loading activity…</p>}
     {activity.status === 'error' && <p>Activity is unavailable while the local API is offline.</p>}
     {activity.status === 'ready' && activity.events.length === 0 && <p>{aiOnly ? 'No AI activity recorded for this case yet.' : 'No case activity recorded yet.'}</p>}

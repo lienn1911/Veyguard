@@ -1657,12 +1657,21 @@ button:focus-visible{outline-color:#a889d9}
 .ai-settings-card label input,.ai-settings-card label select{width:100%;min-height:48px;padding:11px 15px;border:1px solid #ded3ed;border-radius:11px;background:#fff;color:#30204b;font:inherit;font-size:13px;transition:border-color .18s ease,box-shadow .18s ease,background .18s ease}
 .ai-settings-card label input:hover,.ai-settings-card label select:hover{border-color:#b69ed9;background:#fdfbff}
 .ai-settings-card label input:focus,.ai-settings-card label select:focus{outline:0;border-color:#8060bb;box-shadow:0 0 0 4px #8060bb1c}
-.ai-settings-select{position:relative;display:block}
-.ai-settings-select select{appearance:none;-webkit-appearance:none;padding-right:52px;cursor:pointer}
-.ai-settings-select select:disabled{cursor:default}
-.ai-settings-chevron{position:absolute;top:50%;right:18px;width:10px;height:10px;border-right:2px solid #7254b5;border-bottom:2px solid #7254b5;transform:translateY(-70%) rotate(45deg);pointer-events:none;transition:transform .18s ease}
-.ai-settings-select:focus-within .ai-settings-chevron{transform:translateY(-40%) rotate(225deg)}
+.ai-provider-field{display:grid;gap:8px;margin-top:18px;font-size:12px;font-weight:700}
+.ai-provider-picker{position:relative}
+.ai-provider-trigger{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:52px;padding:12px 17px;border:1px solid #ded3ed;border-radius:11px;background:#fff;color:#30204b;font:inherit;font-size:13px;text-align:left;cursor:pointer;transition:border-color .18s ease,box-shadow .18s ease,background .18s ease}
+.ai-provider-trigger:hover:not(:disabled){border-color:#b69ed9;background:#fdfbff}
+.ai-provider-trigger[aria-expanded="true"],.ai-provider-trigger:focus-visible{outline:0;border-color:#8060bb;box-shadow:0 0 0 4px #8060bb1c}
+.ai-provider-trigger:disabled{opacity:.55;cursor:wait}
+.ai-provider-chevron{flex:none;width:9px;height:9px;margin-right:4px;border-right:2px solid #7254b5;border-bottom:2px solid #7254b5;transform:translateY(-2px) rotate(45deg);transition:transform .18s ease}
+.ai-provider-trigger[aria-expanded="true"] .ai-provider-chevron{transform:translateY(2px) rotate(225deg)}
+.ai-provider-menu{position:absolute;z-index:30;top:calc(100% + 8px);left:0;right:0;display:grid;gap:4px;padding:6px;border:1px solid #e2d5f0;border-radius:13px;background:#fff;box-shadow:0 18px 38px #34235424}
+.ai-provider-option{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:43px;padding:10px 12px;border:0;border-radius:8px;background:transparent;color:#49365f;font:inherit;font-size:13px;text-align:left;cursor:pointer}
+.ai-provider-option:hover,.ai-provider-option:focus-visible{outline:0;background:#f5effc;color:#4f3090}
+.ai-provider-option[aria-selected="true"]{background:#f0e8fa;color:#603ba7;font-weight:700}
+.ai-provider-check{display:grid;place-items:center;flex:none;width:20px;height:20px;border-radius:50%;background:#744eb3;color:#fff;font-size:12px}
 .ai-settings-card label small,.ai-settings-hint{color:#8a7b9a;font-size:11px;font-weight:400;line-height:1.5}
+.ai-settings-codex-help{margin:18px 0 0;padding:14px 16px;border:1px solid #e6dbf3;border-radius:11px;background:#faf7fd;color:#665579;font-size:12px;line-height:1.65}.ai-settings-codex-help code{padding:2px 5px;border-radius:4px;background:#eee7f7;color:#50358d}
 .ai-settings-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:25px}
 .ai-settings-actions button{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:44px;padding:11px 17px;border:1px solid #d9c9ed;border-radius:11px;background:#f8f4fd;color:#5e4198;font:inherit;font-size:12px;font-weight:700;box-shadow:0 2px 5px #35265f0a;cursor:pointer;transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease}
 .ai-settings-actions button:hover:not(:disabled){transform:translateY(-2px);border-color:#bda8dd;background:#f0e9fa;box-shadow:0 6px 14px #35265f17}
@@ -1672,7 +1681,7 @@ button:focus-visible{outline-color:#a889d9}
 .ai-settings-actions button:last-child svg{transition:transform .18s ease}
 .ai-settings-actions button:last-child:hover:not(:disabled) svg{transform:scale(1.08)}
 .ai-settings-actions button:disabled{opacity:.55;cursor:wait}
-@media(prefers-reduced-motion:reduce){.ai-settings-card label input,.ai-settings-card label select,.ai-settings-chevron,.ai-settings-actions button,.ai-settings-actions button:last-child svg{transition:none}}
+@media(prefers-reduced-motion:reduce){.ai-settings-card label input,.ai-provider-trigger,.ai-provider-chevron,.ai-settings-actions button,.ai-settings-actions button:last-child svg{transition:none}}
 
 /* Keep evidence and the live AI review visible together in a case investigation. */
 .case-detail-workspace{overflow:visible}
@@ -1789,9 +1798,9 @@ button:focus-visible{outline-color:#a889d9}
 
 /* Case investigation returns to a focused, sequential workflow. */
 .case-detail-workspace.incident-workbench{display:block;overflow:hidden}
-.incident-workbench .iris-case-tabs{position:relative;display:flex;min-height:87px;padding:0 24px;border-radius:15px 15px 0 0}
-.incident-workbench .iris-case-tabs::before{display:block}
-.incident-workbench .iris-case-tabs button{flex:1;flex-direction:column;gap:10px;min-width:94px;padding:20px 7px 12px;border:0;font-size:11px}
+.incident-workbench .iris-case-tabs{position:relative;display:flex;min-height:99px;padding:0 24px;border-radius:15px 15px 0 0}
+.incident-workbench .iris-case-tabs::before{display:block;top:40px}
+.incident-workbench .iris-case-tabs button{flex:1;flex-direction:column;gap:10px;min-width:94px;padding:32px 7px 12px;border:0;font-size:11px}
 .incident-workbench .iris-case-tabs button:hover{background:transparent;color:#8a7d99}
 .incident-workbench .iris-case-tabs button.complete:hover{color:#6e5796}
 .incident-workbench .iris-case-tabs button.selected:hover{color:#4b347f}
@@ -1856,9 +1865,35 @@ button:focus-visible{outline-color:#a889d9}
 .incident-step-panel>.case-audit-summary li{padding-left:13px}
 .incident-step-panel>.case-audit-summary strong{font-size:12px}
 .incident-step-panel>.case-audit-summary time,.incident-step-panel>.case-audit-summary li small{font-size:11px}
+.welcome-stats>.home-ai-check-card{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:9px}
+.home-ai-check-card>span{display:flex;align-items:center;gap:7px}
+.home-ai-check-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+.home-ai-check-actions button{display:inline-flex;align-items:center;gap:5px;padding:5px 7px;border:1px solid #ded2ee;border-radius:6px;background:#f8f5fc;color:#654898;font-size:11px;font-weight:700;cursor:pointer}
+.home-ai-check-actions button:hover{background:#eee6f8}
+.home-ai-check-actions button:focus-visible{outline:2px solid #7254b5;outline-offset:2px}
+.incident-step-panel>.case-audit-summary{margin:0 0 23px;background:#f9f6fd}
+.incident-step-panel>.case-audit-summary ol{display:flex;flex-wrap:wrap;gap:10px}
+.incident-step-panel>.case-audit-summary li{flex:1 1 155px;min-width:0;padding:10px 12px;border:1px solid #e5d9f2;border-left:3px solid #8d6bc0;border-radius:8px;background:#fff}
+.incident-step-panel>.case-audit-summary h3{font-size:17px}
+@media(max-width:760px){.incident-step-panel>.case-audit-summary ol{display:grid;grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.incident-step-panel>.case-audit-summary ol{grid-template-columns:1fr}}
 .incident-step-panel .incident-limitations{margin-top:22px}
 .incident-workbench .incident-audit{margin-top:24px}
-@media(max-width:760px){.incident-workbench .iris-case-tabs{padding:0 8px}.incident-workbench .iris-case-tabs button{min-width:88px;padding:16px 7px 10px}.incident-workbench .incident-primary{padding:14px 18px 26px}.incident-overview-facts{grid-template-columns:1fr 1fr}}
+.case-record{max-width:960px;color:#35265f}
+.case-record-intro{margin:0 0 22px;color:#756986;font-size:13px;line-height:1.55}
+.case-record-summary{display:grid;gap:13px}
+.case-record-summary>div{padding:16px 18px;border:1px solid #e9e1f1;border-radius:10px;background:#fcfaff}
+.case-record-summary small{color:#7254b5;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.case-record-summary p{margin:8px 0 0;font-size:14px;line-height:1.6}
+.case-record-summary span{display:inline-block;margin-top:9px;color:#6d578d;font-size:12px;font-weight:700}
+.case-record-notice{padding:13px 16px;border-radius:9px;background:#fff8e9;color:#765b2c;font-size:13px}
+.case-record-save{margin-top:20px;padding:11px 16px;border:0;border-radius:8px;background:#7254b5;color:#fff;font-size:13px;font-weight:750;cursor:pointer}
+.case-record-save:hover{background:#5b3d99}
+.case-record-saved{margin-top:20px;padding:18px;border:1px solid #cce5d6;border-radius:10px;background:#eef8f2;color:#255b3b}
+.case-record-saved strong{font-size:15px}
+.case-record-saved p{margin:7px 0 12px;font-size:12px}
+.case-record-saved button{padding:0;border:0;background:none;color:#256248;font-size:12px;font-weight:800;cursor:pointer}
+@media(max-width:760px){.incident-workbench .iris-case-tabs{padding:0 8px}.incident-workbench .iris-case-tabs::before{top:36px}.incident-workbench .iris-case-tabs button{min-width:88px;padding:28px 7px 10px}.incident-workbench .incident-primary{padding:14px 18px 26px}.incident-overview-facts{grid-template-columns:1fr 1fr}}
 .ai-settings-message{margin:18px 0 0;padding:11px 13px;border-radius:8px;font-size:12px}
 .ai-settings-message.success{background:#eaf6ee;color:#276b42}.ai-settings-message.error{background:#fff0f2;color:#a52d43}
 .sidebar-account{padding-top:10px}.sidebar-profile{min-height:46px;padding:3px 5px}.profile-avatar{width:36px;height:36px;font-size:12px}.profile-copy strong{font-size:12px}.profile-copy small{font-size:10px}

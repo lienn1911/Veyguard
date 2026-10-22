@@ -12,6 +12,7 @@ import os
 import json
 import re
 import tempfile
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
 from threading import RLock
@@ -39,6 +40,7 @@ PROVIDER_DEFAULT_MODELS = {
     "gemini": "gemini-2.5-flash-lite",
     "openrouter": "meta-llama/llama-3.3-70b-instruct:free",
     "mock": "mock-triage-model",
+    "codex": "default",
 }
 
 PROVIDER_KEY_VARS = {
@@ -46,9 +48,10 @@ PROVIDER_KEY_VARS = {
     "gemini": "GEMINI_API_KEY",
     "openrouter": "OPENROUTER_API_KEY",
     "mock": None,
+    "codex": None,
 }
 
-IMPLEMENTED_PROVIDERS = ("groq", "gemini", "mock")
+IMPLEMENTED_PROVIDERS = ("groq", "gemini", "codex", "mock")
 
 
 def _str(name: str, default: str = "") -> str:
@@ -95,7 +98,7 @@ def _ui_settings() -> dict:
 
 def proposed_ai_settings(provider: str, model: str, api_key: str = "") -> tuple["Settings", dict]:
     if provider not in IMPLEMENTED_PROVIDERS:
-        raise ConfigError("Choose Groq, Gemini, or Demo simulation")
+        raise ConfigError("Choose Groq, Gemini, Codex CLI, or Demo simulation")
     if provider == "mock":
         model = PROVIDER_DEFAULT_MODELS["mock"]
     if not isinstance(model, str) or not re.fullmatch(r"[A-Za-z0-9._:/-]{1,120}", model):
@@ -165,7 +168,7 @@ class Settings:
 
     @property
     def key_configured(self) -> bool:
-        return self.is_mock or bool(self.api_key)
+        return self.is_mock or (bool(shutil.which("codex")) if self.provider == "codex" else bool(self.api_key))
 
     @property
     def ready(self) -> bool:
@@ -179,6 +182,8 @@ class Settings:
                 f"Supported values: {', '.join(IMPLEMENTED_PROVIDERS)}."
             )
         if not self.key_configured:
+            if self.provider == "codex":
+                return "Codex CLI was not found. Install it and sign in with your ChatGPT account on this computer."
             var = PROVIDER_KEY_VARS.get(self.provider)
             return (
                 f"{var} is not set. Add it to .env to run live triage with "
@@ -216,6 +221,7 @@ def load_settings(*, override: dict | None = None) -> Settings:
         "gemini": _str("GEMINI_API_KEY"),
         "openrouter": _str("OPENROUTER_API_KEY"),
         "mock": "",
+        "codex": "",
     }
     api_keys.update({key: value for key, value in (ui.get("api_keys") or {}).items() if key in api_keys and isinstance(value, str)})
     models = {
@@ -223,6 +229,7 @@ def load_settings(*, override: dict | None = None) -> Settings:
         "gemini": _str("GEMINI_MODEL", PROVIDER_DEFAULT_MODELS["gemini"]),
         "openrouter": _str("OPENROUTER_MODEL", PROVIDER_DEFAULT_MODELS["openrouter"]),
         "mock": PROVIDER_DEFAULT_MODELS["mock"],
+        "codex": _str("CODEX_MODEL", PROVIDER_DEFAULT_MODELS["codex"]),
     }
     models.update({key: value for key, value in (ui.get("models") or {}).items() if key in models and isinstance(value, str)})
 

@@ -14,8 +14,7 @@ from services.ai_settings import test_connection
 from services.providers import describe_providers
 from services.data_store import Dataset
 from services.triage import TriageService
-from services.audit_log import AuditLog as AIAuditLog, summarize as summarize_ai_audit
-from services.unified_audit import append_in_transaction, entries as audit_entries, initialize as initialize_audit
+from services.unified_audit import append_in_transaction, entries as audit_entries, initialize as initialize_audit, verify as verify_audit
 from services import auth
 
 
@@ -74,10 +73,52 @@ def audit_events(incident_id):
 
 
 def saved_decisions(incident_id):
-    init_db()
+    init_db(DB_PATH)
     with closing(sqlite3.connect(DB_PATH)) as db:
         rows = db.execute('SELECT recommendation_id, decision FROM decisions WHERE incident_id = ?', (incident_id,)).fetchall()
     return {item_id: decision.lower() for item_id, decision in rows}
+
+
+def case_record(data, incident_id):
+    if not any(item['incident_id'] == incident_id for item in data['incidents']):
+        raise ValueError('Unknown case')
+    events = audit_entries(DB_PATH, incident_id=incident_id)
+    saved = next((item for item in reversed(events) if item['event'] == 'CASE_RECORD_SAVED'), None)
+    if saved:
+        return {'status': 'saved', 'record': saved['payload'], 'event_id': saved['event_id'], 'saved_at': saved['ts']}
+    decisions = saved_decisions(incident_id)
+    checks = generate_recommendations(data, incident_id)
+    ready = len(decisions) == len(checks) and all(item['id'] in decisions for item in checks)
+    assessment = ai_assessment(incident_id)
+    ai_result = assessment.get('assessment') if assessment.get('status') == 'ready' else None
+    return {'status': 'ready' if ready else 'waiting_for_review', 'record': {
+        'case_summary': case_summary(data, incident_id),
+        'ai_summary': ai_result.get('summary') if ai_result else None,
+        'ai_verdict': ai_result.get('verdict') if ai_result else None,
+        'ai_run_id': ai_result.get('run_id') if ai_result else None,
+        'ai_decision': (assessment.get('decision') or {}).get('status') if ai_result else None,
+        'approved_checks': sum(value == 'approved' for value in decisions.values()),
+        'rejected_checks': sum(value == 'rejected' for value in decisions.values()),
+        'total_checks': len(checks),
+    }}
+
+
+def save_case_record(data, incident_id, analyst):
+    if not isinstance(analyst, str) or not analyst.strip() or len(analyst.strip()) > 80:
+        raise ValueError('Analyst name is required')
+    prepared = case_record(data, incident_id)
+    if prepared['status'] == 'saved':
+        return prepared
+    if prepared['status'] != 'ready':
+        raise ValueError('Review every recommended step before saving the case record')
+    with closing(sqlite3.connect(DB_PATH, timeout=30)) as db, db:
+        db.execute('BEGIN IMMEDIATE')
+        existing = db.execute("SELECT event_id, ts, payload FROM audit_events WHERE incident_id = ? AND event = 'CASE_RECORD_SAVED' ORDER BY seq DESC LIMIT 1", (incident_id,)).fetchone()
+        if existing:
+            return {'status': 'saved', 'event_id': existing[0], 'saved_at': existing[1], 'record': json.loads(existing[2])}
+        event = append_in_transaction(db, 'CASE_RECORD_SAVED', incident_id=incident_id,
+                                      actor=f'analyst:{analyst.strip()}', payload=prepared['record'])
+    return {'status': 'saved', 'event_id': event['event_id'], 'saved_at': event['ts'], 'record': event['payload']}
 
 
 def case_summary(data, incident_id):
@@ -242,11 +283,10 @@ class Handler(BaseHTTPRequestHandler):
             if path.path == '/api/audit':
                 raw_limit = parse_qs(path.query).get('limit', ['100'])[0]
                 limit = max(1, min(int(raw_limit), 500))
-                log = AIAuditLog(load_settings().audit_path)
-                self.send_json(200, {'entries': summarize_ai_audit(log.entries(limit=limit)), 'verification': log.verify()})
+                self.send_json(200, {'entries': audit_entries(DB_PATH, limit=limit), 'verification': verify_audit(DB_PATH)})
                 return
             if path.path == '/api/audit/verify':
-                self.send_json(200, AIAuditLog(load_settings().audit_path).verify())
+                self.send_json(200, verify_audit(DB_PATH))
                 return
             if urlsplit(self.path).path == '/api/tasks':
                 self.send_json(200, {'tasks': pending_tasks()})
@@ -268,6 +308,8 @@ class Handler(BaseHTTPRequestHandler):
                 if not any(item['incident_id'] == incident_id for item in data['incidents']):
                     raise ValueError('Unknown case')
                 self.send_json(200, {'events': audit_events(incident_id)})
+            elif action == 'record':
+                self.send_json(200, case_record(data, incident_id))
             elif action == 'notes':
                 if not any(item['incident_id'] == incident_id for item in data['incidents']):
                     raise ValueError('Unknown case')
@@ -359,13 +401,18 @@ class Handler(BaseHTTPRequestHandler):
                 except Exception as error:
                     self.send_json(503, {'status': 'unavailable', 'assessment': None, 'error': {'message': str(error)}})
                 return
-            if action not in {'approval', 'assign', 'notes', 'ai-decision'}:
+            if action not in {'approval', 'assign', 'notes', 'ai-decision', 'record'}:
                 raise ValueError('Unknown endpoint')
             length = int(self.headers.get('Content-Length', '0'))
             if length < 1 or length > 16384:
                 raise ValueError('Invalid request size')
             request = json.loads(self.rfile.read(length))
             data = json.loads(DATA.read_text(encoding='utf-8'))
+            if action == 'record':
+                if request.get('analyst') != session['username']:
+                    raise ValueError('The signed-in analyst must match the reviewer')
+                self.send_json(200, save_case_record(data, incident_id, session['username']))
+                return
             if action == 'ai-decision':
                 if not any(item['incident_id'] == incident_id for item in data['incidents']):
                     raise ValueError('Unknown case')

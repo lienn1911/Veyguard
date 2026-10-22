@@ -15,6 +15,7 @@ const EVENT_LABELS = {
   'ANALYST_NOTE_ADDED': { label: 'Analyst note added', tone: 'info' },
   'INVESTIGATION_STEP_COMPLETED': { label: 'Approved step completed', tone: 'ok' },
   'CASE_ASSIGNED': { label: 'Case assigned', tone: 'info' },
+  'CASE_RECORD_SAVED': { label: 'Case summary saved', tone: 'ok' },
 };
 
 function eventDetail(entry) {
@@ -34,6 +35,8 @@ function eventDetail(entry) {
       return `${payload.code}: ${payload.message}`;
     case 'analyst.decision':
       return `${payload.decision}${payload.note ? ` — ${payload.note}` : ''}`;
+    case 'CASE_RECORD_SAVED':
+      return `${payload.case_summary || ''} ${payload.ai_summary ? `AI: ${payload.ai_summary}` : 'No live AI summary.'} ${payload.approved_checks} approved, ${payload.rejected_checks} rejected`;
     default:
       return '';
   }

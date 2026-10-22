@@ -30,6 +30,7 @@ from .base import (
 from .gemini_provider import GeminiProvider
 from .groq_provider import GroqProvider
 from .mock_provider import MockProvider
+from .codex_provider import CodexProvider
 
 __all__ = [
     "AssistantTurn",
@@ -63,7 +64,7 @@ def build_provider(
         raise ProviderNotConfigured(
             f"No adapter is implemented for AI_PROVIDER={provider!r}. "
             f"Available: {', '.join(IMPLEMENTED_PROVIDERS)}.",
-            detail="Set AI_PROVIDER to groq, gemini, or mock.",
+            detail="Set AI_PROVIDER to groq, gemini, codex, or mock.",
         )
 
     if provider == "mock":
@@ -92,12 +93,23 @@ def build_provider(
             temperature=settings.temperature,
             transport=transport,
         )
+    if provider == "codex":
+        return CodexProvider(model=settings.model, timeout=max(settings.request_timeout, 120.0))
     raise ProviderNotConfigured(f"Unhandled provider {provider!r}")  # pragma: no cover
 
 
 def describe_providers(settings: Settings) -> list[dict]:
     """Static capability matrix for the settings/health UI."""
     return [
+        {
+            "id": "codex",
+            "label": "Codex CLI",
+            "implemented": True,
+            "default_model": "default",
+            "selected": settings.provider == "codex",
+            "key_var": None,
+            "key_configured": settings.provider == "codex" and settings.key_configured,
+        },
         {
             "id": "groq",
             "label": "GroqCloud",

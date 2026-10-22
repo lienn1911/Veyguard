@@ -7,8 +7,8 @@ Run this after adding a key, before trusting a live demo::
 It verifies, in order:
 
 1. configuration loads and the provider is implemented,
-2. the API key is accepted (never printed),
-3. the configured model id exists on the account,
+2. the API key or Codex CLI sign-in is accepted (never printed),
+3. the configured API model id exists on the account (Codex uses a live probe),
 4. the model actually emits a tool call for the investigation tool schema.
 
 Exit code 0 means live triage is ready. Anything else prints the reason.
@@ -87,11 +87,11 @@ def run() -> int:
         return 0 if ok else 1
 
     if not settings.key_configured:
-        print(f"[FAIL] {settings.provider}: no API key configured ({settings.blocking_reason()})")
+        print(f"[FAIL] {settings.provider}: {settings.blocking_reason()}")
         return 2
 
     try:
-        models = _list_models(settings.provider, settings.api_key or "")
+        models = [] if settings.provider == "codex" else _list_models(settings.provider, settings.api_key or "")
     except httpx.HTTPError as exc:
         print(f"[FAIL] could not reach the {settings.provider} API: {exc}")
         return 3
@@ -121,7 +121,7 @@ def run() -> int:
                 }
             ],
             PING_TOOL,
-            timeout=30.0,
+            timeout=120.0 if settings.provider == "codex" else 30.0,
         )
     except ProviderError as exc:
         print(f"[FAIL] tool-calling probe failed: {exc.code} {exc.message}")

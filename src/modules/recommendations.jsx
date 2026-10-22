@@ -70,8 +70,8 @@ export default function NextSteps({ incidentId, analystName, onEvidence, onTimel
           <button type="button" disabled={submitted} className={decisions[item.id] === 'rejected' ? 'selected' : ''} aria-pressed={decisions[item.id] === 'rejected'} onClick={() => setDecisions({ ...decisions, [item.id]: 'rejected' })}>Reject</button>
         </div>
       </div>)}</div>
-      {!submitted && <div className="review-approval"><label htmlFor="analyst-name">Reviewed by</label><input id="analyst-name" value={analystName || ''} readOnly /><button type="button" disabled={!complete || !analystName || saving} onClick={submit}>{saving ? 'Saving…' : 'Finish review'}</button></div>}
-      {submitted && <p className="process-note" role="status">Review saved.</p>}
+      {!submitted && <div className="review-approval"><label htmlFor="analyst-name">Reviewed by</label><input id="analyst-name" value={analystName || ''} readOnly /><button type="button" disabled={!complete || !analystName || saving} onClick={submit}>{saving ? 'Saving…' : 'Save step decisions'}</button></div>}
+      {submitted && <p className="process-note" role="status">Step decisions saved. Continue to Case record to save the final summary.</p>}
       {note && <div className="case-note"><strong>Case note draft</strong><p>{note.summary}</p><ul>{note.approved_checks.map((item) => <li key={item.id}>{item.text}</li>)}</ul><small>Needs Review · Draft only</small></div>}
       {submitted && !note && <p className="process-note">All checks were rejected. No case note was drafted.</p>}
     </>}

@@ -5,9 +5,9 @@ import { TriagePreview } from './WorkflowPreview.jsx';
 import NextSteps from '../modules/recommendations.jsx';
 import CaseNotes from './CaseNotes.jsx';
 import CaseAuditSummary from './CaseAuditSummary.jsx';
+import CaseRecord from './CaseRecord.jsx';
 import data from '../real-alerts.json';
 import timelineData from '../real-timelines.json';
-import { apiFetch } from '../apiFetch.js';
 import { formatConfidence } from '../lib/format.js';
 
 const shortTime = (value) => value?.replace('T', ' ').slice(0, 16) || '—';
@@ -15,8 +15,7 @@ const minuteOf = (value) => value?.slice(0, 16);
 const formatRuleBasis = (value) => value?.replace(/\b\d{4,}\b/g, (number) => Number(number).toLocaleString('en-US'));
 const caseName = (type) => type === 'PortScan' ? 'Many ports checked' : type === 'DDoS' ? 'Distributed traffic surge' : type === 'DoS' ? 'Heavy network traffic' : type === 'NeedsReview' ? 'Unclassified activity · needs review' : type || 'Unclassified activity';
 const aiVerdicts = new Set(['Likely Attack', 'Likely Benign', 'Needs Review']);
-const assessmentRuns = new Map();
-const caseSteps = ['Overview', 'Timeline', 'Evidence', 'AI check', 'Recommendations'];
+const caseSteps = ['Overview', 'Timeline', 'Evidence', 'AI check', 'Recommendations', 'Case record'];
 const StepArrow = ({ back = false }) => <span className={`case-step-arrow${back ? ' back' : ''}`} aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12h15m-6-6 6 6-6 6" /></svg></span>;
 
 function caseAssessment(incident, response) {
@@ -32,7 +31,7 @@ function caseAssessment(incident, response) {
   return { label: result.verdict, tone, confidence: typeof result.confidence === 'number' && result.confidence >= 0 && result.confidence <= 1 ? `${Math.round(result.confidence * 100)}%` : typeof result.confidence === 'string' ? result.confidence : null };
 }
 
-export default function AlertReview({ mode, selectedId, onSelectCase, onCases, username }) {
+export default function AlertReview({ mode, selectedId, onSelectCase, onCases, onAudit, username }) {
   const [query, setQuery] = useState('');
   const [step, setStep] = useState(0);
   const [selectedEvidence, setSelectedEvidence] = useState(null);
@@ -67,40 +66,20 @@ export default function AlertReview({ mode, selectedId, onSelectCase, onCases, u
     if (mode === 'cases' || !incident) return;
     let active = true;
     const endpoint = `/api/cases/${encodeURIComponent(selectedId)}/ai-assessment`;
-    async function load(runIfNeeded = false) {
+    async function load() {
       try {
         const response = await fetch(endpoint);
         const payload = await response.json();
         if (!response.ok) throw new Error(payload.error?.message || payload.error || 'AI status unavailable');
         if (!active) return;
-        if (runIfNeeded && payload.status === 'pending' && payload.mode === 'live') {
-          setOverviewAi({ status: 'running' });
-          let run = assessmentRuns.get(selectedId);
-          if (!run) {
-            run = (async () => {
-              try {
-                const runResponse = await apiFetch(endpoint, { method: 'POST' });
-                const result = await runResponse.json();
-                if (!runResponse.ok) throw new Error(result.error?.message || result.error || 'AI analysis unavailable');
-                return result;
-              } finally {
-                assessmentRuns.delete(selectedId);
-              }
-            })();
-            assessmentRuns.set(selectedId, run);
-          }
-          const result = await run;
-          if (active) { setOverviewAi(result); window.dispatchEvent(new CustomEvent('case-activity-updated', { detail: selectedId })); }
-        } else {
-          setOverviewAi(payload);
-        }
+        setOverviewAi(payload);
       } catch (error) {
         if (active) setOverviewAi({ status: 'unavailable', error: error.message });
       }
     }
     setOverviewAi({ status: 'loading' });
-    load(true);
-    const refresh = (event) => { if (event.detail === selectedId) load(false); };
+    load();
+    const refresh = (event) => { if (event.detail === selectedId) load(); };
     window.addEventListener('case-activity-updated', refresh);
     return () => { active = false; window.removeEventListener('case-activity-updated', refresh); };
   }, [mode, selectedId]);
@@ -230,8 +209,9 @@ export default function AlertReview({ mode, selectedId, onSelectCase, onCases, u
           <div className="incident-evidence-list">{evidenceTab === 'alerts' ? matchingAlerts.map((alert) => <React.Fragment key={alert.alert_id}><button type="button" className={`incident-evidence-row${selectedEvidence === alert.alert_id ? ' selected' : ''}`} onClick={() => setSelectedEvidence(selectedEvidence === alert.alert_id ? null : alert.alert_id)} aria-expanded={selectedEvidence === alert.alert_id}><span className={`alert-type-chip ${alert.type.toLowerCase()}`}>{alert.type}</span><span><strong>{alert.alert_id}</strong><small>{shortTime(alert.timestamp)} UTC · {alert.flow_count.toLocaleString()} flow records</small></span><Icon name="arrow" size={15} /></button>{selectedEvidence === alert.alert_id && evidencePanel}</React.Fragment>) : matchingFlows.map((flow) => <React.Fragment key={flow.flow_id}><button type="button" className={`incident-evidence-row${selectedEvidence === flow.flow_id ? ' selected' : ''}`} onClick={() => setSelectedEvidence(selectedEvidence === flow.flow_id ? null : flow.flow_id)} aria-expanded={selectedEvidence === flow.flow_id}><span className="flow-symbol"><Icon name="flow" size={16} /></span><span><strong className="mono">{flow.flow_id}</strong><small>{shortTime(flow.timestamp)} UTC · {flow.source_ip}:{flow.source_port} → {flow.destination_ip}:{flow.destination_port}</small></span><Icon name="arrow" size={15} /></button>{selectedEvidence === flow.flow_id && evidencePanel}</React.Fragment>)}{(evidenceTab === 'alerts' ? matchingAlerts.length : matchingFlows.length) === 0 && <p className="incident-evidence-empty">No matching records in this view.</p>}</div>
         </section>}
         {step === 2 && <CaseNotes incidentId={incident.incident_id} username={username} evidenceIds={[...incident.alert_ids, ...incident.evidence_sample_ids]} onEvidence={openEvidence} />}
-        {step === 3 && <section className="incident-section incident-step-panel" aria-label="AI check"><TriagePreview incidentId={incident.incident_id} alerts={alerts} flows={flows} onEvidence={openEvidence} analystName={username} autoRunning={overviewAi.status === 'running'} refreshToken={`${overviewAi.status}:${overviewAi.run_id || ''}`} /><CaseAuditSummary incidentId={incident.incident_id} refreshToken={activityRefresh} aiOnly /><section className="incident-limitations"><h2>Limits & possible false positives</h2><ul><li>Only rule-matched minutes appear in the chart; normal traffic is not shown.</li><li>Flow records are linked samples, not the complete traffic dataset.</li><li>High traffic can also come from legitimate activity such as backups or load tests.</li></ul></section></section>}
+        {step === 3 && <section className="incident-section incident-step-panel" aria-label="AI check"><CaseAuditSummary incidentId={incident.incident_id} refreshToken={activityRefresh} aiOnly /><TriagePreview incidentId={incident.incident_id} alerts={alerts} flows={flows} onEvidence={openEvidence} analystName={username} autoRunning={overviewAi.status === 'running'} refreshToken={`${overviewAi.status}:${overviewAi.run_id || ''}`} /><section className="incident-limitations"><h2>Limits & possible false positives</h2><ul><li>Only rule-matched minutes appear in the chart; normal traffic is not shown.</li><li>Flow records are linked samples, not the complete traffic dataset.</li><li>High traffic can also come from legitimate activity such as backups or load tests.</li></ul></section></section>}
         {step === 4 && <section className="incident-section incident-step-panel" aria-labelledby="incident-recommendations"><div className="incident-section-heading"><h2 id="incident-recommendations">Recommendations</h2></div><NextSteps incidentId={incident.incident_id} analystName={username} onEvidence={openEvidence} onTimeline={() => setStep(1)} onReviewed={refreshQueue} /></section>}
+        {step === 5 && <section className="incident-section incident-step-panel"><CaseRecord incidentId={incident.incident_id} analystName={username} onAudit={onAudit} /></section>}
         <div className="case-step-actions"><button type="button" onClick={step === 0 ? onCases : () => setStep(step - 1)}><StepArrow back />{step === 0 ? 'Cases' : caseSteps[step - 1]}</button><span>{step + 1} / {caseSteps.length}</span><button type="button" onClick={step === caseSteps.length - 1 ? onCases : () => setStep(step + 1)}>{step === caseSteps.length - 1 ? 'Cases' : caseSteps[step + 1]}<StepArrow /></button></div>
       </div>
     </div>

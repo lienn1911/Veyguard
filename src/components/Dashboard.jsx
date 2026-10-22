@@ -73,7 +73,7 @@ export default function Dashboard({ onReview, onAlerts, username }) {
       <div className="welcome-stats">
         <button onClick={() => onReview()}><strong>{awaitingApproval ?? '—'}</strong><span className="blue"><Icon name="layers" size={15} /> AWAITING APPROVAL</span></button>
         <div><strong>{taskLoading || taskError ? '—' : tasks.length}</strong><span className="green"><Icon name="check" size={15} /> APPROVED STEPS</span></div>
-        <button onClick={() => onReview()}><strong>{aiReady ?? '—'}</strong><span className="blue"><Icon name="alert" size={15} /> AI READY FOR REVIEW</span></button>
+        <div className="home-ai-check-card"><span className="blue"><Icon name="alert" size={15} /> AI READY FOR REVIEW</span><strong>{aiReady ?? '—'}</strong><div className="home-ai-check-actions"><button type="button" onClick={() => onReview()}>AI check <Icon name="arrow" size={13} /></button></div></div>
       </div>
     </section>
     <section className="home-card home-attention-card">

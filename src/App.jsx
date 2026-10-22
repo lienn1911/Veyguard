@@ -185,7 +185,7 @@ export default function App() {
           ) : page === 'alerts' ? (
             <AlertQueue onOpenCase={openCase} selectedAlertId={selectedAlertId} />
           ) : page === 'review' || page === 'cases' ? (
-            <AlertReview mode={page} selectedId={selectedCaseId} onSelectCase={openCase} onCases={() => selectPage('cases')} username={username} />
+            <AlertReview mode={page} selectedId={selectedCaseId} onSelectCase={openCase} onCases={() => selectPage('cases')} onAudit={() => selectPage('audit')} username={username} />
           ) : (
             <Dashboard onReview={(id) => id ? openCase(id) : selectPage('cases')} onAlerts={(alert) => alert ? openAlert(alert) : selectPage('alerts')} username={username} />
           )}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { apiFetch } from '../apiFetch.js';
 import Icon from './Icon.jsx';
 
@@ -12,6 +12,17 @@ export default function AISettings() {
   const [busy, setBusy] = useState('');
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
+  const [providerOpen, setProviderOpen] = useState(false);
+  const providerMenuRef = useRef(null);
+
+  useEffect(() => {
+    if (!providerOpen) return undefined;
+    const closeOutside = (event) => {
+      if (!providerMenuRef.current?.contains(event.target)) setProviderOpen(false);
+    };
+    document.addEventListener('pointerdown', closeOutside);
+    return () => document.removeEventListener('pointerdown', closeOutside);
+  }, [providerOpen]);
 
   useEffect(() => {
     fetch(endpoint).then(async (response) => {
@@ -25,6 +36,8 @@ export default function AISettings() {
   }, []);
 
   function changeProvider(next) {
+    setProviderOpen(false);
+    requestAnimationFrame(() => providerMenuRef.current?.querySelector('.ai-provider-trigger')?.focus());
     setProvider(next);
     setModel(config.providers.find((item) => item.id === next)?.default_model || '');
     setApiKey('');
@@ -59,13 +72,29 @@ export default function AISettings() {
   }
 
   const selected = config?.providers.find((item) => item.id === provider);
+  function handleProviderKeyDown(event) {
+    if (event.key === 'Escape') {
+      setProviderOpen(false);
+      providerMenuRef.current?.querySelector('.ai-provider-trigger')?.focus();
+    } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      if (!providerOpen) {
+        setProviderOpen(true);
+        requestAnimationFrame(() => providerMenuRef.current?.querySelector('[aria-selected="true"]')?.focus());
+      } else {
+        const options = [...providerMenuRef.current.querySelectorAll('.ai-provider-option')];
+        const current = options.indexOf(document.activeElement);
+        options[(current + (event.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length]?.focus();
+      }
+    }
+  }
   return <section className="ai-settings-page">
     <header><h1>AI settings</h1><p>Connect a model for evidence-based Case assessments.</p></header>
     <div className="ai-settings-card">
       <div className="ai-settings-status"><div><strong>Current connection</strong><p>{config ? config.current.mode === 'live' ? `${config.current.provider.toUpperCase()} · ${config.current.model}` : 'No live model connected' : 'Loading…'}</p></div><span className={config?.current.ready && config?.current.mode === 'live' ? 'ready' : ''}>{config?.current.ready && config?.current.mode === 'live' ? 'Configured' : 'Not configured'}</span></div>
-      <label>AI provider<span className="ai-settings-select"><select value={provider} onChange={(event) => changeProvider(event.target.value)} disabled={!config || !!busy}>{config?.providers.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select><span className="ai-settings-chevron" aria-hidden="true" /></span></label>
-      <label>Model ID<input value={model} onChange={(event) => setModel(event.target.value)} disabled={!config || !!busy || provider === 'mock'} autoComplete="off" /></label>
-      <label>API key<input type="password" value={apiKey} onChange={(event) => setApiKey(event.target.value)} disabled={!config || !!busy} placeholder={selected?.key_configured ? 'Key saved · leave blank to keep it' : 'Paste your API key'} autoComplete="new-password" /><small>{selected?.key_configured ? 'A key is already configured. It is never shown again.' : 'The key is sent only to your local SOC Desk API and saved in the Git-ignored data folder.'}</small></label>
+      <div className="ai-provider-field"><span id="ai-provider-label">AI provider</span><div className="ai-provider-picker" ref={providerMenuRef} onKeyDown={handleProviderKeyDown}><button type="button" className="ai-provider-trigger" aria-labelledby="ai-provider-label ai-provider-value" aria-haspopup="listbox" aria-expanded={providerOpen} aria-controls="ai-provider-options" onClick={() => setProviderOpen((open) => !open)} disabled={!config || !!busy}><span id="ai-provider-value">{selected?.label || 'Choose a provider'}</span><span className="ai-provider-chevron" aria-hidden="true" /></button>{providerOpen && <div id="ai-provider-options" className="ai-provider-menu" role="listbox" aria-labelledby="ai-provider-label">{config.providers.map((item) => <button key={item.id} type="button" className="ai-provider-option" role="option" aria-selected={item.id === provider} onClick={() => changeProvider(item.id)}><span>{item.label}</span>{item.id === provider && <span className="ai-provider-check" aria-hidden="true">✓</span>}</button>)}</div>}</div></div>
+      <label>Model ID<input value={model} onChange={(event) => setModel(event.target.value)} disabled={!config || !!busy || provider === 'mock'} autoComplete="off" />{provider === 'codex' && <small>Keep “default” to use the Codex CLI default model, or enter a model available on your account.</small>}</label>
+      {provider === 'codex' ? <p className="ai-settings-codex-help">On the computer running the SOC Desk API, install Codex CLI with <code>npm install -g @openai/codex</code>, then run <code>codex login</code>. Click <strong>Test connection</strong>, then <strong>Save settings</strong>. Testing and AI checks use your Codex allowance; completed case records remain saved locally.</p> : <label>API key<input type="password" value={apiKey} onChange={(event) => setApiKey(event.target.value)} disabled={!config || !!busy} placeholder={selected?.key_configured ? 'Key saved · leave blank to keep it' : 'Paste your API key'} autoComplete="new-password" /><small>{selected?.key_configured ? 'A key is already configured. It is never shown again.' : 'The key is sent only to your local SOC Desk API and saved in the Git-ignored data folder.'}</small></label>}
       <div className="ai-settings-actions"><button type="button" onClick={() => submit('test')} disabled={!config || !!busy}><Icon name="refresh" size={16} /><span>{busy === 'test' ? 'Testing…' : 'Test connection'}</span></button><button type="button" onClick={() => submit('save')} disabled={!config || !!busy}><Icon name="save" size={16} /><span>{busy === 'save' ? 'Saving…' : 'Save settings'}</span></button></div>
       {notice && <p className="ai-settings-message success" role="status">{notice}</p>}
       {error && <p className="ai-settings-message error" role="alert">{error}</p>}
