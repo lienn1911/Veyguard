@@ -11,7 +11,7 @@ import zipfile
 from collections import Counter
 from pathlib import Path
 
-from services.alerts import DEFAULT_MEMBERS, RULE_THRESHOLDS, classify_group, mark_distributed_floods, read_flow
+from services.alerts import DEFAULT_MEMBERS, RULE_THRESHOLDS, classify_group, needs_review_candidate, read_flow
 
 
 def expected_type(labels):
@@ -26,6 +26,8 @@ def expected_type(labels):
             kinds.add('DDoS')
         elif normalized.startswith('dos'):
             kinds.add('DoS')
+        elif normalized in ('ftp-patator', 'ssh-patator'):
+            kinds.add('BruteForce')
         else:
             kinds.add('Other attack')
     return next(iter(kinds)) if len(kinds) == 1 else 'Mixed'
@@ -36,22 +38,23 @@ def evaluate_archive(path):
     with zipfile.ZipFile(path) as archive:
         members = [name for name in archive.namelist() if name.endswith('.csv') and any(part in name for part in DEFAULT_MEMBERS)]
         if len(members) != len(DEFAULT_MEMBERS):
-            raise ValueError('Expected all three CIC-IDS2017 flow CSVs; a preview cannot measure missed detections')
+            raise ValueError('Expected Monday, Tuesday, Wednesday, and Friday PortScan flow CSVs; a preview cannot measure missed detections')
         for member in members:
             source_file = Path(member).name
             reader = csv.DictReader(io.TextIOWrapper(archive.open(member), encoding='utf-8-sig', newline=''))
             for row_number, row in enumerate(reader, start=2):
                 flow = read_flow(row, source_file, row_number)
                 key = (source_file, flow['source_ip'], flow['destination_ip'], flow['timestamp'][:16])
-                group = groups.setdefault(key, {'count': 0, 'packets': 0, 'ports': set(), 'source_ports': set(), 'labels': Counter()})
+                group = groups.setdefault(key, {'count': 0, 'packets': 0, 'ports': set(),
+                                                'source_ports': set(), 'port_flow_counts': Counter(), 'labels': Counter()})
                 group['count'] += 1
                 group['packets'] += flow['packet_count']
                 group['ports'].add(flow['destination_port'])
+                group['port_flow_counts'][flow['destination_port']] += 1
                 group['source_ports'].add(flow['source_port'])
                 group['labels'][flow['dataset_label']] += 1
 
     matches = [{'key': key, 'type': classify_group(group)} for key, group in groups.items()]
-    mark_distributed_floods(matches)
     predictions = {item['key']: item['type'] for item in matches}
     confusion = Counter()
     excluded = Counter()
@@ -62,7 +65,7 @@ def evaluate_archive(path):
         else:
             confusion[(truth, predictions[key] or 'No alert')] += 1
     per_type = {}
-    for kind in ('PortScan', 'DoS', 'DDoS'):
+    for kind in ('PortScan', 'DoS', 'BruteForce'):
         tp = confusion[(kind, kind)]
         fp = sum(count for (truth, predicted), count in confusion.items() if predicted == kind and truth != kind)
         fn = sum(count for (truth, predicted), count in confusion.items() if truth == kind and predicted != kind)
@@ -72,7 +75,7 @@ def evaluate_archive(path):
                           'missed_without_alert': confusion[(kind, 'No alert')],
                           'precision': round(tp / (tp + fp), 4) if tp + fp else None,
                           'recall': round(tp / (tp + fn), 4) if tp + fn else None}
-    attack_types = {'PortScan', 'DoS', 'DDoS'}
+    attack_types = {'PortScan', 'DoS', 'BruteForce'}
     attack_tp = sum(count for (truth, predicted), count in confusion.items()
                     if truth in attack_types and predicted in attack_types)
     attack_fp = sum(count for (truth, predicted), count in confusion.items()
@@ -85,10 +88,13 @@ def evaluate_archive(path):
         'recall': round(attack_tp / (attack_tp + attack_fn), 4) if attack_tp + attack_fn else None,
         'detected_by_label': {kind: sum(count for (truth, predicted), count in confusion.items()
                                         if truth == kind and predicted in attack_types)
-                              for kind in ('PortScan', 'DoS', 'DDoS')},
+                              for kind in ('PortScan', 'DoS', 'BruteForce')},
     }
     return {'unit': 'source/destination/minute groups', 'files_evaluated': [Path(member).name for member in members],
             'rules': dict(RULE_THRESHOLDS), 'groups_scanned': len(groups),
+            'monday_review_candidates': sum(1 for key, group in groups.items()
+                                            if key[0].startswith('Monday-') and not classify_group(group)
+                                            and needs_review_candidate(group)),
             'excluded_ambiguous_groups': dict(excluded), 'per_type': per_type,
             'attack_detection': attack_detection,
             'confusion': [{'actual': actual, 'predicted': predicted, 'groups': count}

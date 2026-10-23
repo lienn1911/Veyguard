@@ -362,7 +362,7 @@ export default function AuditLog({ mode, refreshToken }) {
             </div>
           </div>
 
-          {state.entries.length === 0 ? (
+          {groups.length === 0 ? (
             <div className="empty">
               <Icon name="audit" size={20} />
               <p>No audit events yet. Run an AI triage investigation to populate the trail.</p>

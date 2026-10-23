@@ -48,7 +48,7 @@ export function bundledDataset() {
       timelines: timelinesPayload.timelines.length,
     },
     triage_summary: {},
-    attack_categories: ['PortScan', 'DoS', 'DDoS'],
+    attack_categories: ['PortScan', 'DoS', 'BruteForce'],
     source: 'bundled',
   };
 }

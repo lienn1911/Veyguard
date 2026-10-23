@@ -26,7 +26,9 @@ class ToolCompaction(unittest.TestCase):
                                  [item['flow_count'] for item in expected])
                 self.assertEqual([item['rule_basis'] for item in related.data['alerts']],
                                  [item['rule_basis'] for item in expected])
-                self.assertLess(len(related.as_text()), 8000)
+                # Long investigation windows contain 61 distinct alerts;
+                # retain their citable IDs while bounding growth per alert.
+                self.assertLess(len(related.as_text()), max(8000, 250 * len(expected)))
                 statistics = registry.execute('get_incident_statistics', {'incident_id': incident_id})
                 self.assertEqual(statistics.data['group_totals']['flows'],
                                  self.dataset.incidents[incident_id]['flow_count'])

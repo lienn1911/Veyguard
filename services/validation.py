@@ -22,6 +22,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from .providers.base import VERDICTS
+from .guardrails import ALLOWED_ACTIONS
 
 MAX_EVIDENCE_IDS = 12
 MAX_REASON_CHARS = 1600
@@ -198,6 +199,7 @@ def validate_proposal(
     evidence_numbers: set[float],
     tool_call_count: int,
     canonical_numbers: set[float] | None = None,
+    seen_evidence_ids: set[str] | None = None,
 ) -> ValidationReport:
     issues: list[Issue] = []
 
@@ -317,9 +319,35 @@ def validate_proposal(
             )
 
     # --- statistics and investigation depth -------------------------------
+    next_steps: list[dict] = []
+    raw_steps = payload.get("next_steps", [])
+    if not isinstance(raw_steps, list) or len(raw_steps) > 2:
+        issues.append(Issue("INVALID_NEXT_STEPS", "next_steps must contain at most two proposed investigation steps."))
+        raw_steps = []
+    seen_actions: set[str] = set()
+    for item in raw_steps:
+        if not isinstance(item, dict):
+            issues.append(Issue("INVALID_NEXT_STEP", "A proposed investigation step must be an object."))
+            continue
+        action = item.get("action")
+        rationale = item.get("reason")
+        step_ids = item.get("evidence_ids")
+        if not isinstance(action, str) or action not in ALLOWED_ACTIONS or action in seen_actions:
+            issues.append(Issue("UNSAFE_NEXT_STEP", "A proposed investigation step is not allowed or is duplicated."))
+            continue
+        if not isinstance(rationale, str) or len(rationale.strip()) < 12 or len(rationale) > 600:
+            issues.append(Issue("INVALID_NEXT_STEP", "A proposed investigation step needs a concise reason."))
+            continue
+        if not isinstance(step_ids, list) or not step_ids or any(not isinstance(value, str) or value not in evidence_ids or (seen_evidence_ids is not None and value not in seen_evidence_ids) for value in step_ids):
+            issues.append(Issue("UNKNOWN_EVIDENCE", "A proposed investigation step must cite evidence returned by a tool for this incident."))
+            continue
+        seen_actions.add(action)
+        next_steps.append({"action": action, "reason": re.sub(r"\s+", " ", rationale).strip(), "evidence_ids": list(dict.fromkeys(step_ids))[:MAX_EVIDENCE_IDS]})
+
     claim_text = " ".join(
         [reason, payload.get("limitations") or ""]
         + [finding["observation"] for finding in findings]
+        + [step["reason"] for step in next_steps]
     )
     issues.extend(check_numeric_claims(claim_text, evidence_numbers, canonical_numbers))
 
@@ -345,6 +373,7 @@ def validate_proposal(
         "reason": reason,
         "evidence_ids": cited,
         "findings": findings,
+        "next_steps": next_steps,
         "limitations": (payload.get("limitations") or "")[:600]
         if isinstance(payload.get("limitations"), str)
         else "",

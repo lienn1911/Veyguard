@@ -1,4 +1,5 @@
 import json
+import os
 import secrets
 import sqlite3
 from contextlib import closing
@@ -7,7 +8,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlsplit
 
-from services.recommendations import DB_PATH, generate_recommendations, get_case_note, init_db, log_event, save_decision
+from services.recommendations import DB_PATH, annotate_ai_next_steps, generate_recommendations, get_case_note, init_db, log_event, save_decision
 from services.case_notes import add_note, list_notes
 from services.config import ConfigError, load_settings, proposed_ai_settings, save_ai_settings
 from services.ai_settings import test_connection
@@ -63,6 +64,7 @@ def ai_assessment(incident_id):
     return {'status': 'ready', 'mode': service.status()['mode'], **run, 'decision': (stored.get('decision') or {'status': 'pending'}), 'assessment': {
         'verdict': latest['verdict'], 'confidence': latest['confidence'], 'summary': latest['reason'],
         'evidence_ids': latest['evidence_ids'], 'findings': latest['findings'], 'limitations': latest['limitations'],
+        'next_steps': (latest.get('proposal') or {}).get('next_steps') or [],
         'requires_confirmation': latest['requires_confirmation'], 'run_id': latest['run_id'],
     }}
 
@@ -373,7 +375,10 @@ class Handler(BaseHTTPRequestHandler):
 
     def allowed_origin(self):
         origin = self.headers.get('Origin')
-        return not origin or origin in {'http://127.0.0.1:5173', 'http://127.0.0.1:5174', 'http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:8765'}
+        allowed = {'http://127.0.0.1:5173', 'http://127.0.0.1:5174', 'http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:8765'}
+        extra = os.environ.get('SOC_TRIAGE_EXTRA_ORIGINS', '')
+        allowed.update(o.strip() for o in extra.split(',') if o.strip())
+        return not origin or origin in allowed
 
     def require_session(self):
         session = auth.current_session(self.headers.get('Cookie'))
@@ -422,12 +427,15 @@ class Handler(BaseHTTPRequestHandler):
             data = json.loads(DATA.read_text(encoding='utf-8'))
             if action == 'recommendations':
                 recommendations = generate_recommendations(data, incident_id)
+                assessment = ai_assessment(incident_id)
+                ai_ready = assessment.get('status') == 'ready'
+                presented = annotate_ai_next_steps(recommendations, (assessment.get('assessment') or {}).get('next_steps') if ai_ready else [])
                 decisions = saved_decisions(incident_id)
                 note = get_case_note(incident_id) if 'approved' in decisions.values() else None
                 if note:
                     note['summary'] = case_summary(data, incident_id)
                     note['approved_checks'] = [{'id': item['id'], 'text': item['description']} for item in recommendations if decisions.get(item['id']) == 'approved']
-                self.send_json(200, {'incident_id': incident_id, 'checks': [{'id': item['id'], 'action': item['action'], 'text': item['description'], 'evidence_ids': item['evidence_ids']} for item in recommendations], 'decisions': decisions, 'note': note})
+                self.send_json(200, {'incident_id': incident_id, 'ai_status': assessment.get('status'), 'checks': [{'id': item['id'], 'action': item['action'], 'text': item['description'], 'evidence_ids': item['evidence_ids'], 'ai_suggested': item['ai_suggested'], 'ai_reason': item.get('ai_reason'), 'ai_evidence_ids': item.get('ai_evidence_ids', [])} for item in presented], 'decisions': decisions, 'note': note})
             elif action == 'audit':
                 if not any(item['incident_id'] == incident_id for item in data['incidents']):
                     raise ValueError('Unknown case')
