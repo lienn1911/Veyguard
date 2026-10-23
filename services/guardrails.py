@@ -1,4 +1,4 @@
-PROTECTED_ALERTS = {"PortScan", "DoS", "DDoS"}
+PROTECTED_ALERTS = {"PortScan", "DoS", "DDoS", "BruteForce"}
 
 VALID_VERDICTS = {
     "Likely Attack",
@@ -131,7 +131,7 @@ def validate_guardrails(result, incident_id, proposal):
         alert["type"] for alert in incident_alerts
     }
 
-    if alert_types - (PROTECTED_ALERTS | {"Benign"}):
+    if alert_types - (PROTECTED_ALERTS | {"Benign", "NeedsReview"}):
         blocked.append("Unknown alert type")
 
     if (

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Icon from './Icon.jsx';
 import data from '../real-alerts.json';
 
-const alertTitle = (alert) => alert.type === 'PortScan' ? 'Many ports checked' : alert.type === 'DDoS' ? 'Distributed traffic surge' : alert.type === 'DoS' ? 'Heavy network traffic' : alert.type === 'NeedsReview' ? 'Unclassified activity · needs review' : alert.type;
+const alertTitle = (alert) => alert.type === 'PortScan' ? 'Many ports checked' : alert.type === 'BruteForce' ? 'Repeated login-port connections' : alert.type === 'DDoS' ? 'Distributed traffic surge' : alert.type === 'DoS' ? 'Heavy network traffic' : alert.type === 'NeedsReview' ? 'Unclassified activity · needs review' : alert.type;
 const time = (value) => value.replace('T', ' ').slice(0, 16);
 const dates = [...new Set(data.alerts.map((alert) => alert.timestamp.slice(0, 10)))].sort();
 const alertTypes = ['All', ...new Set(data.alerts.map((alert) => alert.type))];

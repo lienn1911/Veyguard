@@ -344,6 +344,18 @@ class TriageService:
     # ------------------------------------------------------------- internals
     def _validate(self, payload: dict, incident_id: str, trace: Trace) -> ValidationReport:
         evidence_numbers = collect_numbers(trace.payloads)
+        known_ids = set(self.dataset.evidence_ids(incident_id))
+        seen_ids: set[str] = set()
+        def collect_seen(value):
+            if isinstance(value, dict):
+                for nested in value.values():
+                    collect_seen(nested)
+            elif isinstance(value, list):
+                for nested in value:
+                    collect_seen(nested)
+            elif isinstance(value, str) and value in known_ids:
+                seen_ids.add(value)
+        collect_seen(trace.payloads)
         return validate_proposal(
             payload,
             incident_id=incident_id,
@@ -351,6 +363,7 @@ class TriageService:
             evidence_numbers=evidence_numbers,
             canonical_numbers=self.dataset.canonical_statistic_numbers(incident_id),
             tool_call_count=trace.executed,
+            seen_evidence_ids=seen_ids,
         )
 
     def _base_record(
@@ -405,6 +418,7 @@ class TriageService:
             "reason": proposal["reason"],
             "evidence_ids": proposal["evidence_ids"],
             "findings": proposal["findings"],
+            "next_steps": proposal["next_steps"],
             "limitations": proposal["limitations"],
             "proposal": proposal,
             "error": None,
@@ -423,6 +437,7 @@ class TriageService:
                 "verdict": proposal["verdict"],
                 "confidence": proposal["confidence"],
                 "evidence_ids": proposal["evidence_ids"],
+                "next_steps": proposal["next_steps"],
                 "requires_confirmation": guardrail.requires_confirmation,
                 "guardrail_source": guardrail.source,
             },

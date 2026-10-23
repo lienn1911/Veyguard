@@ -29,8 +29,9 @@ class DetectionEvaluationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             archive_path = Path(folder) / 'flows.zip'
             with zipfile.ZipFile(archive_path, 'w') as archive:
-                for member, label in [('Wednesday-workingHours.csv', 'DoS Hulk'),
-                                      ('Friday-WorkingHours-Afternoon-DDos.csv', 'BENIGN'),
+                for member, label in [('Monday-WorkingHours.csv', 'BENIGN'),
+                                      ('Tuesday-WorkingHours.csv', 'BENIGN'),
+                                      ('Wednesday-workingHours.csv', 'DoS Hulk'),
                                       ('Friday-WorkingHours-Afternoon-PortScan.csv', 'BENIGN')]:
                     buffer = io.StringIO()
                     writer = csv.writer(buffer)
@@ -43,28 +44,28 @@ class DetectionEvaluationTests(unittest.TestCase):
         self.assertEqual(report['attack_detection']['true_positive'], 0)
         self.assertEqual(report['attack_detection']['false_negative'], 1)
         self.assertEqual(report['attack_detection']['false_positive'], 0)
-        self.assertEqual(report['groups_scanned'], 3)
+        self.assertEqual(report['groups_scanned'], 4)
 
-    def test_single_source_ddos_label_counts_as_detected_flood_not_ddos(self):
+    def test_repeated_ssh_flows_are_detected_without_login_outcome(self):
         header = ['Source IP', 'Destination IP', 'Destination Port', 'Source Port', 'Timestamp',
                   'Total Fwd Packets', 'Total Backward Packets', 'Label']
         with tempfile.TemporaryDirectory() as folder:
             archive_path = Path(folder) / 'flows.zip'
             with zipfile.ZipFile(archive_path, 'w') as archive:
-                for member in ('Wednesday-workingHours.csv', 'Friday-WorkingHours-Afternoon-DDos.csv',
+                for member in ('Monday-WorkingHours.csv', 'Tuesday-WorkingHours.csv', 'Wednesday-workingHours.csv',
                                'Friday-WorkingHours-Afternoon-PortScan.csv'):
                     buffer = io.StringIO()
                     writer = csv.writer(buffer)
                     writer.writerow(header)
-                    if 'DDos' in member:
-                        for index in range(1000):
-                            writer.writerow(['10.0.0.1', '10.0.0.2', 80, 1000 + index % 10,
-                                             '07/07/2017 15:00:00', 10, 0, 'DDoS'])
+                    if 'Tuesday' in member:
+                        for index in range(50):
+                            writer.writerow(['10.0.0.1', '10.0.0.2', 22, 1000 + index,
+                                             '04/07/2017 09:00:00', 1, 0, 'SSH-Patator'])
                     archive.writestr(member, buffer.getvalue())
             report = evaluate_archive(archive_path)
         self.assertEqual(report['attack_detection']['true_positive'], 1)
-        self.assertEqual(report['per_type']['DDoS']['missed_without_alert'], 0)
-        self.assertEqual(report['per_type']['DoS']['other_attack_type_predictions'], 1)
+        self.assertEqual(report['per_type']['BruteForce']['true_positive'], 1)
+        self.assertEqual(report['per_type']['BruteForce']['missed_without_alert'], 0)
 
 
 if __name__ == '__main__':
