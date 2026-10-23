@@ -2251,3 +2251,67 @@ button:focus-visible{outline-color:#a889d9}
     flex: 1 1 100%;
   }
 }
+
+
+/* Audit Log — Expandable Case Groups */
+
+.audit-group-row {
+  background: #faf7fd;
+}
+
+.audit-group-cell {
+  padding: 0 !important;
+}
+
+.audit-group-toggle {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 20px;
+  border: none;
+  background: transparent;
+  color: #4b176e;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.audit-group-toggle:hover {
+  background: #f2e8fa;
+}
+
+.audit-group-id {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.audit-group-meta {
+  color: #8b729d;
+  font-size: 12px;
+}
+
+.audit-group-time {
+  margin-left: auto;
+  color: #8b729d;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.audit-group-row.is-open {
+  background: #f3e9fa;
+}
+
+.audit-event-row {
+  background: #fff;
+}
+
+@media (max-width: 700px) {
+  .audit-group-toggle {
+    flex-wrap: wrap;
+  }
+
+  .audit-group-time {
+    margin-left: 0;
+  }
+}
