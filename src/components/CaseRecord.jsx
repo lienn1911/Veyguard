@@ -7,6 +7,9 @@ export default function CaseRecord({ incidentId, analystName, onAudit }) {
   const [state, setState] = useState({ status: 'loading', record: null });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [resolutionReason, setResolutionReason] = useState('');
+  const [resolutionConfirmed, setResolutionConfirmed] = useState(false);
+  const [resolving, setResolving] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -43,6 +46,49 @@ export default function CaseRecord({ incidentId, analystName, onAudit }) {
     }
   }
 
+  async function resolve() {
+    if (!resolutionConfirmed || resolutionReason.trim().length < 10) {
+      setError('Enter a resolution reason and confirm your decision.');
+      return;
+    }
+
+    setResolving(true);
+    setError('');
+
+    try {
+      const response = await apiFetch(
+        `/api/cases/${encodeURIComponent(incidentId)}/resolve`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            analyst: analystName,
+            reason: resolutionReason.trim(),
+            confirmed: true
+          })
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Could not resolve case');
+      }
+
+      setState(result);
+
+      window.dispatchEvent(
+        new CustomEvent('case-activity-updated', {
+          detail: incidentId
+        })
+      );
+    } catch (failure) {
+      setError(failure.message);
+    } finally {
+      setResolving(false);
+    }
+  }
+
   const record = state.record;
   return <section className="case-record" aria-live="polite">
     <div className="incident-section-heading"><h2>Case record</h2></div>
@@ -57,5 +103,68 @@ export default function CaseRecord({ incidentId, analystName, onAudit }) {
     {state.status === 'waiting_for_review' && <p className="case-record-notice">Finish reviewing every recommendation before saving the case record.</p>}
     {state.status === 'ready' && <button type="button" className="case-record-save" disabled={saving} onClick={save}>{saving ? 'Saving…' : 'Save summary to audit log'}</button>}
     {state.status === 'saved' && <div className="case-record-saved" role="status"><strong>Saved to audit log</strong><p>Record {state.event_id} · {state.saved_at?.slice(0, 16).replace('T', ' ')} UTC</p><button type="button" onClick={onAudit}>View audit log →</button></div>}
+    {state.status === 'saved' && (
+      <div className="case-resolution">
+        <h3>Final Analyst Decision</h3>
+
+        <p>
+          The case record has been saved.
+          Confirm the resolution to remove this case
+          from the active Priority Queue.
+        </p>
+
+        <label htmlFor="resolution-reason">
+          Resolution reason
+        </label>
+
+        <textarea
+          id="resolution-reason"
+          value={resolutionReason}
+          onChange={(e) => setResolutionReason(e.target.value)}
+          placeholder="Explain why the investigation can be considered resolved..."
+          maxLength={1000}
+          rows={3}
+        />
+
+        <label className="case-resolution-confirm">
+          <input
+            type="checkbox"
+            checked={resolutionConfirmed}
+            onChange={(e) => setResolutionConfirmed(e.target.checked)}
+          />
+          I have reviewed the evidence and explicitly authorize
+          this case resolution.
+        </label>
+
+        <button
+          type="button"
+          className="case-record-save"
+          disabled={
+            resolving ||
+            !resolutionConfirmed ||
+            resolutionReason.trim().length < 10
+          }
+          onClick={resolve}
+        >
+          {resolving ? 'Resolving...' : 'Resolve Case'}
+        </button>
+      </div>
+    )}
+
+    {state.status === 'resolved' && (
+      <div className="case-record-saved" role="status">
+        <strong>Case Resolved</strong>
+        <p>
+          Resolution: {state.resolution?.reason}
+        </p>
+        <p>
+          Resolved by: {state.resolution?.analyst_id}
+        </p>
+        <button type="button" onClick={onAudit}>
+          View audit log →
+        </button>
+      </div>
+    )}
+
   </section>;
 }

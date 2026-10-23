@@ -16,6 +16,7 @@ const EVENT_LABELS = {
   'INVESTIGATION_STEP_COMPLETED': { label: 'Approved step completed', tone: 'ok' },
   'CASE_ASSIGNED': { label: 'Case assigned', tone: 'info' },
   'CASE_RECORD_SAVED': { label: 'Case summary saved', tone: 'ok' },
+  'CASE_RESOLVED': {label: 'Case resolved', tone: 'ok'},
 };
 
 function eventDetail(entry) {
@@ -37,14 +38,19 @@ function eventDetail(entry) {
       return `${payload.decision}${payload.note ? ` — ${payload.note}` : ''}`;
     case 'CASE_RECORD_SAVED':
       return `${payload.case_summary || ''} ${payload.ai_summary ? `AI: ${payload.ai_summary}` : 'No live AI summary.'} ${payload.approved_checks} approved, ${payload.rejected_checks} rejected`;
-    default:
+    case 'CASE_RESOLVED':
+      return `Resolved by ${payload.analyst_id || entry.actor} · ${payload.reason || 'No reason recorded'}`;
+  default:
       return '';
   }
 }
 
 export default function AuditLog({ mode, refreshToken }) {
   const [state, setState] = useState({ status: 'idle', entries: [], verification: null, error: null });
-
+  const [searchQuery, setSearchQuery] = useState('');
+  const [eventFilter, setEventFilter] = useState('all');
+  const [actorFilter, setActorFilter] = useState('all');
+  const [dateSort, setDateSort] = useState('newest');
   const load = useCallback(async () => {
     if (mode === 'offline') {
       setState({ status: 'offline', entries: [], verification: null, error: null });
@@ -69,6 +75,50 @@ export default function AuditLog({ mode, refreshToken }) {
   }, [load, refreshToken]);
 
   const verified = state.verification?.ok;
+
+  const eventTypes = [...new Set(
+    state.entries.map((entry) => entry.event).filter(Boolean)
+  )].sort();
+
+  const actors = [...new Set(
+    state.entries.map((entry) => entry.actor).filter(Boolean)
+  )].sort();
+
+  const filteredEntries = state.entries
+    .filter((entry) => {
+      const text = [
+        entry.incident_id,
+        entry.event_id,
+        entry.event,
+        entry.actor,
+        EVENT_LABELS[entry.event]?.label,
+        eventDetail(entry)
+      ].filter(Boolean).join(' ').toLowerCase();
+
+      const matchesSearch = text.includes(
+        searchQuery.trim().toLowerCase()
+      );
+
+      const matchesEvent =
+        eventFilter === 'all' ||
+        entry.event === eventFilter;
+
+      const matchesActor =
+        actorFilter === 'all' ||
+        entry.actor === actorFilter;
+
+      return matchesSearch && matchesEvent && matchesActor;
+    })
+    .sort((a, b) => {
+      // Audit sequence gives us a stable event order.
+      const aSeq = Number(a.seq) || 0;
+      const bSeq = Number(b.seq) || 0;
+
+      return dateSort === 'newest'
+        ? bSeq - aSeq
+        : aSeq - bSeq;
+    });
+
 
   return (
     <section className="page audit-log-page">
@@ -126,6 +176,69 @@ export default function AuditLog({ mode, refreshToken }) {
             <span className="chip chip-muted">{state.entries.length} latest</span>
           </div>
 
+          <div className="audit-filters">
+            <input
+              type="search"
+              placeholder="Search case ID, event, or analyst..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Search audit events"
+            />
+
+            <select
+              value={eventFilter}
+              onChange={(e) => setEventFilter(e.target.value)}
+              aria-label="Filter by event type"
+            >
+              <option value="all">All Event Types</option>
+              {eventTypes.map((type) => (
+                <option key={type} value={type}>
+                  {EVENT_LABELS[type]?.label || type}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={actorFilter}
+              onChange={(e) => setActorFilter(e.target.value)}
+              aria-label="Filter by actor"
+            >
+              <option value="all">All Actors</option>
+              {actors.map((actor) => (
+                <option key={actor} value={actor}>
+                  {actor}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={dateSort}
+              onChange={(e) => setDateSort(e.target.value)}
+              aria-label="Sort audit events"
+            >
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+            </select>
+
+            <div className="audit-filter-bottom">
+              <span>
+                Showing {filteredEntries.length} of {state.entries.length} loaded events
+              </span>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery('');
+                  setEventFilter('all');
+                  setActorFilter('all');
+                  setDateSort('newest');
+                }}
+              >
+                Clear filters
+              </button>
+            </div>
+          </div>
+
           {state.entries.length === 0 ? (
             <div className="empty">
               <Icon name="audit" size={20} />
@@ -146,7 +259,7 @@ export default function AuditLog({ mode, refreshToken }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {[...state.entries].reverse().map((entry) => {
+                  {filteredEntries.map((entry) => {
                     const meta = EVENT_LABELS[entry.event] || { label: entry.event, tone: 'muted' };
                     return (
                       <tr key={entry.event_id || entry.seq}>
@@ -166,6 +279,11 @@ export default function AuditLog({ mode, refreshToken }) {
                   })}
                 </tbody>
               </table>
+              {filteredEntries.length === 0 && (
+                <p className="audit-no-results">
+                  No audit events match your filters.
+                </p>
+              )}
             </div>
           )}
         </section>

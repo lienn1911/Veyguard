@@ -83,9 +83,28 @@ def case_record(data, incident_id):
     if not any(item['incident_id'] == incident_id for item in data['incidents']):
         raise ValueError('Unknown case')
     events = audit_entries(DB_PATH, incident_id=incident_id)
-    saved = next((item for item in reversed(events) if item['event'] == 'CASE_RECORD_SAVED'), None)
+
+    saved = next(
+        (item for item in reversed(events)
+         if item['event'] == 'CASE_RECORD_SAVED'),
+        None
+    )
+
+    resolved = next(
+        (item for item in reversed(events)
+         if item['event'] == 'CASE_RESOLVED'),
+        None
+    )
+
     if saved:
-        return {'status': 'saved', 'record': saved['payload'], 'event_id': saved['event_id'], 'saved_at': saved['ts']}
+        return {
+            'status': 'resolved' if resolved else 'saved',
+            'record': saved['payload'],
+            'event_id': saved['event_id'],
+            'saved_at': saved['ts'],
+            'resolution': resolved['payload'] if resolved else None,
+            'resolved_at': resolved['ts'] if resolved else None
+        }
     decisions = saved_decisions(incident_id)
     checks = generate_recommendations(data, incident_id)
     ready = len(decisions) == len(checks) and all(item['id'] in decisions for item in checks)
@@ -107,7 +126,7 @@ def save_case_record(data, incident_id, analyst):
     if not isinstance(analyst, str) or not analyst.strip() or len(analyst.strip()) > 80:
         raise ValueError('Analyst name is required')
     prepared = case_record(data, incident_id)
-    if prepared['status'] == 'saved':
+    if prepared['status'] in ('saved', 'resolved'):
         return prepared
     if prepared['status'] != 'ready':
         raise ValueError('Review every recommended step before saving the case record')
@@ -120,6 +139,77 @@ def save_case_record(data, incident_id, analyst):
                                       actor=f'analyst:{analyst.strip()}', payload=prepared['record'])
     return {'status': 'saved', 'event_id': event['event_id'], 'saved_at': event['ts'], 'record': event['payload']}
 
+
+def resolve_case(data, incident_id, analyst, reason, confirmed):
+    if not any(
+        item['incident_id'] == incident_id
+        for item in data['incidents']
+    ):
+        raise ValueError('Unknown case')
+
+    if not isinstance(analyst, str) or not analyst.strip():
+        raise ValueError('Analyst is required')
+
+    if not isinstance(reason, str) or not 10 <= len(reason.strip()) <= 1000:
+        raise ValueError('Resolution reason must be 10-1000 characters')
+
+    if confirmed is not True:
+        raise ValueError('Explicit analyst confirmation is required')
+
+    init_db()
+    initialize_audit(DB_PATH)
+
+    with closing(sqlite3.connect(DB_PATH, timeout=30)) as db, db:
+        db.execute('BEGIN IMMEDIATE')
+
+        existing = db.execute(
+            """
+            SELECT event_id, ts, payload
+            FROM audit_events
+            WHERE incident_id = ? AND event = 'CASE_RESOLVED'
+            ORDER BY seq DESC LIMIT 1
+            """,
+            (incident_id,)
+        ).fetchone()
+
+        if existing:
+            return {
+                'status': 'resolved',
+                'event_id': existing[0],
+                'resolved_at': existing[1],
+                'resolution': json.loads(existing[2])
+            }
+
+        saved = db.execute(
+            """
+            SELECT 1 FROM audit_events
+            WHERE incident_id = ? AND event = 'CASE_RECORD_SAVED'
+            LIMIT 1
+            """,
+            (incident_id,)
+        ).fetchone()
+
+        if not saved:
+            raise ValueError('Save the case record before resolving')
+
+        event = append_in_transaction(
+            db,
+            'CASE_RESOLVED',
+            incident_id=incident_id,
+            actor=f'analyst:{analyst.strip()}',
+            payload={
+                'analyst_id': analyst.strip(),
+                'reason': reason.strip(),
+                'confirmed_by_analyst': True
+            }
+        )
+
+    return {
+        'status': 'resolved',
+        'event_id': event['event_id'],
+        'resolved_at': event['ts'],
+        'resolution': event['payload']
+    }
 
 def case_summary(data, incident_id):
     incident = next(item for item in data['incidents'] if item['incident_id'] == incident_id)
@@ -134,6 +224,16 @@ def case_queue(data):
         owners = dict(db.execute('SELECT incident_id, analyst_id FROM case_assignments'))
         activity = dict(db.execute('SELECT incident_id, MAX(ts) FROM audit_events GROUP BY incident_id')) if db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='audit_events'").fetchone() else {}
         analyst_activity = {row[0] for row in db.execute("SELECT DISTINCT incident_id FROM audit_events WHERE event = 'ANALYST_NOTE_ADDED'")}
+        resolved_cases = {
+            row[0]
+            for row in db.execute(
+                """
+                SELECT DISTINCT incident_id
+                FROM audit_events
+                WHERE event = 'CASE_RESOLVED'
+                """
+            )
+        }
         check_decisions = {}
         for incident_id, decision in db.execute('SELECT incident_id, decision FROM decisions'):
             check_decisions.setdefault(incident_id, []).append(decision)
@@ -146,9 +246,22 @@ def case_queue(data):
     triage = ai_service()
     expected_checks = {incident['incident_id']: len(generate_recommendations(data, incident['incident_id']))
                        for incident in data['incidents']}
+
+    def has_pending_approval(incident_id):
+        if incident_id in resolved_cases:
+            return False
+
+        total = expected_checks[incident_id]
+        decided = len(check_decisions.get(incident_id, []))
+
+        return total > 0 and decided < total
+
     def checks_complete(incident_id):
         return len(check_decisions.get(incident_id, [])) == expected_checks[incident_id]
     def status_for(incident_id):
+        if incident_id in resolved_cases:
+            return 'Resolved'
+
         checks = check_decisions.get(incident_id, [])
         if checks:
             if not checks_complete(incident_id):
@@ -173,10 +286,21 @@ def case_queue(data):
                 and latest.get('model') == triage.settings.model):
             return 'AI ready for review'
         return 'Not reviewed'
+
     return {
         incident['incident_id']: {
             'status': status_for(incident['incident_id']),
-            'review_complete': checks_complete(incident['incident_id']),
+            'case_status': (
+                'Resolved'
+                if incident['incident_id'] in resolved_cases
+                else 'Open'
+            ),
+            'pending_approval': has_pending_approval(
+                incident['incident_id']
+            ),
+            'review_complete': checks_complete(
+                incident['incident_id']
+            ),
             'owner': owners.get(incident['incident_id']),
             'last_activity': activity.get(incident['incident_id']),
         }
@@ -187,13 +311,13 @@ def case_queue(data):
 def pending_tasks():
     init_db()
     with closing(sqlite3.connect(DB_PATH)) as db:
-        rows = db.execute('''
-            SELECT d.recommendation_id, d.incident_id, d.description, d.analyst_id
-            FROM decisions d LEFT JOIN task_completions t
-              ON t.recommendation_id = d.recommendation_id
-            WHERE d.decision = 'APPROVED' AND t.recommendation_id IS NULL
-            ORDER BY d.incident_id, d.recommendation_id
-        ''').fetchall()
+        rows = db.execute(
+            """
+            SELECT DISTINCT incident_id
+            FROM audit_events
+            WHERE event = 'CASE_RESOLVED'
+            """
+        ).fetchall()
     return [{'id': task_id, 'incident_id': incident_id, 'text': description, 'approved_by': analyst}
             for task_id, incident_id, description, analyst in rows]
 
@@ -401,6 +525,25 @@ class Handler(BaseHTTPRequestHandler):
                 except Exception as error:
                     self.send_json(503, {'status': 'unavailable', 'assessment': None, 'error': {'message': str(error)}})
                 return
+
+            if action == 'resolve':
+                request = self.request_body()
+
+                if request.get('analyst') != session['username']:
+                    raise ValueError('Signed-in analyst must match reviewer')
+
+                resolve_case(
+                    json.loads(DATA.read_text(encoding='utf-8')),
+                    incident_id,
+                    session['username'],
+                    request.get('reason'),
+                    request.get('confirmed')
+                )
+
+                data = json.loads(DATA.read_text(encoding='utf-8'))
+                self.send_json(200, case_record(data, incident_id))
+                return
+
             if action not in {'approval', 'assign', 'notes', 'ai-decision', 'record'}:
                 raise ValueError('Unknown endpoint')
             length = int(self.headers.get('Content-Length', '0'))

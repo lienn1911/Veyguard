@@ -33,6 +33,9 @@ function caseAssessment(incident, response) {
 
 export default function AlertReview({ mode, selectedId, onSelectCase, onCases, onAudit, username }) {
   const [query, setQuery] = useState('');
+  const [verdictFilter, setVerdictFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [dateSort, setDateSort] = useState('newest');
   const [step, setStep] = useState(0);
   const [selectedEvidence, setSelectedEvidence] = useState(null);
   const [selectedMinute, setSelectedMinute] = useState(null);
@@ -171,11 +174,85 @@ export default function AlertReview({ mode, selectedId, onSelectCase, onCases, o
     <button type="button" className="incident-copy-id" onClick={copyEvidenceId}>{copiedId === selectedEvidence ? 'Copied ID' : 'Copy record ID'}</button>
   </div>;
 
-  if (mode === 'cases' || !incident) return <section className="iris-cases-page"><header><h1>Investigations</h1><p>{data.incidents.length} cases · {data.alerts.length} related alerts</p></header>{queueError && <p className="case-queue-error" role="status">{queueError}</p>}<div className="iris-cases-table"><div className="iris-cases-columns"><span>Case</span><span>First seen · UTC</span><span>Review status</span><span>AI assessment</span><span>AI confidence</span><span>Alerts</span></div>{data.incidents.map((item, index) => {
+
+const filteredCases = data.incidents
+  .filter((item) => {
+    const ai = caseAssessment(
+      item,
+      assessments[item.incident_id]
+    );
+
+    const caseStatus =
+      queue?.[item.incident_id]?.case_status || 'Open';
+
+    const matchesVerdict =
+      verdictFilter === 'all' ||
+      (verdictFilter === 'Not Assessed'
+        ? !aiVerdicts.has(ai.label)
+        : ai.label === verdictFilter);
+
+    const matchesStatus =
+      statusFilter === 'all' ||
+      caseStatus === statusFilter;
+
+    return matchesVerdict && matchesStatus;
+  })
+  .sort((a, b) => {
+    const aTime = Date.parse(a.window_start);
+    const bTime = Date.parse(b.window_start);
+
+    return dateSort === 'newest'
+      ? bTime - aTime
+      : aTime - bTime;
+  });
+
+  if (mode === 'cases' || !incident) return <section className="iris-cases-page"><header><h1>Investigations</h1><p>{data.incidents.length} cases · {data.alerts.length} related alerts</p></header>{queueError && <p className="case-queue-error" role="status">{queueError}</p>}
+
+
+<div className="investigation-filters">
+
+  {/* 1. Sort by Date */}
+  <select
+    value={dateSort}
+    onChange={(e) => setDateSort(e.target.value)}
+    aria-label="Sort by detection date"
+  >
+    <option value="newest">Newest First</option>
+    <option value="oldest">Oldest First</option>
+  </select>
+
+  {/* 2. AI Assessment */}
+  <select
+    value={verdictFilter}
+    onChange={(e) => setVerdictFilter(e.target.value)}
+    aria-label="Filter by AI assessment"
+  >
+    <option value="all">All Assessments</option>
+    <option value="Likely Attack">Likely Attack</option>
+    <option value="Likely Benign">Likely Benign</option>
+    <option value="Needs Review">Needs Review</option>
+    <option value="Not Assessed">Not Assessed</option>
+  </select>
+
+  {/* 3. Case Resolution */}
+  <select
+    value={statusFilter}
+    onChange={(e) => setStatusFilter(e.target.value)}
+    aria-label="Filter by case resolution"
+  >
+    <option value="all">All Cases</option>
+    <option value="Open">Open Cases</option>
+    <option value="Resolved">Resolved Cases</option>
+  </select>
+
+</div>
+
+<div className="iris-cases-table">
+  <div className="iris-cases-columns"><span>Case</span><span>First seen · UTC</span><span>Review status</span><span>AI assessment</span><span>AI confidence</span><span>Alerts</span></div>{filteredCases.map((item) => {
     const caseAlerts = data.alerts.filter((alert) => alert.incident_id === item.incident_id);
     const state = queue?.[item.incident_id];
     const ai = caseAssessment(item, assessments[item.incident_id]);
-    return <button type="button" className="iris-cases-row" key={item.incident_id} onClick={() => onSelectCase(item.incident_id)}><span className="case-queue-name"><strong>{index + 1} <span>· {caseName(caseAlerts[0]?.type)}</span></strong><small>{item.source_ip} → {item.destination_ip}</small></span><time>{shortTime(item.window_start)}</time><span className="case-queue-status">{state?.status || (queueError ? 'Unavailable' : 'Loading…')}</span><span className={`case-ai-assessment ${ai.tone}`}><span className="case-ai-label">{ai.label}</span></span><span className="case-ai-confidence">{ai.confidence ? formatConfidence(ai.confidence) : '—'}</span><span className="case-alert-count">{caseAlerts.length} alerts</span></button>;
+    return <button type="button" className="iris-cases-row" key={item.incident_id} onClick={() => onSelectCase(item.incident_id)}><span className="case-queue-name"><strong>{data.incidents.indexOf(item) + 1} <span>· {caseName(caseAlerts[0]?.type)}</span></strong><small>{item.source_ip} → {item.destination_ip}</small></span><time>{shortTime(item.window_start)}</time><span className="case-queue-status">{state?.status || (queueError ? 'Unavailable' : 'Loading…')}</span><span className={`case-ai-assessment ${ai.tone}`}><span className="case-ai-label">{ai.label}</span></span><span className="case-ai-confidence">{ai.confidence ? formatConfidence(ai.confidence) : '—'}</span><span className="case-alert-count">{caseAlerts.length} alerts</span></button>;
   })}</div></section>;
 
   const caseNumber = data.incidents.findIndex((item) => item.incident_id === incident.incident_id) + 1;
