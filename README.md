@@ -1,82 +1,250 @@
-# SOC Desk
+# Veyguard
 
-Latest integrated results and limitations: [JOINT_ACCEPTANCE.md](JOINT_ACCEPTANCE.md).
+**Evidence-linked AI triage for network security alerts.**
 
-## Demo sign-in
+Veyguard brings related alerts, supporting records and human review into one case workspace. It helps security analysts understand why activity was flagged, examine an AI assessment and decide what to investigate next.
 
-The local UI opens on a single-user sign-in screen. On first use, sign in as `administrator` / `Demo@1234`, then use the account menu at the bottom of the sidebar to change that password. The local API verifies the password and protects its routes with an eight-hour, HttpOnly session cookie and CSRF checks on writes. Changing the password signs out every session. The bundled historical preview JSON remains a static frontend asset, so this local demo is not a production access-control boundary for the dataset.
+This is a local prototype using historical CIC-IDS2017 network-flow data. The bundled demonstration contains **9 cases** covering **PortScan, DoS and suspected BruteForce**. It is not a live network monitor or an autonomous response system.
 
-The password hash is stored in Git-ignored `data/auth/account.json`, using a unique salt and scrypt. New passwords must have 15–128 characters; common choices are blocked, and five failed login or current-password attempts cause a fifteen-minute lockout. The lockout and active sessions are in this single local API process, so restarting it clears them and signs everyone out.
+## Contents
 
-Alert generation, incident grouping, and timeline reconstruction use the official CIC-IDS2017 `GeneratedLabelledFlows.zip`. Suggested investigation checks, analyst decisions, case-note drafts, and audit logging run in a local Python service. The UI AI check requires a configured live provider. The explicit offline mock provider is for software tests, not AI performance reporting.
+- [Quick start](#quick-start)
+- [Configure AI analysis](#configure-ai-analysis)
+- [Review your first case](#review-your-first-case)
+- [Understand decisions and saved reports](#understand-decisions-and-saved-reports)
+- [Data and storage](#data-and-storage)
+- [Project structure](#project-structure)
+- [Troubleshooting](#troubleshooting)
+- [Limitations](#limitations)
+- [Development and evaluation](#development-and-evaluation)
 
-## Run the demo on Windows
+## Quick start
 
-Install Node.js LTS (with npm) and Python 3.10 or newer, then open the project folder and run `start.cmd`. The script installs missing frontend and Python packages, starts the local API, and opens `http://127.0.0.1:5174`. The bundled historical case data is already in `src/real-alerts.json`, `src/real-timelines.json`, and `src/raw-context.json`; the source archive is **not** needed to open the demo. Viewing all original records requires the local `data/raw-flows.db` import. Dependencies in `node_modules/` are machine-specific and are not part of the repository.
+### Requirements
 
-If the frontend says `Cannot find package 'esbuild'`, run `npm install --include=optional` in the project folder and start again. If installation still fails, remove that machine's incomplete `node_modules` folder and rerun `npm install --include=optional`. Keep the terminal open while using the app; a startup error is shown there. The local API log is in `data/api.err.log`.
+- Node.js with npm; use an LTS release compatible with Vite 6.
+- Python 3.10 or newer, available as `python`.
+- Git, if cloning the repository.
+- A configured AI provider for real AI analysis.
 
-## Regenerate historical data (optional)
-
-The bundled demo contains 9 CIC-IDS2017 Cases: 2 suspected brute-force, 3 DoS, and 4 PortScan. Two of the attack-rule Cases are labeled Benign in the dataset and therefore provide false-positive review examples. To refresh the data, run from the repository root:
+### Windows
 
 ```powershell
-python services/alerts.py path/to/GeneratedLabelledFlows.zip -o src/real-alerts.json
-python services/timeline.py src/real-alerts.json -o src/real-timelines.json
-python -m services.raw_context path/to/GeneratedLabelledFlows.zip src/real-alerts.json -o src/raw-context.json
-python -m services.raw_flows path/to/GeneratedLabelledFlows.zip
+git clone https://github.com/lienn1911/Veyguard.git
+cd Veyguard
+.\start.cmd
 ```
 
-`start.cmd` starts Vite and the loopback Python review service. The frontend reads the tracked JSON files; the local review service writes `data/audit.db`. `data/` stays local and is ignored by Git. Only up to six sampled flow records per alert enter the tracked alert JSON. `raw-context.json` stores per-minute counts for the same source/destination pairs from one minute before through one minute after each case window. The `services.raw_flows` command imports every CSV row and field into the Git-ignored local `data/raw-flows.db`; the authenticated Timeline detail queries it in pages of 50. The large source archive stays local. The earlier Yatesbury DDoS demonstration is archived rather than included in this three-type queue. Regenerating case IDs leaves old local decisions and audit events under their original IDs; they are not transferred to new cases.
+The launcher installs missing dependencies, starts the Python API and opens **http://127.0.0.1:5174**. Keep the frontend terminal open while using the application.
 
-## Detection and grouping
+The bundled cases are included: you do not need to download the original dataset to explore them. All original communication records require the optional import described under [Data and storage](#data-and-storage).
 
-The script scans the Monday, Tuesday, Wednesday, and Friday PortScan flow CSVs. It detects one-minute source/destination groups. PortScan and DoS retain their prototype count/port rules. Suspected BruteForce requires at least 50 connections from one source to one target's FTP (21) or SSH (22) port in a minute. Flow counts cannot establish failed logins; authentication logs would be needed to confirm brute force. Optional NeedsReview candidates are excluded from the bundled three-rule queue.
+### Manual startup
 
-Consecutive alerts are grouped only when source CSV, rule type, ordered source/destination pair, and (for BruteForce) target login port match, with at most five minutes between consecutive alert minute starts. Different types remain separate. Rule thresholds are prototype heuristics selected during development, not independently validated SOC policy. No rule match is not a Benign verdict.
+From the repository root, install dependencies:
 
-The five-minute gap is a configurable design assumption, not a known incident boundary. Run `python -m services.evaluate_grouping_gap src/real-alerts.json` to compare one-, five-, and ten-minute gaps without changing the demo queue. The bundled 158 alerts form 11, 9, and 9 cases respectively; the one-minute setting splits two of the five-minute cases. Ground-truth labels do not identify campaign boundaries, so this comparison measures sensitivity rather than correctness. The saved result is in `evaluation/grouping-gap-sensitivity-20261024.json`.
+```powershell
+npm install --include=optional
+python -m pip install -r requirements.txt
+```
 
-The AI starts with the case details, then chooses which read-only alert, flow, or statistics queries it needs. Every cited evidence ID must occur in returned tool data; a rule match remains a lead for investigation, not an AI or analyst attack verdict.
+Start the backend in one terminal:
 
-The detector does not read dataset labels when matching or grouping alerts. Labels are kept for retrospective evaluation and are withheld from model-facing tools. A normal-labeled Case does not automatically receive a Likely Benign AI verdict: the live model may reasonably return Needs Review without business context.
+```powershell
+python -m services.api
+```
 
-### Checking detection quality and extending rules
+Start the frontend in another terminal:
 
-Run `python -m services.evaluate_detection path/to/GeneratedLabelledFlows.zip -o data/detection-evaluation.json` on the **complete** archive. The current results and limitations are in [THREE_TYPE_EVALUATION.md](THREE_TYPE_EVALUATION.md). The earlier [DETECTION_AUDIT.md](DETECTION_AUDIT.md) describes the archived DDoS configuration, not this queue. This is an offline historical check on data used during rule development, not a claim of live SOC accuracy.
+```powershell
+npm run dev -- --port 5174 --strictPort
+```
 
-Named rule predicates and thresholds live in `services/alerts.py`. `--include-monday-review` exports unmatched high-volume Monday groups as NeedsReview candidates (at least 500 flows and 5,000 packets in a minute); this is a coarse review heuristic, **not** zero-day detection. `--include-unclassified` applies the same rule across all included days and is not used in the bundled queue.
+Open **http://127.0.0.1:5174**. The current review API listens on **127.0.0.1:8765**; Vite forwards `/api` requests to it.
 
-## Timeline
+### First sign-in
 
-`services/timeline.py` orders sampled source records and every alert in each incident by timestamp and CSV row. Each event carries an evidence ID that resolves to a flow or alert in the matching JSON export. Rule-based ATT&CK hints are tentative; the AI may suggest a validated mapping or mark an alert Unmapped with a reason. Alert timestamps mark minute bucket starts, while sampled records retain their original seconds. Friday afternoon CSV hours are normalized to afternoon according to their filename.
+| Field | Initial value |
+| --- | --- |
+| Username | `administrator` |
+| Password | `Demo@1234` |
 
-The combined Timeline and evidence view shows each case minute plus one minute of context on either side. Opening a minute shows why it was flagged, if a rule fired, and the original CSV communication records for that source/destination pair when the local raw-flow database is available. A minute without a rule match is not a Benign verdict. The counts describe flow records, not individual packets or messages.
+These credentials initialise a new local installation. Use the account menu at the bottom of the sidebar to change the password. Replacement passwords require 15–128 characters. Changing the password signs out existing sessions.
 
-The bundled data contains 9 Cases and 158 one-minute Alerts from the four selected CIC files. Regenerate the alert, timeline, and raw-context files together after changing any rule, grouping rule, or dataset input.
+The application currently uses one local account. It does not provide multi-user account administration.
 
-## Archived Yatesbury DDoS case (outside the current queue)
+## Configure AI analysis
 
-The additional historical case uses the SYN Flood DDoS scenario's `nsg.csv` records for 2023-03-15 11:56 UTC. Three distinct sources sent 710,279 TCP records and 485,706 reported packets to 172.0.0.19 in that minute. Each source contributed more than 1,000 records. Detection uses the traffic records; `label.csv` is read afterward as a separate reference, not as the trigger. Six sampled flow IDs point back to original `nsg.csv` row numbers. This is a historical dataset replay, not live detection.
+1. Open **AI settings** in the sidebar.
+2. Select an available provider, enter its model ID and required credentials.
+3. Select **Test connection**, then **Save settings**.
+4. Open a case from **Investigations**.
 
-## Demo path
+The current adapters support Groq, Gemini and a locally authenticated Codex CLI. Codex CLI requires installation and sign-in on the computer running the backend. Connection tests can make a real model request and consume provider allowance.
 
-Open Investigations to see the case list, then open the PortScan case. The five tabs can be selected directly. Timeline & evidence shares one page: select a time point to jump to its original CSV records, alert, or linked samples below. The timeline shows six one-minute PortScan alerts from 14:51 through 14:56, including the 14:54 match with 34,620 records across 997 destination ports. The alerts group because source IP, destination IP, and source CSV match and their gap is under five minutes.
+Alternatively, copy `.env.example` to `.env` and configure a supported provider there. Saved settings from the interface take precedence over environment settings.
 
-The dataset label is shown separately from the rule result. It is a reference for evaluation, not the reason the rule fired. A PortScan rule match is a candidate incident; triage and any verdict belong to the other modules. Source timestamps have only minute precision, so events within one minute are ordered by CSV row where available.
+**The default `mock` provider is for deterministic software tests.** It does not provide a genuine AI assessment in the normal review interface. Configure a live provider to use AI analysis. Relevant case evidence is sent to that provider when an investigation runs; review its data-handling requirements before using your own records.
 
-AI check displays Pending until an analyst selects **Run AI check**. The merged agent reads case evidence through allowlisted tools, validates cited evidence IDs, and stores a proposed verdict separately from analyst decisions. Numeric traffic claims must also match stored case aggregates or linked sample computations. The analyst can confirm or reject the AI proposal in the UI; confirming a protected Likely Benign proposal requires a written reason. By default `AI_PROVIDER=mock`, so its output is a **demo simulation**, not a live model assessment. For a live provider, copy `.env.example` to `.env`, set `AI_PROVIDER=groq` or `gemini` and the matching API key, then run `python -m services.preflight` before the demo. Next Steps continues to show deterministic, evidence-linked investigation checks based on rule matches. An analyst approves or rejects every check and enters a name before submitting. The local service inserts decisions into SQLite and appends AI and analyst events to one hash-chained audit table. A case-note draft is returned only when at least one check is approved. No security action is executed.
+API keys stay in backend configuration and are not returned to the browser. Local `.env` and `data/` files are Git-ignored.
 
-The historical AI JSONL and analyst SQLite events are imported into the new `audit_events` table on first use. The old stores are retained as read-only migration sources; new events go only to `audit_events`. SQLite triggers reject UPDATE and DELETE on that table, and the Audit page checks the hash chain. This protects against edits through this application, not an administrator who can replace the database file.
+## Review your first case
 
-Run `python -m services.evaluate_detection path/to/GeneratedLabelledFlows.zip -o data/detection-evaluation.json` for the existing rules. Install `requirements-eval.txt`, then run `python -m services.evaluate_baseline path/to/GeneratedLabelledFlows.zip -o data/baseline-evaluation.json` for the separate, normal-only Isolation Forest experiment. It uses Monday chronological training, calibration and test blocks with five-minute gaps, then measures shifted-day Benign false positives and known-attack recall on Wednesday and Friday. Calibration and reporting use source/destination/minute groups; flagged benign cases are counted separately after a five-minute grouping. Dataset labels are excluded from model features and used only for evaluation. This baseline is **not** the deployed detector and anomaly scores are not attack verdicts. Combine reports with `python -m services.evaluate_system --detector-report data/detection-evaluation.json --baseline-report data/baseline-evaluation.json`; `--cases path/to/reviewed-cases.json` adds workflow safety counts when reviewed cases exist. Without a baseline report, the rate sweep stays pending rather than inventing results.
+### 1. Choose a case
 
-You can also configure live AI from **AI settings** in the sidebar: select Groq or Gemini, enter the model ID and API key, use **Test connection**, then **Save settings**. The key is stored only by the loopback Python service in `data/ai-settings.json` (Git-ignored); the browser receives only a configured/not-configured flag. Saved UI settings take precedence over `.env` and apply to the next AI check without restarting. Restart `start.cmd` once after updating the application code so the settings endpoints are available.
+Open **Investigations**. Search or filter the case list, check its AI and review status, then open a case.
 
-For **Codex CLI**, install `@openai/codex`, run `codex login` on the computer running the Python API, then choose **Codex CLI** in AI settings. Leave Model ID as `default` to use the CLI default. **Test connection** makes one real Codex request, then **Save settings** activates it. Codex investigations use the account's Codex allowance; no API key is needed. The adapter starts each model turn in a temporary read-only CLI session and passes only the case conversation and read-only tool descriptions. Existing case results remain in the local state store if the allowance is exhausted.
+Opening a case requests AI analysis when a live provider is configured and no reusable valid result exists. The separate **Auto AI analysis** switch processes pending cases sequentially in the background. Human review is still required.
 
-After a new AI check, the validated proposal may include one or two evidence-linked next investigation steps. Recommendations highlights those AI suggestions and their cited evidence, while keeping the case-rule checks available. Only allowlisted read-only steps can be approved; an analyst must approve or reject each check. Earlier stored AI results do not contain these new suggestions until checked again.
+Review priority helps order the queue. **High, Medium and Low are activity-based review priorities, not confirmed attack severity.**
 
-The guardrails reject evidence IDs outside the case, prevent unsupported verdicts, and require explicit analyst confirmation for a Likely Benign verdict on an attack alert. The safety evaluator separately counts attack/benign merges, low-priority attack assignments, and attack closure recommendations from a supplied evaluation-case JSON array. A zero count on a test set would not establish zero operational risk.
+### 2. Understand the Overview
 
-Run the workflow checks with `python -m unittest discover -s services -p test_workflow.py`. To evaluate a JSON array of cases with `dataset_labels`, `priority`, and `recommendations`, run `python services/guardrails.py path/to/evaluation-cases.json`.
+The **Overview** shows the communication path, observation period, alert count, matched flow count and **Why flagged** explanation. The AI assessment provides a short conclusion and expandable analysis details.
+
+| AI conclusion | Meaning |
+| --- | --- |
+| Likely Attack | The AI considers the available evidence consistent with attack activity; analyst verification is required. |
+| Likely Benign | The AI considers a legitimate explanation more likely; it is not automatic clearance. |
+| Needs Review | The available evidence is insufficient for a stronger conclusion. |
+
+AI confidence is model-reported and is not a calibrated probability of an attack.
+
+### 3. Inspect the Timeline and evidence
+
+Open **Timeline** to inspect minute-level activity, detection reasons and rule criteria. Click an evidence reference to jump to its corresponding record. Expand communication records when you need the underlying detail.
+
+The bundled samples provide traceable examples. Browsing all original records requires the local raw-flow database. A minute without a rule match is not proof of benign activity.
+
+### 4. Review Recommendations
+
+Read each proposed step and expand **Reason and evidence** when needed. Choose **Approve** or **Reject**, add a remark where useful, then select **Save decisions**.
+
+Approval places a step on the investigation work list. Carry out the investigation separately and mark approved work complete from **Home → Pending investigation steps**. Veyguard does not block traffic, isolate a device or perform the recommended investigation for you.
+
+### 5. Record findings and review the AI conclusion
+
+Use **Notes** in the case header while examining any case tab. Record what you checked and found, optionally attach an evidence ID, then save the note. The evidence selector supports search.
+
+In **Triage report → AI assessment**, choose **Agree** or **Disagree**. Disagreement requires a reason. Accepting a protected Likely Benign result also requires written justification. Saved decisions show the reviewer and time.
+
+### 6. Save or download the report
+
+Review the report's assessment, evidence, investigation steps, notes and activity history. Select **Save report** to preserve the current snapshot, or **Download PDF** for a complete black-and-white document.
+
+To revisit a saved report, use the **Report saved** filter in Investigations, open the case and select **Triage report**. PDF export uses the stored snapshot when a saved report exists; otherwise it exports the current draft.
+
+## Understand decisions and saved reports
+
+| Item | Purpose |
+| --- | --- |
+| Investigation note | Records what you checked and found; optionally links to evidence. |
+| Recommendation remark | Explains an individual step's approval or rejection. |
+| Agree / Disagree | Records your judgment about the AI conclusion. |
+| Review status | Shows whether the current AI conclusion and all proposed steps have been reviewed. |
+| Save report | Preserves the findings and decisions as a snapshot. |
+| Download PDF | Exports the report without approving steps or saving a new snapshot. |
+
+**Saving a report does not mark the review complete or resolve the case.** Review completion also does not mean approved investigation work has been carried out.
+
+The current prototype retains one saved snapshot per case. Later notes and decisions do not update that snapshot, and saving again does not create a new report version. Finish the review and save the notes you want included before saving the report.
+
+## Data and storage
+
+The repository includes historical cases, alerts, sampled flows and timeline context. Your local decisions, notes, credentials and AI state are stored under `data/`. Preserve this directory if you want to keep your local work; a fresh clone does not include it.
+
+| Location | Contents |
+| --- | --- |
+| `src/real-alerts.json` | Bundled cases, alerts and sampled flow evidence |
+| `src/real-timelines.json` | Reconstructed timeline events |
+| `src/raw-context.json` | Minute-level context around case windows |
+| `data/audit.db` | Review decisions, notes and shared audit events |
+| `data/raw-flows.db` | Optional original-record import |
+| `data/auth/` | Local account configuration |
+| `data/ai-settings.json` | Provider settings saved through the interface |
+
+### Optional: import original communication records
+
+Obtain the CIC-IDS2017 `GeneratedLabelledFlows.zip` archive, then run:
+
+```powershell
+python -m services.raw_flows "C:\path\to\GeneratedLabelledFlows.zip"
+```
+
+This creates the local raw-flow database used for paginated record browsing. The source archive and imported database stay local.
+
+## Project structure
+
+```text
+Veyguard/
+├── src/
+│   ├── components/       # Case workspace, notes, reports and settings
+│   ├── modules/          # Timeline and recommendation views
+│   ├── lib/              # Shared formatting and data helpers
+│   ├── App.jsx           # Application entry and navigation
+│   └── *.json            # Bundled historical demonstration data
+├── services/             # Python API, AI tools, validation and persistence
+│   ├── providers/        # AI provider adapters
+│   ├── api.py            # Local review API
+│   ├── triage.py         # Bounded AI investigation workflow
+│   └── report_pdf.py     # Monochrome report export
+├── tests/                # Automated regression checks
+├── evaluation/           # Evaluation scripts and recorded results
+├── reports/              # Supporting documents and review artifacts
+├── scripts/              # Local startup helpers
+├── data/                 # Local runtime state; Git-ignored
+├── .env.example          # Backend configuration template
+├── requirements.txt      # Python dependencies
+├── package.json          # Frontend dependencies and commands
+└── start.cmd             # Windows launcher
+```
+
+## Troubleshooting
+
+| Symptom | What to check |
+| --- | --- |
+| Frontend reports an API error | Start the Python backend; check `data/api.err.log` when using the launcher. |
+| AI shows Setup needed | Configure a live provider in AI settings, test it and save the settings. |
+| AI fails or reaches a usage limit | Check provider credentials and allowance; retry when available. Failures are not replaced with simulated conclusions. |
+| Original communication records are unavailable | Import the source archive into `data/raw-flows.db`. Bundled samples remain available. |
+| `Cannot find package 'esbuild'` | Run `npm install --include=optional`, then restart. |
+| Port 5174 or 8765 is occupied | Stop the conflicting service before starting the application. |
+| Recent backend changes are missing | Restart the application; refreshing the browser alone does not restart Python. |
+| Signed out after a restart | Sessions are local to the API process; sign in again. |
+
+## Limitations
+
+- The prototype replays historical data; it does not ingest live network traffic.
+- Detection rules have limited cross-dataset generalisation. Missed attacks do not reach the normal AI queue.
+- Flow records alone cannot confirm failed authentication, successful compromise or service disruption.
+- Evidence validation checks selected claims and citations, not every part of AI reasoning.
+- ATT&CK suggestions are tentative mappings, not proof that an attack occurred.
+- The local sign-in does not protect the bundled static dataset as a production access-control boundary.
+- Append-only audit protections and hash verification do not prevent a local administrator from replacing storage.
+- GitHub Pages alone cannot run the Python API, AI analysis or persistent review workflow. This repository is not itself a hosted live demo.
+
+## Development and evaluation
+
+Build the frontend:
+
+```powershell
+npm run build
+```
+
+Run automated checks:
+
+```powershell
+python -m pytest tests services evaluation -q
+```
+
+To regenerate the bundled historical data, run these together from the repository root:
+
+```powershell
+python services/alerts.py "C:\path\to\GeneratedLabelledFlows.zip" -o src/real-alerts.json
+python services/timeline.py src/real-alerts.json -o src/real-timelines.json
+python -m services.raw_context "C:\path\to\GeneratedLabelledFlows.zip" src/real-alerts.json -o src/raw-context.json
+```
+
+Regeneration may change case IDs. Existing local decisions remain attached to their original cases and are not transferred automatically.
+
+For methodology, recorded checks and detection limitations, see [THREE_TYPE_EVALUATION.md](THREE_TYPE_EVALUATION.md), [JOINT_ACCEPTANCE.md](JOINT_ACCEPTANCE.md) and [FINAL_ACCEPTANCE.md](FINAL_ACCEPTANCE.md). These are technical records; workflow tests and selected AI examples do not establish operational accuracy or time savings.
