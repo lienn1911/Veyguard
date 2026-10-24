@@ -109,26 +109,22 @@ export default function Dashboard({ onReview, username }) {
     ? approvalRecords.filter((record) => record.pending_approval === true).length
     : null;
 
-  const activeIncidents = caseQueue
-    ? incidents.filter(
-        (incident) =>
-          caseQueue[incident.incident_id]?.case_status === 'Open'
-      )
-    : [];
 
-  const activeVerdicts = activeIncidents.map((incident) =>
-    validatedVerdict(assessments[incident.incident_id])
-  );
+  const likelyAttack =
+    caseQueue && assessmentLoaded
+      ? incidents.filter((incident) =>
+          caseQueue[incident.incident_id]?.case_status === 'Open' &&
+          validatedVerdict(assessments[incident.incident_id]) === 'Likely Attack'
+        ).length
+      : null;
 
-  const countsReady = caseQueue !== null && assessmentLoaded;
-
-  const likelyAttack = countsReady
-    ? activeVerdicts.filter((v) => v === 'Likely Attack').length
-    : null;
-
-  const needsReview = countsReady
-    ? activeVerdicts.filter((v) => v === 'Needs Review').length
-    : null;
+  const needsReview =
+    caseQueue && assessmentLoaded
+      ? incidents.filter((incident) =>
+          caseQueue[incident.incident_id]?.case_status === 'Open' &&
+          validatedVerdict(assessments[incident.incident_id]) === 'Needs Review'
+        ).length
+      : null;
 
   const priorityCases = caseQueue
     ? incidents
