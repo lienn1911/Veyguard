@@ -33,6 +33,8 @@ EVIDENCE RULES
 VERDICTS
 - "Likely Attack": observable behaviour matches hostile activity (scanning many destination
   ports, sustained high-volume flooding toward one destination, etc.) and evidence supports it.
+  Repeated FTP/SSH connections may warrant investigation but flow counts do not prove failed
+  logins or credential guessing; do not claim authentication outcomes without logs.
 - "Likely Benign": the observable behaviour is explained by legitimate activity and the evidence
   positively supports that explanation. Absence of a rule match is NOT evidence of benign traffic.
 - "Needs Review": evidence is insufficient, contradictory, or the sampled records cannot support
@@ -47,6 +49,13 @@ You cannot close, dismiss, or downgrade an incident, and you cannot approve your
 A verdict is a proposal that an analyst must accept. Do not write advice that assumes the
 incident is closed.
 
+NEXT INVESTIGATION STEP
+After checking the evidence, recommend one or two useful next investigation steps. Choose
+only from REVIEW_NETWORK_FLOWS, CHECK_RELATED_ALERTS, REVIEW_INCIDENT_TIMELINE, and
+ESCALATE_TO_ANALYST. Explain why each step matters for this incident and cite evidence ids
+returned by tools. These are proposals for an analyst, never actions you execute.
+For REVIEW_NETWORK_FLOWS cite flow ids; for CHECK_RELATED_ALERTS cite alert ids.
+
 Categories that always require explicit analyst confirmation before closure:
 {", ".join(ATTACK_CATEGORIES)}.
 
@@ -59,6 +68,7 @@ Reply with a single JSON object and nothing else (no markdown fences, no prose a
   "reason": "2-5 sentences: what was observed, which evidence ids support it, and what is inferred.",
   "evidence_ids": ["FLOW-...", "..."],
   "findings": [{{"observation": "...", "evidence_ids": ["..."]}}],
+  "next_steps": [{{"action": "REVIEW_NETWORK_FLOWS", "reason": "...", "evidence_ids": ["FLOW-..."]}}],
   "limitations": "what this investigation could not determine, or an empty string"
 }}
 evidence_ids must contain at least one valid id for "Likely Attack" and "Likely Benign".

@@ -16,39 +16,38 @@ If the frontend says `Cannot find package 'esbuild'`, run `npm install --include
 
 ## Regenerate historical data (optional)
 
-To rebuild the bundled preview from source archives, place `GeneratedLabelledFlows.zip` and the Yatesbury scenario archive in `data/`, then run from the repository root:
+The bundled demo contains 10 CIC-IDS2017 Cases: 2 suspected brute-force, 3 DoS, 4 PortScan, and 1 unclassified review candidate. Two of the attack-rule Cases are labeled Benign in the dataset and therefore provide real false-positive review examples. To refresh the data, run from the repository root:
 
 ```powershell
-python services/alerts.py data/GeneratedLabelledFlows.zip -o data/alerts-full.json
-python services/alerts.py --preview-from data/alerts-full.json --preview-cases 3 -o src/real-alerts.json
-python services/timeline.py data/alerts-full.json -o data/timelines-full.json
+python services/alerts.py path/to/GeneratedLabelledFlows.zip --include-monday-review -o src/real-alerts.json
 python services/timeline.py src/real-alerts.json -o src/real-timelines.json
-python -m services.yatesbury data/normal_synflood_ddos.tar.gz --alerts-output src/real-alerts.json --timelines-output src/real-timelines.json
 ```
 
-`start.cmd` starts Vite and the loopback Python review service. The frontend reads the tracked preview JSON files; the local review service writes `data/audit.db`. `data/` stays local and is ignored by Git. The Yatesbury command needs the single `normal_synflood_ddos.tar.gz` scenario from [Microsoft Yatesbury](https://github.com/microsoft/Yatesbury), not the full collection. Run it after regenerating the CIC-IDS2017 preview. It replaces its own case on repeat runs. The original 163 MB archive stays local; only sampled evidence enters the tracked preview JSON.
+`start.cmd` starts Vite and the loopback Python review service. The frontend reads the tracked JSON files; the local review service writes `data/audit.db`. `data/` stays local and is ignored by Git. Only up to six sampled flow records per alert enter the tracked JSON; the large source archive stays local. The earlier Yatesbury DDoS demonstration is archived rather than included in this three-type queue.
 
 ## Detection and grouping
 
-The script scans the Wednesday DoS, Friday DDoS, and Friday PortScan flow CSVs inside the archive. It detects one-minute flow groups using source IP, destination IP, port counts, flow counts, and packet counts. A PortScan candidate needs at least 100 destination ports and 100 flows, plus either twice as many source ports as destination ports or at least 250 destination ports and two source ports. The second branch catches dense scans that reuse source ports. A DoS candidate needs at least 1,000 flows, 10,000 packets, 10 source ports, and at most 10 destination ports. Three visible flood sources against one destination in the same minute produce DDoS rule matches.
+The script scans the Monday, Tuesday, Wednesday, and Friday PortScan flow CSVs. It detects one-minute source/destination groups. PortScan and DoS retain their prototype count/port rules. Suspected BruteForce requires at least 50 connections from one source to one target's FTP (21) or SSH (22) port in a minute. Flow counts cannot establish failed logins; authentication logs would be needed to confirm brute force. One unmatched high-volume Monday group becomes NeedsReview, selected without reading its label.
 
-Consecutive alerts are grouped by type and source CSV when their gap is at most five minutes: PortScan follows the source IP, while DoS/DDoS follows the destination IP. Different types remain separate even when their addresses overlap; near-in-time cases sharing a source or destination are linked as related investigations. This turns multiple one-minute alerts into a single evidence-linked case. Rule thresholds are prototype heuristics, not validated SOC policy. No rule match is not a Benign verdict.
+Consecutive alerts are grouped by type and source CSV when their gap is at most five minutes: PortScan follows the source IP, DoS follows the destination IP, and suspected BruteForce follows the source/target/login-port tuple. Different types remain separate. Rule thresholds are prototype heuristics selected during development, not independently validated SOC policy. No rule match is not a Benign verdict.
 
-The detector does not read dataset labels when matching or grouping alerts. Labels are kept for evaluation and for choosing representative preview cases. In this dataset, the DDoS attack exposes one visible source IP, so its flood alerts remain DoS rule matches with a separate DDoS dataset reference. This does not establish distributed origins from the available fields.
+The detector does not read dataset labels when matching or grouping alerts. Labels are kept for retrospective evaluation and are withheld from model-facing tools. A normal-labeled Case does not automatically receive a Likely Benign AI verdict: the live model may reasonably return Needs Review without business context.
 
 ### Checking detection quality and extending rules
 
-Run `python -m services.evaluate_detection data/GeneratedLabelledFlows.zip -o data/detection-evaluation.json` on the **complete** archive. The report compares each source/destination/minute group's rule result with its dataset label and shows attack-detection and per-type confusion tables. Mixed-label groups are reported separately rather than forced into one truth class. The chosen preview cases cannot be used for this evaluation: they were selected because they matched the rules. The measured results and limitations are in [DETECTION_AUDIT.md](DETECTION_AUDIT.md). This is an offline historical check, not a claim of live SOC accuracy. For stronger validation, repeat on an independent dataset or traffic capture, inspect false positives and missed groups, then tune thresholds only on separate development data before rerunning the held-out check.
+Run `python -m services.evaluate_detection path/to/GeneratedLabelledFlows.zip -o data/detection-evaluation.json` on the **complete** archive. The current results and limitations are in [THREE_TYPE_EVALUATION.md](THREE_TYPE_EVALUATION.md). The earlier [DETECTION_AUDIT.md](DETECTION_AUDIT.md) describes the archived DDoS configuration, not this queue. This is an offline historical check on data used during rule development, not a claim of live SOC accuracy.
 
-Named rule predicates and thresholds live in `services/alerts.py` (`DETECTION_RULES` and `RULE_THRESHOLDS`). A new evidence-backed type can be added there without changing the case grouping or evidence-linking code. Regenerate the alert and timeline exports after a rule change. Optional `--include-unclassified` exports high-volume unmatched groups as `NeedsReview` candidates (at least 500 flows and 5,000 packets in a minute); this is a coarse review heuristic with potentially many false positives, **not** zero-day detection. The Alerts filter picks up types present in the export automatically. This option is off for the current preview until its false-positive rate is measured.
+Named rule predicates and thresholds live in `services/alerts.py`. `--include-monday-review` exports unmatched high-volume Monday groups as NeedsReview candidates (at least 500 flows and 5,000 packets in a minute); this is a coarse review heuristic, **not** zero-day detection. `--include-unclassified` applies the same rule across all included days and is not used in the bundled queue.
 
 ## Timeline
 
 `services/timeline.py` orders sampled source records and every alert in each incident by timestamp and CSV row. Each event carries an evidence ID that resolves to a flow or alert in the matching JSON export. PortScan alerts map to MITRE ATT&CK T1046; DDoS alerts map to T1498; events without sufficient evidence are Unmapped. The source timestamps have minute precision. Friday afternoon CSV hours are normalized to afternoon according to their filename.
 
-The CIC-IDS2017 preview selects three incidents. The Yatesbury import adds a fourth, independently sourced DDoS incident. The CIC-IDS2017 full export currently contains six incidents and 54 one-minute alerts from its three scanned files; regenerate after changing any rule or dataset input.
+The Timeline view covers every minute between a case's first and last recorded event, including minutes without an exported rule match. It highlights the first match, peak matched minute, matched flow total, and linked sample count. Selecting a minute explains the detection basis and links to its alert evidence before navigating to the Evidence view. Blank minutes mean no exported rule match; the bundled preview does not include all raw network flows, so they must not be interpreted as zero traffic.
 
-## Yatesbury DDoS case
+The bundled data contains 10 Cases and 159 one-minute Alerts from the four selected CIC files. Regenerate after changing any rule or dataset input.
+
+## Archived Yatesbury DDoS case (outside the current queue)
 
 The additional historical case uses the SYN Flood DDoS scenario's `nsg.csv` records for 2023-03-15 11:56 UTC. Three distinct sources sent 710,279 TCP records and 485,706 reported packets to 172.0.0.19 in that minute. Each source contributed more than 1,000 records. Detection uses the traffic records; `label.csv` is read afterward as a separate reference, not as the trigger. Six sampled flow IDs point back to original `nsg.csv` row numbers. This is a historical dataset replay, not live detection.
 
@@ -67,6 +66,8 @@ Run `python -m services.evaluate_detection path/to/GeneratedLabelledFlows.zip -o
 You can also configure live AI from **AI settings** in the sidebar: select Groq or Gemini, enter the model ID and API key, use **Test connection**, then **Save settings**. The key is stored only by the loopback Python service in `data/ai-settings.json` (Git-ignored); the browser receives only a configured/not-configured flag. Saved UI settings take precedence over `.env` and apply to the next AI check without restarting. Restart `start.cmd` once after updating the application code so the settings endpoints are available.
 
 For **Codex CLI**, install `@openai/codex`, run `codex login` on the computer running the Python API, then choose **Codex CLI** in AI settings. Leave Model ID as `default` to use the CLI default. **Test connection** makes one real Codex request, then **Save settings** activates it. Codex investigations use the account's Codex allowance; no API key is needed. The adapter starts each model turn in a temporary read-only CLI session and passes only the case conversation and read-only tool descriptions. Existing case results remain in the local state store if the allowance is exhausted.
+
+After a new AI check, the validated proposal may include one or two evidence-linked next investigation steps. Recommendations highlights those AI suggestions and their cited evidence, while keeping the case-rule checks available. Only allowlisted read-only steps can be approved; an analyst must approve or reject each check. Earlier stored AI results do not contain these new suggestions until checked again.
 
 The guardrails reject evidence IDs outside the case, prevent unsupported verdicts, and require explicit analyst confirmation for a Likely Benign verdict on an attack alert. The safety evaluator separately counts attack/benign merges, low-priority attack assignments, and attack closure recommendations from a supplied evaluation-case JSON array. A zero count on a test set would not establish zero operational risk.
 

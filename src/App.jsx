@@ -13,7 +13,7 @@ import { apiFetch, setCsrfToken } from './apiFetch.js';
 
 const featuredCase = data.incidents.find((incident) => data.alerts.some((alert) => alert.incident_id === incident.incident_id && alert.type === 'PortScan'));
 const alertNotificationEnabled = false;
-const caseTitle = (incident) => incident.type === 'PortScan' ? 'Many ports checked' : incident.type === 'DDoS' ? 'Distributed traffic surge' : incident.type === 'DoS' ? 'Heavy network traffic' : incident.type === 'NeedsReview' ? 'Unclassified activity · needs review' : incident.type;
+const caseTitle = (incident) => incident.type === 'PortScan' ? 'Many ports checked' : incident.type === 'BruteForce' ? 'Repeated login-port connections' : incident.type === 'DDoS' ? 'Distributed traffic surge' : incident.type === 'DoS' ? 'Heavy network traffic' : incident.type === 'NeedsReview' ? 'Unclassified activity · needs review' : incident.type;
 
 export default function App() {
   const [username, setUsername] = useState(null);

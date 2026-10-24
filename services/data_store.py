@@ -30,11 +30,11 @@ LABEL_FIELDS = ("dataset_label", "dataset_labels", "ddos_reference", "reference_
 AGENT_ALERT_FIELDS = (
     "alert_id", "incident_id", "type", "timestamp", "source_ip",
     "destination_ip", "flow_count", "destination_port_count",
-    "source_port_count", "source_count", "evidence_sample_ids", "rule_basis",
+    "source_port_count", "source_count", "target_port", "evidence_sample_ids", "rule_basis",
 )
 
 #: Attack categories that trigger the Module 5 human-confirmation rule.
-ATTACK_CATEGORIES = ("PortScan", "DoS", "DDoS")
+ATTACK_CATEGORIES = ("PortScan", "DoS", "BruteForce")
 
 
 class DatasetError(RuntimeError):

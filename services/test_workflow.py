@@ -76,8 +76,9 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(bad_action['status'], 'BLOCKED')
 
     def test_attack_benign_verdict_requires_review(self):
-        alert_id = DATA['incidents'][0]['alert_ids'][0]
-        result = validate_guardrails(DATA, CASE_ID, {'verdict': 'Likely Benign', 'evidence_ids': [alert_id], 'actions': ['REVIEW_NETWORK_FLOWS']})
+        attack = next(item for item in DATA['incidents'] if item['type'] == 'BruteForce')
+        alert_id = attack['alert_ids'][0]
+        result = validate_guardrails(DATA, attack['incident_id'], {'verdict': 'Likely Benign', 'evidence_ids': [alert_id], 'actions': ['REVIEW_NETWORK_FLOWS']})
         self.assertEqual(result['status'], 'REVIEW_REQUIRED')
 
     def test_three_safety_failures_are_counted_separately(self):

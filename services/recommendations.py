@@ -120,7 +120,7 @@ def generate_recommendations(data, incident_id, db_path=DB_PATH):
     alert_types = {a["type"] for a in alerts}
 
     if not alert_types or alert_types - {
-        "PortScan", "DoS", "DDoS", "Benign"
+        "PortScan", "DoS", "DDoS", "BruteForce", "Benign", "NeedsReview"
     }:
         raise ValueError("Unknown alert type")
 
@@ -130,7 +130,7 @@ def generate_recommendations(data, incident_id, db_path=DB_PATH):
         "REVIEW_INCIDENT_TIMELINE",
     ]
 
-    if alert_types & {"PortScan", "DoS", "DDoS"}:
+    if alert_types & {"PortScan", "DoS", "DDoS", "BruteForce"}:
         actions.append("ESCALATE_TO_ANALYST")
 
     recommendations = []
@@ -154,6 +154,29 @@ def generate_recommendations(data, incident_id, db_path=DB_PATH):
         })
 
     return recommendations
+
+
+def annotate_ai_next_steps(recommendations, next_steps):
+    """Add validated AI rationale to case-rule-allowed checks only."""
+    by_action = {item['action']: item for item in recommendations}
+    ranked = []
+    for step in next_steps or []:
+        if not isinstance(step, dict):
+            continue
+        action = step.get('action')
+        if not isinstance(action, str):
+            continue
+        base = by_action.get(action)
+        evidence = step.get('evidence_ids')
+        reason = step.get('reason')
+        if (base is None or not isinstance(reason, str) or not reason.strip()
+                or not isinstance(evidence, list) or not evidence
+                or any(not isinstance(value, str) for value in evidence)
+                or not set(evidence).issubset(set(base['evidence_ids']))):
+            continue
+        ranked.append({**base, 'ai_suggested': True, 'ai_reason': reason, 'ai_evidence_ids': evidence})
+        by_action.pop(action)
+    return ranked + [{**item, 'ai_suggested': False} for item in recommendations if item['action'] in by_action]
 
 
 # 4. Approve or reject recommendations

@@ -57,13 +57,15 @@ export default function NextSteps({ incidentId, analystName, onEvidence, onTimel
   const complete = proposal?.checks.every((item) => decisions[item.id]);
 
   return <section className="process-panel next-steps" aria-label="Next steps">
-    <div className="process-panel-head"><h3>Rule-based next steps</h3></div>
-    <p className="process-note">These checks come from the case rules. The AI assessment is shown separately for your review.</p>
+    <div className="process-panel-head"><h3>Recommended next steps</h3></div>
+    <p className="process-note">AI suggestions are grounded in the case evidence and limited to safe investigation steps. Review each step before saving your decision.</p>
     {error && <p className="review-error" role="alert">{error}</p>}
     {!proposal && !error && <p className="process-note">Loading checks…</p>}
     {proposal && <>
+      {!proposal.checks.some((item) => item.ai_suggested) && <p className="process-note">{proposal.ai_status === 'ready' ? 'This AI check did not produce a validated next step. The safe case-rule checks remain available below.' : 'Run AI check to see case-specific suggestions. The safe case-rule checks remain available below.'}</p>}
       <div className="check-list">{proposal.checks.map((item) => <div className="check-item" key={item.id}>
-        <p>{item.text}</p>
+        <p>{item.ai_suggested && <span className="recommendation-ai-badge">AI suggested</span>}{item.text}</p>
+        {item.ai_suggested && <div className="recommendation-ai-reason"><p>{item.ai_reason}</p><div>{item.ai_evidence_ids.map((id) => <button type="button" key={id} onClick={() => onEvidence(id)}>{id}</button>)}</div></div>}
         <button className="check-evidence" type="button" onClick={() => item.action === 'REVIEW_INCIDENT_TIMELINE' ? onTimeline() : onEvidence(item.evidence_ids[0])}>{item.action === 'REVIEW_INCIDENT_TIMELINE' ? 'View timeline' : item.action === 'REVIEW_NETWORK_FLOWS' ? 'View flows' : 'View evidence'}</button>
         <div className="check-actions" aria-label={`Decision for ${item.id}`}>
           <button type="button" disabled={submitted} className={decisions[item.id] === 'approved' ? 'selected' : ''} aria-pressed={decisions[item.id] === 'approved'} onClick={() => setDecisions({ ...decisions, [item.id]: 'approved' })}>Approve</button>
