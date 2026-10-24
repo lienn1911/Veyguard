@@ -14,6 +14,7 @@ const endpoint = (id, action) => `/api/cases/${encodeURIComponent(id)}/${action}
 export default function NextSteps({ incidentId, analystName, onEvidence, onTimeline, onReviewed, onCaseRecord, onOverview }) {
   const [proposal, setProposal] = useState(null);
   const [decisions, setDecisions] = useState({});
+  const [remarks, setRemarks] = useState({});
   const [events, setEvents] = useState([]);
   const [note, setNote] = useState(null);
   const [error, setError] = useState('');
@@ -24,6 +25,7 @@ export default function NextSteps({ incidentId, analystName, onEvidence, onTimel
     let current = true;
     setProposal(null);
     setDecisions({});
+    setRemarks({});
     setNote(null);
     setSubmitted(false);
     setError('');
@@ -33,6 +35,7 @@ export default function NextSteps({ incidentId, analystName, onEvidence, onTimel
       if (checks.error) throw new Error(checks.error);
       setProposal(checks);
       setDecisions(checks.decisions || {});
+      setRemarks(checks.remarks || {});
       setNote(checks.note || null);
       setSubmitted(Object.keys(checks.decisions || {}).length > 0);
       setEvents(history.events || []);
@@ -47,7 +50,7 @@ export default function NextSteps({ incidentId, analystName, onEvidence, onTimel
       const response = await apiFetch(endpoint(incidentId, 'approval'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ analyst: analystName, decisions }),
+        body: JSON.stringify({ analyst: analystName, decisions, remarks: Object.fromEntries(Object.entries(remarks).filter(([id, value]) => decisions[id] && value.trim())) }),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Approval could not be saved');
@@ -72,10 +75,11 @@ export default function NextSteps({ incidentId, analystName, onEvidence, onTimel
       <h3>{item.text}</h3>
       <p>{stepPurpose[item.action]}</p>
       {item.ai_suggested && <details className="recommendation-rationale"><summary>Reason and evidence</summary><p>{item.ai_reason}</p><div>{(item.ai_evidence_ids || []).map((id) => <button type="button" key={id} onClick={() => onEvidence(id)}>{id}</button>)}</div></details>}
+      <label className="recommendation-remark"><span>Remark <small>(optional)</small></span><textarea value={remarks[item.id] || ''} onChange={(event) => setRemarks({ ...remarks, [item.id]: event.target.value })} disabled={submitted || saving} maxLength={1000} rows={2} placeholder="Add your reason or follow-up note" /></label>
     </div>
     <div className="recommendation-choice" role="group" aria-label={`Decision: ${item.text}`}>
-      <button type="button" disabled={submitted || saving} className={decisions[item.id] === 'approved' ? 'selected approved' : ''} aria-pressed={decisions[item.id] === 'approved'} onClick={() => setDecisions({ ...decisions, [item.id]: 'approved' })}>Approve</button>
-      <button type="button" disabled={submitted || saving} className={decisions[item.id] === 'rejected' ? 'selected rejected' : ''} aria-pressed={decisions[item.id] === 'rejected'} onClick={() => setDecisions({ ...decisions, [item.id]: 'rejected' })}>Reject</button>
+      <button type="button" disabled={submitted || saving} className={decisions[item.id] === 'approved' ? 'selected approved' : ''} aria-pressed={decisions[item.id] === 'approved'} onClick={() => setDecisions({ ...decisions, [item.id]: 'approved' })}>{decisions[item.id] === 'approved' ? 'Approved' : 'Approve'}</button>
+      <button type="button" disabled={submitted || saving} className={decisions[item.id] === 'rejected' ? 'selected rejected' : ''} aria-pressed={decisions[item.id] === 'rejected'} onClick={() => setDecisions({ ...decisions, [item.id]: 'rejected' })}>{decisions[item.id] === 'rejected' ? 'Rejected' : 'Reject'}</button>
     </div>
   </li>;
 

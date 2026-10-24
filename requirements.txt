@@ -6,3 +6,6 @@ python-dotenv>=1.0
 
 # Tests
 pytest>=8.0
+
+# Monochrome case report PDF export
+reportlab>=4.0

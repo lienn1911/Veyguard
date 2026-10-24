@@ -68,7 +68,7 @@ export default function Timeline({ incident, alerts = [], rawContext, selectedMi
   const timeRange = `${rows[0].key.slice(11)} – ${rows.at(-1).key.slice(11)} UTC`;
 
   return <section className="traffic-timeline case-minute-timeline" aria-label="Case event timeline">
-    <div className="incident-section-heading timeline-heading"><div><h2 id="incident-timeline">Timeline</h2><p className="case-step-purpose">Select a minute to inspect its evidence.</p></div><p className="case-minute-range"><strong>{dateRange}</strong><time>{timeRange}</time></p></div>
+    <div className="incident-section-heading timeline-heading"><div><h2 id="incident-timeline">Timeline</h2><p className="case-step-purpose">Select a minute to see why it was flagged and view its records.</p></div><p className="case-minute-range"><strong>{dateRange}</strong><time>{timeRange}</time></p></div>
     <ol className="case-minute-list">{rows.slice(0, visibleCount).map((item) => {
       const minuteAlerts = alerts.filter((alert) => minuteOf(alert.timestamp) === item.key);
       const expanded = activeKey === item.key;

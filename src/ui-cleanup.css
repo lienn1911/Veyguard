@@ -451,7 +451,7 @@ button:disabled{cursor:not-allowed}
 .case-list-review .case-ai-assessment.attack{background:#fff0ef;color:#ad4141}
 .case-list-review .case-ai-assessment.benign{background:#eef7f1;color:#39734f}
 .case-list-review .case-ai-assessment.review{background:#fff6e6;color:#93671f}
-.case-list-review .case-ai-assessment.unavailable{background:#fff0ee;color:#a95b4d}
+.case-list-review .case-ai-assessment.unavailable{background:#edf1f5;color:#526273}
 .case-list-review .case-ai-assessment.pending{background:#f0eef3;color:#817789}
 .case-list-review .case-ai-assessment.analysing{background:#edf3fc;color:#4e72a3}
 .investigation-main-content .iris-cases-columns,.investigation-main-content .iris-cases-row{grid-template-columns:minmax(200px,1.6fr) minmax(120px,.75fr) minmax(220px,1.7fr) minmax(130px,.8fr) 104px}
@@ -608,8 +608,11 @@ button:disabled{cursor:not-allowed}
 .triage-progress-steps>li{display:flex;align-items:center;gap:6px;font-size:12px;color:#8c8696}
 .triage-progress-steps>li>span{display:grid;place-items:center;width:21px;height:21px;border:1px solid #e3dceb;border-radius:50%;font-size:11px}
 .triage-progress-steps>.current{color:var(--ui-purple);font-weight:600}.triage-progress-steps>.current>span{background:var(--ui-purple);color:white;border-color:var(--ui-purple)}
-.triage-progress-steps>.done{color:#486b57}.triage-progress-steps>.done>span{border-color:#b9d5c3;background:#f0f7f2}
+.triage-progress-steps>.done{color:#176f73}.triage-progress-steps>.done>span{border-color:#16878c;background:#16878c;color:#fff;font-weight:600}
 .triage-progress>small{color:var(--ui-muted);font-size:11px}
+.triage-progress-steps{margin:4px 0 6px}
+.triage-progress-percent{text-align:right;color:var(--ui-purple);font-size:12px;font-weight:650;font-variant-numeric:tabular-nums}
+.triage-progress-track{margin:6px 0 0}
 @media(prefers-reduced-motion:reduce){.triage-progress-track>span{transition:none}}
 
 /* Compact recommendations and a single clear hierarchy in expanded minutes. */
@@ -746,8 +749,334 @@ button:disabled{cursor:not-allowed}
 .incident-workbench .case-minute-detail .case-minute-reason>strong,
 .incident-workbench .case-minute-detail .minute-rule-details h4{display:block;margin:0 0 8px;font-family:'Segoe UI',Arial,sans-serif;font-size:14px;font-weight:600;line-height:1.5;letter-spacing:normal;color:var(--ui-ink)}
 .incident-workbench .case-minute-detail .case-minute-reason>p{margin:0;font-family:'Segoe UI',Arial,sans-serif;font-size:14px;font-weight:400;line-height:1.7;color:var(--ui-muted)}
+.incident-workbench .case-minute-detail .case-minute-reason>.minute-record-button{display:inline-flex;align-items:center;gap:8px;min-height:36px;margin:12px 0 0;padding:7px 10px;border:1px solid #dcd2e9;border-radius:6px;background:#faf8fd;color:#67468e;font-family:'Segoe UI',Arial,sans-serif;font-size:13px;font-weight:600;cursor:pointer}
+.incident-workbench .case-minute-detail .case-minute-reason>.minute-record-button:hover{background:#f0eafa}
+.incident-workbench .case-minute-detail .minute-record-button>span{color:#877b95;font-family:ui-monospace,Consolas,monospace;font-size:11px;font-weight:400}
 .incident-workbench .case-minute-detail .minute-rule-details{margin-top:24px}
 .incident-workbench .case-minute-detail .minute-rule-details dl{padding:0 14px}
 .incident-workbench .case-minute-detail .minute-rule-details dl>div{padding:11px 0;font-family:'Segoe UI',Arial,sans-serif;font-size:14px;font-weight:400;line-height:1.7;letter-spacing:normal}
 .incident-workbench .case-minute-detail .minute-rule-details dt,
 .incident-workbench .case-minute-detail .minute-rule-details dd{font-family:inherit;font-size:inherit;font-weight:400;line-height:inherit}
+
+/* Items 1–6: case workflow only; audit/settings pages retain their own styles. */
+.incident-workbench .incident-overview .overview-trigger h3,
+.incident-workbench .incident-overview-ai .ai-assessment-heading{border-left:3px solid #b6a1d1;padding-left:10px}
+.incident-workbench .incident-overview .overview-trigger h3{padding-top:2px;padding-bottom:2px}
+.incident-workbench .ai-summary-points strong{font-weight:600;color:var(--ui-ink)}
+.incident-workbench .recommendation-choice{gap:8px;padding:0;border:0;background:transparent}
+.incident-workbench .recommendation-choice button{min-width:92px;min-height:40px;padding:8px 14px;border:1px solid #d9d3e2;border-radius:7px;background:#fff;color:#5d536a;font-size:13px;font-weight:600;box-shadow:none}
+.incident-workbench .recommendation-choice button:hover:not(:disabled){border-color:#9c84ba;background:#f6f2fa}
+.incident-workbench .recommendation-choice button.selected.approved{background:#eaf5ee;border-color:#83b899;color:#226342}
+.incident-workbench .recommendation-choice button.selected.rejected{background:#fff0ef;border-color:#da9a93;color:#a13229}
+.incident-workbench .recommendation-remark{display:block;width:100%;margin-top:14px;color:var(--ui-ink);font-size:13px;font-weight:600}
+.incident-workbench .recommendation-remark small{color:var(--ui-muted);font-size:12px;font-weight:400}
+.incident-workbench .recommendation-remark textarea{display:block;box-sizing:border-box;width:100%;margin-top:6px;padding:9px 11px;border:1px solid var(--ui-line);border-radius:7px;background:#fff;color:var(--ui-ink);font:inherit;font-size:13px;font-weight:400;line-height:1.5;resize:vertical}
+.incident-workbench .recommendation-remark textarea:focus-visible{outline:2px solid #8463ae;outline-offset:2px}
+.incident-workbench .recommendations-list{padding:0 20px;border:1px solid var(--ui-line);border-radius:9px;background:#fff}
+.incident-workbench .recommendations-list>.recommendation-row:last-child{border-bottom:0}
+@media(max-width:600px){.incident-workbench .recommendations-list{padding:0 14px}}
+.incident-workbench .recommendation-choice button:disabled{opacity:1}
+.incident-workbench .recommendation-choice button:focus-visible,
+.incident-workbench .report-assessment-review button:focus-visible{outline:2px solid #8463ae;outline-offset:3px}
+.incident-workbench .case-report .ai-summary-points{margin:0 0 14px;padding-left:18px;font-size:14px;line-height:1.7;color:#4d4758}
+.incident-workbench .case-report .ai-summary-points li{margin-bottom:8px;padding-left:2px}
+.incident-workbench .case-report .report-verdict{font-size:16px;font-weight:600}
+.incident-workbench .case-report .verdict-likely-attack{color:#b42318}
+.incident-workbench .case-report .verdict-likely-benign{color:#26704b}
+.incident-workbench .case-report .verdict-needs-review{color:#966017}
+.incident-workbench .report-assessment-review .ai-review-note{margin:12px 0}
+.incident-workbench .report-assessment-review .ai-review-note label{font-size:12px;font-weight:400;color:var(--ui-muted)}
+.incident-workbench .report-assessment-review textarea{min-height:82px;margin:7px 0 12px;font-size:14px}
+.incident-workbench .report-assessment-review .ai-review-controls>div:last-of-type{gap:8px}
+.incident-workbench .report-assessment-review button{min-height:40px;border:1px solid #d9d3e2;border-radius:7px;font-size:13px;font-weight:600;box-shadow:none}
+.incident-workbench .report-assessment-review .assessment-confirm{background:#7051a8;border-color:#7051a8;color:#fff}
+.incident-workbench .report-assessment-review .assessment-confirm:hover:not(:disabled){background:#5e408f}
+.incident-workbench .report-assessment-review .assessment-reject{background:#fff;color:#a13229;border-color:#deb8b4}
+.incident-workbench .report-assessment-review button:disabled{opacity:.45;cursor:not-allowed}
+.incident-workbench .case-report-source .case-report-facts{gap:12px;margin:0}
+.incident-workbench .case-report-source .case-report-facts>div{padding:0;border:0}
+.incident-workbench .case-report-source .case-report-facts dt{margin-bottom:4px;font-size:12px}
+.incident-workbench .case-report-source .case-report-facts dd{font-size:13px;line-height:1.6}
+.incident-workbench .case-report-source .case-report-source-grid>.case-report-panel+section{margin-top:14px;padding-top:14px}
+.incident-workbench .case-report-source .case-report-metrics{margin:0 0 12px;gap:12px}
+.incident-workbench .report-activity-table{width:100%;table-layout:fixed}
+.incident-workbench .report-activity-table th:first-child{width:30%}
+.incident-workbench .report-activity-table th:nth-child(2){width:27%}
+.incident-workbench .report-activity-table td{vertical-align:top;font-size:12px;line-height:1.6}
+.incident-page .incident-header-main>div{display:flex;align-items:center;gap:10px}
+.incident-page .incident-header-main h1{display:flex;align-items:center;gap:8px;margin:0;line-height:1.4}
+.incident-page .incident-header-main h1 .case-stable-id{margin:0}
+.incident-page .incident-header .incident-back{display:flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0}
+.incident-page .case-back-chevron{display:block;flex:none}
+
+.incident-page .incident-header .incident-back .case-back-chevron{transform:none}
+
+
+/* Audit workspace: concise case groups, readable events and optional technical detail. */
+.main-content>.audit-log-page,.main-content>.ai-settings-page{width:100%;max-width:none;margin:0}
+.audit-log-page{gap:24px;color:var(--ui-ink)}
+.audit-log-page .page-head{align-items:flex-start;margin:0}
+.audit-log-page .page-head h1{font-size:24px;line-height:1.3;margin:0;font-weight:650}
+.audit-log-page .audit-page-subtitle{margin:8px 0 0;color:var(--ui-muted);font-size:14px;line-height:1.6;max-width:75ch}
+.audit-log-page>.panel{padding:0;border:1px solid var(--ui-line);border-radius:10px;background:#fff;overflow:hidden;box-shadow:none}
+.audit-log-page .panel-head{padding:20px 22px;margin:0;border-bottom:1px solid var(--ui-line);align-items:center}
+.audit-log-page .panel-head h2{font-size:16px;margin:0;font-weight:600}
+.audit-log-page .audit-filters{display:grid;grid-template-columns:minmax(200px,2fr) repeat(3,minmax(130px,1fr));gap:12px;padding:18px 22px;margin:0;background:#fff}
+.audit-log-page .audit-filters input[type=search],.audit-log-page select{width:100%;min-width:0;min-height:40px;padding:8px 12px;border:1px solid #dcd7e3;border-radius:7px;background:#fff;color:var(--ui-ink);font-size:13px}
+.audit-log-page .audit-filter{display:flex;align-items:center;gap:10px}
+.audit-log-page .audit-filter select{max-width:250px}
+.audit-log-page .audit-filter-bottom{grid-column:1/-1;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:0;margin:0;font-size:12px;color:var(--ui-muted)}
+.audit-log-page .audit-filter-bottom>button{margin-left:auto;padding:5px 0;border:0;background:transparent;color:var(--ui-purple);font-size:13px;cursor:pointer}
+.audit-log-page .audit-technical-toggle{display:inline-flex;align-items:center;gap:7px;font-size:13px;cursor:pointer}
+.audit-log-page .audit-technical-toggle input{width:16px;min-height:0;height:16px;margin:0;accent-color:#7051a8}
+.audit-log-page .audit-table{width:100%;table-layout:fixed;margin:0;border-collapse:collapse}
+.audit-log-page .audit-table th{padding:12px 18px;background:#faf9fc;color:var(--ui-muted);font-size:12px;font-weight:600;text-align:left;border-bottom:1px solid var(--ui-line)}
+.audit-log-page .audit-table th:nth-child(1){width:18%}.audit-log-page .audit-table th:nth-child(2){width:23%}.audit-log-page .audit-table th:nth-child(3){width:20%}
+.audit-log-page .audit-table td{padding:14px 18px;vertical-align:top;overflow-wrap:anywhere;font-size:13px;line-height:1.6;border-bottom:1px solid var(--ui-line)}
+.audit-log-page .audit-table .audit-group-cell{padding:0}
+.audit-log-page .audit-group-toggle{display:grid;grid-template-columns:minmax(0,1fr) auto 18px;align-items:center;gap:18px;width:100%;padding:16px 18px;background:#fff;color:var(--ui-ink);border:0;text-align:left;cursor:pointer}
+.audit-log-page .audit-group-row.is-open .audit-group-toggle,.audit-log-page .audit-group-toggle:hover{background:#f7f4fa}
+.audit-log-page .audit-case-identity strong{display:block;font-size:13px;font-weight:600}
+.audit-log-page .audit-case-identity small{display:block;margin-top:4px;font-size:12px;color:var(--ui-muted)}
+.audit-log-page .audit-group-toggle time{font-size:12px;color:var(--ui-muted)}
+.audit-log-page .audit-expand-chevron{display:block;transform:none;transition:transform .15s}
+.audit-log-page .is-open .audit-expand-chevron{transform:rotate(180deg)}
+.audit-log-page .audit-filters{grid-template-columns:minmax(200px,2fr) repeat(3,minmax(130px,1fr));align-items:center}
+.audit-log-page>.audit-filters{grid-template-columns:minmax(240px,2fr) repeat(3,minmax(145px,1fr));align-items:end;padding:20px;border:1px solid var(--ui-line);border-radius:10px;background:#fff}
+.audit-log-page .audit-filters>label{display:grid;gap:8px;min-width:0;color:#4b4657;font-size:13px;font-weight:600}
+.audit-log-page .audit-filters input[type=search],.audit-log-page .audit-filters select{min-height:44px;padding:10px 12px;font-size:14px;font-weight:400}
+@media(max-width:1100px){.audit-log-page .audit-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.audit-log-page .audit-filters{grid-template-columns:1fr}}
+.audit-log-page .audit-result-summary{margin:0;font-size:13px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.audit-log-page .audit-entry-details{margin-top:8px}
+.audit-log-page .audit-entry-details summary{font-size:12px;color:var(--ui-purple);cursor:pointer}
+.audit-log-page .audit-entry-details dl{margin:12px 0}.audit-log-page .audit-entry-details dt{font-size:11px;color:var(--ui-muted)}.audit-log-page .audit-entry-details dd{margin:0 0 8px;font-size:12px;overflow-wrap:anywhere}
+.audit-log-page .audit-entry-details pre{max-height:300px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;padding:10px;border:1px solid var(--ui-line);border-radius:6px;background:#faf9fc;font-size:11px;line-height:1.6}
+.audit-log-page .page-actions>.btn{background:#fff;border:1px solid #dcd7e3;border-radius:7px;font-size:13px;font-weight:600}
+.audit-log-page .page-actions>.chip.chip-ok{border-color:#5b3d85;background:#5b3d85;color:#fff}
+.audit-log-page button:focus-visible,.audit-log-page summary:focus-visible{outline:2px solid #8463ae;outline-offset:2px}
+/* Settings use the same page width, with aligned form columns. */
+.main-content>.ai-settings-page>header{margin-bottom:24px}
+.ai-settings-page .ai-settings-card{width:100%;padding:24px;border-radius:10px;box-shadow:none}
+.ai-settings-page .ai-settings-status{margin:0 0 24px;padding:0 0 20px;border:0;border-bottom:1px solid var(--ui-line);background:transparent;border-radius:0}
+.ai-settings-page .ai-settings-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px;align-items:start}
+.ai-settings-page .ai-settings-form-grid>label,.ai-settings-page .ai-provider-field{margin:0}
+.ai-settings-page .ai-settings-form-grid>label:last-child,.ai-settings-page .ai-settings-form-grid>details{grid-column:1/-1}
+.ai-settings-page .ai-settings-form-grid>label input{max-width:none}
+.ai-settings-page .ai-settings-form-grid>label,.ai-settings-page .ai-provider-field>span{font-size:14px;font-weight:500;color:var(--ui-ink)}
+.ai-settings-page .ai-settings-form-grid>label small{font-size:12px}
+.ai-settings-page .ai-settings-actions{justify-content:flex-end;margin:24px 0 0;padding-top:20px;border-top:1px solid var(--ui-line);gap:10px}
+.ai-settings-page .ai-settings-status{margin-bottom:18px;padding-bottom:16px}
+.ai-settings-page .ai-settings-form-grid{row-gap:12px}
+.ai-settings-page .ai-settings-form-grid>details{margin:0}
+.ai-settings-page .ai-settings-form-grid>details>summary{padding:12px 16px}
+.ai-settings-page .ai-settings-form-grid>details>.ai-settings-codex-help{max-width:none;width:auto;margin:0;padding:0 16px 12px;line-height:1.55}
+.ai-settings-page .ai-settings-actions{margin-top:16px;padding-top:16px}
+@media(max-width:900px){.audit-log-page .audit-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.audit-log-page .table-wrap{overflow-x:auto}.audit-log-page .audit-table{min-width:720px}}
+@media(max-width:600px){.ai-settings-page .ai-settings-form-grid{grid-template-columns:1fr}.audit-log-page .page-head,.audit-log-page .panel-head{flex-wrap:wrap;gap:16px}.audit-log-page .audit-filters{grid-template-columns:1fr}.audit-log-page .audit-group-toggle{gap:10px}.ai-settings-page .ai-settings-actions{justify-content:flex-start;flex-wrap:wrap}}
+.audit-log-page .audit-technical-toggle{flex:0 0 auto;white-space:nowrap}
+.audit-log-page .audit-filters .audit-technical-toggle input[type=checkbox]{flex:0 0 16px;min-width:16px;width:16px;padding:0}
+
+/* Full-width overview section highlights and solid step markers. */
+.incident-workbench .incident-overview .overview-trigger>div{width:100%;min-width:0}
+.incident-workbench .incident-overview .overview-trigger h3,
+.incident-workbench .incident-overview-ai .ai-assessment-heading{width:100%;box-sizing:border-box;padding:9px 12px;border:0;border-radius:6px;background:#f1edf7;margin-bottom:12px}
+.incident-workbench .incident-overview-ai .ai-assessment-heading h3{margin:0}
+.incident-workbench .recommendation-number{width:25px;height:25px;border:0;border-radius:50%;background:#7051a8;color:#fff;font-size:12px;font-weight:600;line-height:1}
+
+.incident-workbench .report-assessment-review .ai-review-controls{display:block}
+.incident-workbench .report-assessment-review .ai-review-controls h4{margin:0 0 8px}
+.incident-workbench .report-assessment-review .ai-review-controls>.ai-review-note{display:grid;gap:6px;margin:0 0 12px}
+.incident-workbench .report-assessment-review .ai-review-note label{margin:0;padding:0}
+.incident-workbench .report-assessment-review .ai-review-note textarea{margin:0;min-height:82px}
+
+/* Separate human review progress from AI verdict and report storage. */
+.case-list-review .case-review-state{display:block;margin-top:6px;font-size:12px;line-height:1.5;color:#81758b}
+.case-list-review .case-review-state.review-partial{color:#966017}
+.case-list-review .case-review-state.review-complete{color:#26704b}
+.case-report-saved-label{display:block;margin-top:4px;font-size:11px;color:var(--ui-muted)}
+.saved-report-header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;margin:0 0 18px;border:1px solid var(--ui-line);border-radius:7px;background:#faf9fc}
+.saved-report-header strong{font-size:14px;color:var(--ui-ink)}
+.saved-report-header span,.saved-report-header small{font-size:12px;color:var(--ui-muted);overflow-wrap:anywhere}
+
+/* The whole case row opens the case; keep AI and human review in separate columns. */
+.investigation-main-content .iris-cases-columns,.investigation-main-content .iris-cases-row{grid-template-columns:minmax(185px,1.35fr) minmax(110px,.72fr) minmax(130px,.8fr) minmax(195px,1.4fr) minmax(115px,.75fr) minmax(125px,.85fr);gap:14px}
+.investigation-main-content .iris-cases-row{appearance:none;cursor:pointer;text-align:left;transition:background-color .15s ease,box-shadow .15s ease}
+.investigation-main-content .iris-cases-row:hover{background:#f7f3fc;box-shadow:inset 3px 0 #8061b0}
+.investigation-main-content .iris-cases-row:focus-visible{position:relative;z-index:1;outline:2px solid #8061b0;outline-offset:-2px;background:#f7f3fc}
+.iris-cases-row>.case-review-progress{display:grid;gap:4px;min-width:0;text-align:left}
+.case-review-progress .case-review-state{margin:0;color:#776b82;font-size:12px;line-height:1.5}
+.case-review-progress .case-review-state.review-partial{color:#966017}
+.case-review-progress .case-review-state.review-complete{color:#26704b}
+.case-review-progress .case-report-saved-label{margin:0}
+@container(max-width:940px){.investigation-main-content .iris-cases-columns{display:none}.investigation-main-content .iris-cases-row{grid-template-columns:minmax(0,1fr) auto;gap:8px 14px}.investigation-main-content .iris-cases-row>.case-queue-name{grid-column:1;grid-row:1}.investigation-main-content .iris-cases-row>.case-review-priority{grid-column:2;grid-row:1;justify-self:end}.investigation-main-content .iris-cases-row>time{grid-column:1/-1;grid-row:2}.investigation-main-content .iris-cases-row>.case-list-reason{grid-column:1/-1;grid-row:3}.investigation-main-content .iris-cases-row>.case-list-review{grid-column:1;grid-row:4}.investigation-main-content .iris-cases-row>.case-review-progress{grid-column:2;grid-row:4;justify-self:end;text-align:right}}
+@container(max-width:520px){.investigation-main-content .iris-cases-row>.case-review-progress{grid-column:1;grid-row:5;justify-self:start;text-align:left}}
+
+/* Match the Overview facts band to the highlighted section headings. */
+.incident-workbench .incident-overview .overview-snapshot{margin:0 0 16px;padding:0;border:0;border-radius:6px;background:#f1edf7}
+.incident-workbench .incident-overview .overview-snapshot>div{padding:12px 16px 14px;border:0;border-left:1px solid #ded5e9}
+.incident-workbench .incident-overview .overview-snapshot>div:first-child{padding-left:16px;border-left:0}
+.incident-workbench .incident-overview .overview-snapshot dt{margin:0 0 7px;color:var(--ui-ink);font-family:'Segoe UI',Arial,sans-serif;font-size:14px;font-weight:600;line-height:1.5;letter-spacing:normal}
+.incident-workbench .incident-overview .overview-snapshot dd{color:var(--ui-ink)}
+@media(max-width:980px){.incident-workbench .incident-overview .overview-snapshot>div:nth-child(3){border-left:0;border-top:1px solid #ded5e9}.incident-workbench .incident-overview .overview-snapshot>div:nth-child(4){border-top:1px solid #ded5e9}}
+@media(max-width:600px){.incident-workbench .incident-overview .overview-snapshot>div:nth-child(n){padding:12px 16px;border-left:0;border-top:1px solid #ded5e9}.incident-workbench .incident-overview .overview-snapshot>div:first-child{border-top:0}}
+
+/* Only the four fact labels form the highlighted row; values stay on white. */
+.incident-workbench .incident-overview .overview-snapshot{border-bottom:0;border-radius:0;background:#fff;overflow:visible}
+.incident-workbench .incident-overview .overview-snapshot>div,.incident-workbench .incident-overview .overview-snapshot>div:first-child{padding:0;border:0}
+.incident-workbench .incident-overview .overview-snapshot dt{box-sizing:border-box;min-height:46px;margin:0;padding:10px 16px;border:0;background:#f1edf7}
+.incident-workbench .incident-overview .overview-snapshot>div:first-child dt{border-radius:6px 0 0 6px}
+.incident-workbench .incident-overview .overview-snapshot>div:last-child dt{border-radius:0 6px 6px 0}
+.incident-workbench .incident-overview .overview-snapshot dd{min-height:51px;margin:0;padding:11px 16px 14px;background:#fff}
+@media(max-width:980px){.incident-workbench .incident-overview .overview-snapshot>div:nth-child(2) dt{border-radius:0 6px 6px 0}.incident-workbench .incident-overview .overview-snapshot>div:nth-child(3) dt{border-radius:6px 0 0 6px}}
+@media(max-width:600px){.incident-workbench .incident-overview .overview-snapshot>div:nth-child(n) dt{border-radius:6px}.incident-workbench .incident-overview .overview-snapshot>div:nth-child(n) dd{min-height:0}}
+
+/* Report reading order: case facts, conclusion, evidence/plan, human review, audit. */
+.incident-workbench .case-report{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+.incident-workbench .case-report>.report-case-strip,
+.incident-workbench .case-report>.case-report-assessment,
+.incident-workbench .case-report>.report-analyst-review,
+.incident-workbench .case-report>.case-report-activity{grid-column:1/-1}
+.incident-workbench .case-report>.case-report-source,.incident-workbench .case-report>.case-report-plan{grid-column:auto;align-self:stretch}
+.incident-workbench .case-report>.report-case-strip{display:grid;grid-template-columns:1.2fr .7fr 1.5fr 1.4fr;gap:18px;padding:0 0 18px;border-bottom:1px solid var(--ui-line)}
+.report-case-strip>div{min-width:0}
+.report-case-strip span{display:block;margin-bottom:5px;font-size:12px;color:var(--ui-muted)}
+.report-case-strip strong{display:block;font-size:13px;font-weight:500;line-height:1.6;overflow-wrap:anywhere;color:var(--ui-ink)}
+.incident-workbench .case-report>.case-report-assessment{padding:22px 24px;background:#fcfbfe}
+.incident-workbench .case-report .report-assessment-verdict{display:flex;align-items:baseline;gap:32px;flex-wrap:wrap;margin:0 0 16px}
+.incident-workbench .case-report .report-assessment-verdict>div{border:0;padding:0;min-width:0}
+.incident-workbench .case-report .report-assessment-verdict dt{font-size:12px;margin-bottom:5px}
+.incident-workbench .case-report .report-assessment-verdict dd{margin:0}
+.incident-workbench .case-report .report-key-limitation{font-size:13px;color:var(--ui-muted);line-height:1.7;margin:12px 0}
+.report-key-limitation>strong{font-weight:600;color:var(--ui-ink);margin-right:6px}
+.incident-workbench .case-report>.report-analyst-review{margin:0;padding:20px 24px}
+.incident-workbench .report-analyst-review textarea{max-width:none;min-height:90px}
+.incident-workbench .report-analyst-review .ai-review-controls>div:last-of-type{justify-content:flex-end}
+.incident-workbench .case-report>.case-report-activity{display:block;padding:20px 24px}
+.incident-workbench .case-report-activity>.report-recent-activity{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.incident-workbench .case-report-activity .report-ai-activity{margin:0 0 16px;padding:0 0 14px;border-bottom:1px solid var(--ui-line)}
+.incident-workbench .case-report-source .report-evidence-reason{margin:0 0 12px;color:var(--ui-muted);font-size:13px;line-height:1.7}
+.incident-workbench .case-report-source .case-report-source-grid>.case-report-panel{margin:14px 0 0;padding:14px 0 0;border-top:1px solid var(--ui-line)}
+@media(max-width:900px){.incident-workbench .case-report>.report-case-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.incident-workbench .case-report{grid-template-columns:1fr}.incident-workbench .case-report-activity>.report-recent-activity{grid-template-columns:1fr;gap:0}}
+.incident-workbench .case-report>section.case-report-panel.case-report-assessment,
+.incident-workbench .case-report>section.case-report-panel.report-analyst-review,
+.incident-workbench .case-report>section.case-report-panel.case-report-activity{grid-column:1/-1}
+.incident-workbench .case-report>section.case-report-panel.case-report-assessment{padding:22px 24px;background:#fcfbfe}
+
+/* Overview values use the same reading type as the Why flagged explanation. */
+.incident-workbench .incident-overview .overview-snapshot dd,
+.incident-workbench .incident-overview .overview-snapshot-metric dd{color:#5d5268;font-family:'Segoe UI',Arial,sans-serif;font-size:14px;font-weight:400;line-height:1.7;letter-spacing:normal}
+.incident-workbench .incident-overview .overview-snapshot>div:first-child dt{padding-left:12px}
+.incident-workbench .incident-overview .overview-snapshot{margin-bottom:12px}
+.incident-workbench .incident-overview .overview-snapshot dd{min-height:0;padding-top:10px;padding-bottom:12px}
+.incident-workbench .incident-overview .overview-trigger{padding-top:0}
+
+.incident-workbench .case-report{padding:22px;border:1px solid var(--ui-line);border-radius:10px;background:#fff}
+.report-download-toolbar{display:flex;justify-content:flex-end;margin:0 0 12px}
+.report-download-button{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:8px 14px;border:1px solid #dcd7e3;border-radius:7px;background:#fff;color:var(--ui-purple);font-size:13px;font-weight:600;text-decoration:none}
+.report-download-button:hover{background:#f6f2fa;border-color:#aa94c5}
+.report-download-button:focus-visible{outline:2px solid #8463ae;outline-offset:3px}
+@media(max-width:600px){.incident-workbench .case-report{padding:14px}}
+
+.incident-workbench .incident-primary .report-page-heading{width:100%;align-items:stretch}
+.report-title-row{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%}
+.report-title-row .report-download-button{flex:none}
+@media(max-width:480px){.report-title-row{gap:8px}.report-title-row .report-download-button{padding:7px 10px;font-size:12px}}
+
+.report-title-row .report-download-button{position:relative;top:18px}
+
+
+.incident-workbench .case-report-source .case-report-source-grid>section.case-report-panel{border:0;border-radius:0;padding-top:0}
+.incident-workbench .case-report>section.case-report-panel.case-report-source{padding:16px 18px}
+.incident-workbench .case-report>.case-report-source>h3{margin-bottom:10px}
+.incident-workbench .case-report-source .report-evidence-reason{margin-bottom:8px}
+.incident-workbench .case-report-source .report-evidence-links{margin:7px 0}
+.incident-workbench .case-report-source .case-report-appendix{padding:8px 0}
+.incident-workbench .case-report-source .case-report-metrics{margin-bottom:8px;padding:9px 0}
+.incident-workbench .case-report-source .case-report-source-grid>.case-report-panel{margin-top:8px;padding-top:8px}
+
+/* Match the Investigations filter row without a surrounding card. */
+.audit-log-page>.audit-filters{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:0;padding:0;border:0;border-radius:0;background:transparent}
+.audit-log-page>.audit-filters>.audit-search-field{flex:1;min-width:240px;gap:5px}
+.audit-log-page>.audit-filters>.select-field{flex:0 0 188px;gap:5px}
+.audit-log-page>.audit-filters>.audit-search-field>span,.audit-log-page>.audit-filters>.select-field>label{color:#4b4657;font-size:13px;font-weight:600}
+.audit-log-page>.audit-filters input[type=search],.audit-log-page>.audit-filters .select-field-trigger{min-height:40px;border-color:#d9d5e0;border-radius:7px;background:#fff;color:var(--ui-ink);font-size:14px;font-weight:400}
+.audit-log-page .audit-table th.audit-case-heading{width:auto;padding:18px 22px;background:#faf9fc;color:var(--ui-muted);font-size:13px;font-weight:600;text-align:left;text-transform:none;letter-spacing:0}
+.audit-log-page .audit-table .audit-event-row .event{display:inline;padding:0;border:0;border-radius:0;background:transparent;color:var(--ui-ink);font-size:13px;font-weight:500;white-space:normal}
+@media(max-width:760px){.audit-log-page>.audit-filters>.audit-search-field{flex-basis:100%}.audit-log-page>.audit-filters>.select-field{flex:1 1 140px}}
+
+
+.report-technique-mapping{padding:14px 0 0}
+.report-technique-mapping+section{margin-top:14px;border-top:1px solid var(--ui-line)}
+.incident-workbench .report-technique-mapping h4{margin:0 0 8px;font-size:14px;font-weight:600;color:var(--ui-ink);line-height:1.6}
+.incident-workbench .report-technique-mapping>p{margin:0 0 12px;font-size:13px;line-height:1.7}
+.mapping-evidence-label{font-size:12px;color:var(--ui-muted)}
+.incident-workbench .report-technique-mapping .mapping-limitation{margin:8px 0 0;font-size:12px;color:var(--ui-muted)}
+.incident-workbench .report-assessment-review,
+.incident-workbench .report-assessment-review .ai-review-controls{width:100%;min-width:0}
+.incident-workbench .report-assessment-review .ai-review-controls>.ai-review-note{width:100%;min-width:0;grid-template-columns:minmax(0,1fr);justify-items:stretch}
+.incident-workbench .report-assessment-review .ai-review-note textarea{display:block;box-sizing:border-box;width:100%;max-width:none;min-width:0;min-height:110px;padding:12px 14px;border:1px solid #d9d5e0;border-radius:7px;background:#fff;color:var(--ui-ink);font:inherit;font-size:14px;line-height:1.6;resize:vertical}
+/* A single notes drawer persists while the analyst switches case tabs. */
+.incident-page .incident-header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.case-notes-open{min-height:38px;padding:8px 16px;border:1px solid #dcd7e3;border-radius:7px;background:#fff;color:var(--ui-purple);font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.case-notes-open[aria-expanded=true]{background:#f1edf7;border-color:#a88fc6}
+.case-notes-drawer{position:fixed;z-index:90;right:20px;top:88px;bottom:20px;width:min(420px,calc(100vw - 32px));display:flex;flex-direction:column;border:1px solid #dcd7e3;border-radius:10px;background:#fff;box-shadow:0 8px 32px #29273526;color:var(--ui-ink)}
+.case-notes-drawer[hidden]{display:none}
+.case-notes-drawer>header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px;border-bottom:1px solid var(--ui-line)}
+.case-notes-drawer h2{margin:0 0 4px;font-size:16px;font-weight:600}.case-notes-drawer>header span{font-size:11px;color:var(--ui-muted)}
+.case-notes-drawer>header button{display:grid;place-items:center;width:32px;height:32px;padding:0;border:0;border-radius:5px;background:transparent;font-size:24px;color:var(--ui-muted);cursor:pointer}
+.case-notes-drawer-body{min-height:0;overflow-y:auto;padding:18px}
+.case-notes-drawer form{display:grid;gap:8px}
+.case-notes-drawer label{font-size:12px;font-weight:500;color:var(--ui-muted)}
+.case-notes-drawer textarea,.case-notes-drawer select{box-sizing:border-box;width:100%;min-width:0;padding:10px 12px;border:1px solid #dcd7e3;border-radius:7px;background:#fff;color:var(--ui-ink);font:inherit;font-size:13px;line-height:1.6}
+.case-notes-drawer textarea{min-height:140px;resize:vertical;margin:0 0 8px}
+.case-notes-drawer footer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
+.case-notes-drawer footer small{font-size:11px;color:var(--ui-muted)}
+.case-notes-drawer footer button{padding:9px 14px;border:1px solid #7051a8;border-radius:7px;background:#7051a8;color:#fff;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.case-notes-drawer button:disabled{opacity:.45;cursor:not-allowed}
+.case-notes-drawer h3{margin:22px 0 12px;font-size:14px;font-weight:600}
+.case-notes-drawer .link-current-evidence,.investigation-note-entry>button{padding:4px 0;border:0;background:none;text-align:left;color:var(--ui-purple);font-size:12px;cursor:pointer;text-decoration:underline}
+.investigation-note-entry{padding:14px 0;border-top:1px solid var(--ui-line)}
+.investigation-note-entry>div,.report-investigation-note>div{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.investigation-note-entry strong,.report-investigation-note strong{font-size:12px;font-weight:600}
+.investigation-note-entry time,.report-investigation-note time{font-size:11px;color:var(--ui-muted)}
+.investigation-note-entry p,.report-investigation-note p{margin:8px 0;font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+.case-notes-status,.case-notes-empty{font-size:12px;color:var(--ui-muted);line-height:1.6}
+.incident-workbench .case-report>section.case-report-panel.report-investigation-notes{grid-column:1/-1}
+.report-investigation-note+.report-investigation-note{padding-top:14px;margin-top:14px;border-top:1px solid var(--ui-line)}
+.case-notes-drawer textarea:focus-visible,.case-notes-drawer select:focus-visible,.case-notes-drawer button:focus-visible,.case-notes-open:focus-visible{outline:2px solid #8463ae;outline-offset:2px}
+/* Compact evidence picker anchored below its trigger. */
+.notes-evidence-picker{position:relative;min-width:0}
+.case-notes-drawer .notes-evidence-trigger{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:40px;padding:9px 12px;border:1px solid #dcd7e3;border-radius:7px;background:#fff;color:var(--ui-ink);font:inherit;font-size:13px;text-align:left;cursor:pointer}
+.notes-evidence-trigger>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.notes-evidence-popover{position:absolute;z-index:3;top:calc(100% + 5px);left:0;right:0;padding:8px;border:1px solid #dcd7e3;border-radius:7px;background:#fff;box-shadow:0 5px 16px #29273520}
+.case-notes-drawer .notes-evidence-popover input{box-sizing:border-box;width:100%;padding:8px 10px;margin:0 0 6px;border:1px solid var(--ui-line);border-radius:5px;font:inherit;font-size:12px}
+.notes-evidence-options{max-height:180px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.notes-evidence-options button{display:block;width:100%;padding:8px 10px;border:0;border-radius:4px;background:#fff;text-align:left;font:inherit;font-size:12px;color:var(--ui-ink);cursor:pointer;overflow-wrap:anywhere}
+.notes-evidence-options button:hover,.notes-evidence-options button[aria-selected=true]{background:#f1edf7;color:var(--ui-purple)}
+.notes-evidence-options p{margin:8px;font-size:12px;color:var(--ui-muted)}
+/* Conclusion review lives directly under the AI result. */
+.report-conclusion-review{padding-top:14px;margin-top:14px;border-top:1px solid var(--ui-line)}
+.incident-workbench .report-conclusion-review .ai-review-controls{padding:0;border:0;margin:0;display:block;width:100%}
+.incident-workbench .report-conclusion-review .conclusion-review-actions{display:flex;gap:8px;justify-content:flex-start}
+.incident-workbench .report-conclusion-review .conclusion-reason{display:block;width:100%;margin-top:14px}
+.conclusion-reason label{font-size:12px;color:var(--ui-muted)}
+.incident-workbench .report-conclusion-review .conclusion-reason textarea{box-sizing:border-box;width:100%;max-width:none;min-height:90px;padding:10px 12px;margin:7px 0 10px;border:1px solid #dcd7e3;border-radius:7px;background:#fff;font:inherit;font-size:14px;line-height:1.6;resize:vertical}
+.conclusion-reason>div{display:flex;gap:8px}
+.report-conclusion-review .ai-review-saved{display:grid;gap:5px;margin:0}
+.report-conclusion-review .ai-review-saved strong{font-size:13px}.report-conclusion-review .ai-review-saved span{font-size:12px;color:var(--ui-muted)}
+.report-conclusion-review .ai-review-saved p{margin:0;font-size:13px;line-height:1.6;white-space:pre-wrap}
+
+/* Keep the dropdown in the drawer flow, so it cannot cover the save area. */
+.case-notes-drawer{bottom:20px;max-height:calc(100dvh - 108px);overflow:hidden}
+.case-notes-drawer>header{flex:none}
+.case-notes-drawer-body{flex:1 1 auto;scrollbar-width:none;-ms-overflow-style:none}
+.case-notes-drawer-body::-webkit-scrollbar{display:none;width:0;height:0}
+.case-notes-drawer .notes-evidence-popover{position:relative;top:auto;left:auto;right:auto;margin-top:5px;width:100%;box-sizing:border-box}
+.case-notes-drawer .notes-evidence-options{max-height:160px;overflow-y:auto;scrollbar-width:thin}
+.notes-evidence-trigger .notes-picker-chevron{display:block;flex:none;transform:none;transition:transform .15s ease}
+.notes-evidence-trigger[aria-expanded=true] .notes-picker-chevron{transform:rotate(180deg)}
+
+.incident-workbench .report-step-decision{display:inline-block;padding:3px 8px;border-radius:5px;background:#f1eff4;color:var(--ui-muted);font-size:12px;font-weight:600;line-height:1.5;white-space:nowrap}
+.incident-workbench .report-step-decision.decision-approved{background:#eaf5ee;color:#226342}
+.incident-workbench .report-step-decision.decision-rejected{background:#fff0ef;color:#a13229}

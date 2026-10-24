@@ -25,7 +25,9 @@ def add_note(data, incident_id, analyst, evidence_id, text, db_path=DB_PATH):
     if incident is None:
         raise ValueError('Unknown case')
     valid_evidence = set(incident['alert_ids']) | set(incident['evidence_sample_ids'])
-    if not isinstance(evidence_id, str) or evidence_id not in valid_evidence:
+    if evidence_id is None:
+        evidence_id = ''
+    if not isinstance(evidence_id, str) or (evidence_id and evidence_id not in valid_evidence):
         raise ValueError('Select evidence from this case')
     if not isinstance(analyst, str) or not analyst.strip() or len(analyst.strip()) > 80:
         raise ValueError('Analyst name is required')
@@ -40,6 +42,6 @@ def add_note(data, incident_id, analyst, evidence_id, text, db_path=DB_PATH):
         )
         note_id = cursor.lastrowid
         append_in_transaction(db, 'ANALYST_NOTE_ADDED', incident_id=incident_id, actor=f'analyst:{analyst.strip()}',
-                              payload={'note_id': note_id, 'analyst_id': analyst.strip(), 'evidence_id': evidence_id})
+                              payload={'note_id': note_id, 'analyst_id': analyst.strip(), 'evidence_id': evidence_id, 'text': text.strip()})
     return {'id': note_id, 'analyst': analyst.strip(), 'evidence_id': evidence_id,
             'text': text.strip(), 'time': timestamp}

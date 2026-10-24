@@ -102,6 +102,13 @@ def saved_decisions(incident_id):
     return {item_id: decision.lower() for item_id, decision in rows}
 
 
+def saved_decision_remarks(incident_id):
+    init_db(DB_PATH)
+    with closing(sqlite3.connect(DB_PATH)) as db:
+        rows = db.execute('SELECT recommendation_id, remark FROM decisions WHERE incident_id = ?', (incident_id,)).fetchall()
+    return {item_id: remark or '' for item_id, remark in rows}
+
+
 def case_record(data, incident_id):
     if not any(item['incident_id'] == incident_id for item in data['incidents']):
         raise ValueError('Unknown case')
@@ -138,6 +145,7 @@ def case_record(data, incident_id):
             'resolved_at': resolved['ts'] if resolved else None
         }
     decisions = saved_decisions(incident_id)
+    decision_remarks = saved_decision_remarks(incident_id)
     checks = generate_recommendations(data, incident_id)
     assessment = ai_assessment(incident_id)
     ai_result = assessment.get('assessment') if assessment.get('status') == 'ready' else None
@@ -156,8 +164,9 @@ def case_record(data, incident_id):
         'ai_limitations': ai_result.get('limitations') if ai_result else None,
         'ai_mappings': ai_result.get('technique_mappings', []) if ai_result else [],
         'analyst_review': assessment.get('decision'),
+        'investigation_notes': list_notes(incident_id, db_path=DB_PATH),
         'activity': events,
-        'investigation_steps': [{'id': check['id'], 'text': check['description'], 'decision': decisions.get(check['id']),
+        'investigation_steps': [{'id': check['id'], 'text': check['description'], 'decision': decisions.get(check['id']), 'remark': decision_remarks.get(check['id'], ''),
             'evidence_ids': check.get('ai_evidence_ids') or check.get('evidence_ids', []), 'reason': check.get('ai_reason'),
             'events': [event for event in events if event['payload'].get('recommendation_id') == check['id']]} for check in plan_checks if check.get('ai_suggested') or check['id'] in decisions],
         'ai_summary': ai_result.get('summary') if ai_result else None,
@@ -264,6 +273,17 @@ def case_summary(data, incident_id):
     return f"{len(incident['alert_ids'])} alerts from {incident['source_ip']} to {incident['destination_ip']} between {incident['window_start'].replace('T', ' ')} and {incident['window_end'].replace('T', ' ')}."
 
 
+def review_progress(ready, ai_decision, required_ids, decisions):
+    """Review is complete only for a current AI result and every proposed step."""
+    ai_reviewed = ready and ai_decision in ('confirmed', 'rejected')
+    reviewed = sum(str(decisions.get(item, '')).lower() in ('approved', 'rejected') for item in required_ids)
+    done = int(ai_reviewed) + reviewed
+    total = 1 + len(required_ids)
+    status = 'complete' if ready and done == total else 'partial' if done else 'pending'
+    return {'state': status, 'reviewed': done, 'total': total, 'ai_reviewed': bool(ai_reviewed),
+            'steps_reviewed': reviewed, 'steps_total': len(required_ids)}
+
+
 def case_queue(data):
     init_db()
     initialize_audit(DB_PATH)
@@ -283,6 +303,11 @@ def case_queue(data):
                 """
             )
         }
+        saved_reports = {row[0]: {'event_id': row[1], 'saved_at': row[2], 'saved_by': row[3]}
+                         for row in db.execute("SELECT incident_id, event_id, ts, actor FROM audit_events WHERE event = 'CASE_RECORD_SAVED' ORDER BY seq")}
+        decision_ids = {}
+        for row in db.execute('SELECT incident_id, recommendation_id, decision FROM decisions'):
+            decision_ids.setdefault(row[0], {})[row[1]] = row[2]
         check_decisions = {}
         for incident_id, decision in db.execute('SELECT incident_id, decision FROM decisions'):
             check_decisions.setdefault(incident_id, []).append(decision)
@@ -306,6 +331,23 @@ def case_queue(data):
             (stored.get('decision') or {}).get('status', 'pending') == 'pending'
             or (expected_checks[incident_id] > 0 and not check_decisions.get(incident_id)
                 and (latest.get('proposal') or {}).get('next_steps'))))
+
+    def progress_for(incident_id):
+        stored = triage.latest(incident_id) or {}
+        latest = stored.get('latest') or {}
+        ready = (not triage.settings.is_mock and latest.get('status') == 'ok'
+                 and latest.get('provider') == triage.settings.provider
+                 and latest.get('model') == triage.settings.model)
+        proposal = latest.get('proposal') or {}
+        incident = next(item for item in data['incidents'] if item['incident_id'] == incident_id)
+        alerts = [item for item in data['alerts'] if item['alert_id'] in incident['alert_ids']]
+        if ready and check_case_time_claims(proposal.get('summary', ''), incident, alerts):
+            ready = False
+        checks = annotate_ai_next_steps(generate_recommendations(data, incident_id), proposal.get('next_steps', []) if ready else [])
+        required = [item['id'] for item in checks if item.get('ai_suggested')]
+        if not ready:
+            required = list(decision_ids.get(incident_id, {}))
+        return review_progress(ready, (stored.get('decision') or {}).get('status'), required, decision_ids.get(incident_id, {}))
 
     def checks_complete(incident_id):
         return bool(check_decisions.get(incident_id))
@@ -350,6 +392,8 @@ def case_queue(data):
             'review_complete': checks_complete(
                 incident['incident_id']
             ),
+            'review_progress': progress_for(incident['incident_id']),
+            'saved_report': saved_reports.get(incident['incident_id']),
             'owner': owners.get(incident['incident_id']),
             'review_priority': effective_priority(data, incident, priority_overrides.get(incident['incident_id'])),
             'last_activity': activity.get(incident['incident_id']),
@@ -502,17 +546,32 @@ class Handler(BaseHTTPRequestHandler):
                 if note:
                     note['summary'] = case_summary(data, incident_id)
                     note['approved_checks'] = [{'id': item['id'], 'text': item['description']} for item in recommendations if decisions.get(item['id']) == 'approved']
-                self.send_json(200, {'incident_id': incident_id, 'ai_status': assessment.get('status'), 'checks': [{'id': item['id'], 'action': item['action'], 'text': item['description'], 'evidence_ids': item['evidence_ids'], 'ai_suggested': item['ai_suggested'], 'ai_reason': item.get('ai_reason'), 'ai_evidence_ids': item.get('ai_evidence_ids', [])} for item in presented], 'decisions': decisions, 'note': note})
+                self.send_json(200, {'incident_id': incident_id, 'ai_status': assessment.get('status'), 'checks': [{'id': item['id'], 'action': item['action'], 'text': item['description'], 'evidence_ids': item['evidence_ids'], 'ai_suggested': item['ai_suggested'], 'ai_reason': item.get('ai_reason'), 'ai_evidence_ids': item.get('ai_evidence_ids', [])} for item in presented], 'decisions': decisions, 'remarks': saved_decision_remarks(incident_id), 'note': note})
             elif action == 'audit':
                 if not any(item['incident_id'] == incident_id for item in data['incidents']):
                     raise ValueError('Unknown case')
                 self.send_json(200, {'events': audit_events(incident_id)})
+            elif action == 'report-pdf':
+                from services.report_pdf import build_report_pdf
+                report = case_record(data, incident_id)
+                incident = next(item for item in data['incidents'] if item['incident_id'] == incident_id)
+                alerts = [item for item in data['alerts'] if item['alert_id'] in incident['alert_ids']]
+                flows = [item for item in data.get('flows', []) if item.get('flow_id') in incident.get('evidence_sample_ids', [])]
+                pdf = build_report_pdf(incident_id, incident, alerts, flows, report)
+                safe_name = ''.join(c for c in incident_id if c.isalnum() or c in '-_')
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/pdf')
+                self.send_header('Content-Disposition', f'attachment; filename="Triage-report-{safe_name}.pdf"')
+                self.send_header('Content-Length', str(len(pdf)))
+                self.send_header('Cache-Control', 'no-store')
+                self.end_headers()
+                self.wfile.write(pdf)
             elif action == 'record':
                 self.send_json(200, case_record(data, incident_id))
             elif action == 'notes':
                 if not any(item['incident_id'] == incident_id for item in data['incidents']):
                     raise ValueError('Unknown case')
-                self.send_json(200, {'notes': list_notes(incident_id)})
+                self.send_json(200, {'notes': list_notes(incident_id, db_path=DB_PATH)})
             elif action == 'ai-assessment':
                 if not any(item['incident_id'] == incident_id for item in data['incidents']):
                     raise ValueError('Unknown case')
@@ -664,7 +723,7 @@ class Handler(BaseHTTPRequestHandler):
             if action == 'notes':
                 if request.get('analyst') != session['username']:
                     raise ValueError('The signed-in analyst must match the reviewer')
-                note = add_note(data, incident_id, session['username'], request.get('evidence_id'), request.get('text'))
+                note = add_note(data, incident_id, session['username'], request.get('evidence_id'), request.get('text'), db_path=DB_PATH)
                 self.send_json(200, {'note': note})
                 return
             if action == 'assign':
@@ -689,12 +748,15 @@ class Handler(BaseHTTPRequestHandler):
             if (assessment.get('error') or {}).get('code') == 'EVIDENCE_INTEGRITY_FAILED':
                 raise ValueError('Rerun AI investigation: the saved result conflicts with current evidence and cannot support approval.')
             decisions = request.get('decisions')
+            remarks = request.get('remarks', {})
             analyst = request.get('analyst')
             ids = {item['id'] for item in recommendations}
             if analyst != session['username']:
                 raise ValueError('The signed-in analyst must match the reviewer')
             if not isinstance(analyst, str) or not analyst.strip() or not isinstance(decisions, dict) or not decisions or set(decisions) - ids or set(decisions.values()) - {'approved', 'rejected'}:
                 raise ValueError('Select valid investigation steps to approve or reject')
+            if not isinstance(remarks, dict) or set(remarks) - set(decisions) or any(not isinstance(value, str) or len(value.strip()) > 1000 for value in remarks.values()):
+                raise ValueError('Remarks must be text of at most 1000 characters for reviewed steps')
             init_db()
             with closing(sqlite3.connect(DB_PATH)) as db:
                 existing = db.execute('SELECT recommendation_id FROM decisions WHERE incident_id = ?', (incident_id,)).fetchall()
@@ -702,7 +764,7 @@ class Handler(BaseHTTPRequestHandler):
                 raise ValueError('Decisions for this case have already been saved')
             for item in recommendations:
                 if item['id'] in decisions:
-                    save_decision(data, incident_id, item['id'], decisions[item['id']].upper(), analyst, 'Needs Review')
+                    save_decision(data, incident_id, item['id'], decisions[item['id']].upper(), analyst, 'Needs Review', remark=remarks.get(item['id'], ''))
             note = None
             if 'approved' in decisions.values():
                 note = get_case_note(incident_id)

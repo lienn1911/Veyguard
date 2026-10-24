@@ -45,6 +45,14 @@ class WorkflowTests(unittest.TestCase):
             events = [row[0] for row in db.execute('SELECT event FROM audit_events ORDER BY seq')]
         self.assertIn('ANALYST_DECISION', events)
 
+    def test_decision_remark_is_saved_with_audit_event(self):
+        rec = generate_recommendations(DATA, CASE_ID, self.db)[0]
+        save_decision(DATA, CASE_ID, rec['id'], 'REJECTED', 'Test Analyst', 'Needs Review', self.db, remark='Reviewed the linked alerts')
+        with closing(sqlite3.connect(self.db)) as db:
+            self.assertEqual(db.execute('SELECT remark FROM decisions WHERE recommendation_id = ?', (rec['id'],)).fetchone()[0], 'Reviewed the linked alerts')
+            details = db.execute("SELECT payload FROM audit_events WHERE event = 'ANALYST_DECISION'").fetchone()[0]
+        self.assertIn('Reviewed the linked alerts', details)
+
     def test_approved_step_becomes_pending_task_until_analyst_completes_it(self):
         rec = generate_recommendations(DATA, CASE_ID, self.db)[0]
         save_decision(DATA, CASE_ID, rec['id'], 'APPROVED', 'Test Analyst', 'Needs Review', self.db)

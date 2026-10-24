@@ -47,6 +47,8 @@ def init_db(db_path=DB_PATH):
                 analyst_id TEXT
             )
         """)
+        if 'remark' not in {row[1] for row in db.execute('PRAGMA table_info(decisions)')}:
+            db.execute("ALTER TABLE decisions ADD COLUMN remark TEXT NOT NULL DEFAULT ''")
 
         db.execute("""
             CREATE TABLE IF NOT EXISTS task_completions (
@@ -184,12 +186,16 @@ def save_decision(
     data, incident_id, recommendation_id,
     decision, analyst_id, verdict,
     db_path=DB_PATH,
+    remark='',
 ):
     if decision not in {"APPROVED", "REJECTED"}:
         raise ValueError("Invalid decision")
 
     if not isinstance(analyst_id, str) or not analyst_id.strip():
         raise ValueError("Analyst ID required")
+    if not isinstance(remark, str) or len(remark.strip()) > 1000:
+        raise ValueError("Remark must be text of at most 1000 characters")
+    remark = remark.strip()
 
     recommendations = generate_recommendations(
         data, incident_id, db_path
@@ -231,17 +237,17 @@ def save_decision(
     with closing(sqlite3.connect(db_path)) as db, db:
         try:
             db.execute("""
-                INSERT INTO decisions VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO decisions (recommendation_id, incident_id, action, description, evidence_ids, decision, analyst_id, remark) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 rec["id"], incident_id,
                 rec["action"], rec["description"],
                 json.dumps(rec["evidence_ids"]),
-                decision, analyst_id,
+                decision, analyst_id, remark,
             ))
             append_in_transaction(db, 'ANALYST_DECISION', incident_id=incident_id,
                                   actor=f'analyst:{analyst_id}', payload={
                                       'recommendation_id': recommendation_id, 'decision': decision,
-                                      'analyst_id': analyst_id, 'safety_status': safety['status'],
+                                      'analyst_id': analyst_id, 'safety_status': safety['status'], 'remark': remark,
                                   })
 
         except sqlite3.IntegrityError:

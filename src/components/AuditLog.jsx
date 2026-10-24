@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Icon from './Icon.jsx';
+import SelectField from './SelectField.jsx';
 import { getAudit } from '../lib/api.js';
-import { formatTimestamp, shortId } from '../lib/format.js';
+import { formatTimestamp } from '../lib/format.js';
 
 const EVENT_LABELS = {
   'triage.started': { label: 'Investigation started', tone: 'info' },
@@ -16,9 +17,13 @@ const EVENT_LABELS = {
   'INVESTIGATION_STEP_COMPLETED': { label: 'Approved step completed', tone: 'ok' },
   'CASE_ASSIGNED': { label: 'Case assigned', tone: 'info' },
   'CASE_REVIEW_PRIORITY_SET': { label: 'Review priority changed', tone: 'info' },
-  'CASE_RECORD_SAVED': { label: 'Case summary saved', tone: 'ok' },
+  'CASE_RECORD_SAVED': { label: 'Triage report saved', tone: 'ok' },
   'CASE_RESOLVED': {label: 'Case resolved', tone: 'ok'},
 };
+
+function displayActor(actor) {
+  return actor === 'system:triage-agent' ? 'Agent' : actor || 'System';
+}
 
 function eventDetail(entry) {
   const payload = entry.payload || {};
@@ -40,7 +45,7 @@ function eventDetail(entry) {
     case 'analyst.decision':
       return `${payload.decision}${payload.note ? ` — ${payload.note}` : ''}`;
     case 'CASE_RECORD_SAVED':
-      return `${payload.case_summary || ''} ${payload.ai_summary ? `AI: ${payload.ai_summary}` : 'No live AI summary.'} ${payload.approved_checks} approved, ${payload.rejected_checks} rejected`;
+      return `${payload.approved_checks ?? 0} steps approved · ${payload.rejected_checks ?? 0} rejected`;
     case 'CASE_RESOLVED':
       return `Resolved by ${payload.analyst_id || entry.actor} · ${payload.reason || 'No reason recorded'}`;
   default:
@@ -81,51 +86,30 @@ function groupByCase(entries) {
 }
 
 function CaseGroup({ group, open, onToggle, dateSort }) {
-  const meta = { label: 'Case', tone: 'muted' };
   const latest = group.decidedStatus
-    ? `${group.decidedStatus === 'confirmed' ? 'Analyst confirmed' : 'Analyst rejected'}`
-    : group.verdict
-      ? `AI proposal: ${group.verdict}`
-      : 'No verdict yet';
-  return (
-    <>
-      <tr className={`audit-group-row${open ? ' is-open' : ''}`}>
-        <td colSpan={7} className="audit-group-cell">
-          <button type="button" className="audit-group-toggle" onClick={onToggle} aria-expanded={open}>
-            <Icon name={open ? 'chevronDown' : 'chevron'} size={14} />
-            <span className="mono audit-group-id">{group.incidentId}</span>
-            <span className="audit-group-meta">
-              {group.events.length} events
-              {group.runs > 1 ? ` · ${group.runs} investigations` : ''}
-              {' · '}
-              {latest}
-            </span>
-            <span className="audit-group-time">{formatTimestamp(group.lastTs)}</span>
-          </button>
+    ? (group.decidedStatus === 'confirmed' ? 'Assessment confirmed' : 'Assessment rejected')
+    : group.verdict || 'No assessment yet';
+  return <>
+    <tr className={`audit-group-row${open ? ' is-open' : ''}`}><td colSpan={4} className="audit-group-cell">
+      <button type="button" className="audit-group-toggle" onClick={onToggle} aria-expanded={open} aria-label={`${open ? 'Collapse' : 'Expand'} ${group.incidentId}`}>
+        <span className="audit-case-identity"><strong>{group.incidentId}</strong><small>{group.events.length} events · {latest}</small></span>
+        <time>{formatTimestamp(group.lastTs)}</time>
+        <svg className="audit-expand-chevron" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m5 9 7 7 7-7" /></svg>
+      </button>
+    </td></tr>
+    {open && <tr className="audit-event-head"><th>Time</th><th>Activity</th><th>Performed by</th><th>Result</th></tr>}
+    {open && [...group.events].sort((a, b) => dateSort === 'newest' ? Number(b.seq) - Number(a.seq) : Number(a.seq) - Number(b.seq)).map((entry) => {
+      const meta = EVENT_LABELS[entry.event] || { label: entry.event, tone: 'muted' };
+      return <tr key={entry.event_id || entry.seq} className="audit-event-row">
+        <td><time>{formatTimestamp(entry.ts)}</time></td>
+        <td><span className={`event event-${meta.tone}`}>{meta.label}</span></td>
+        <td>{displayActor(entry.actor)}</td>
+        <td><p className="audit-result-summary">{eventDetail(entry) || entry.payload?.decision || entry.payload?.note || 'Recorded'}</p>
+          <details className="audit-entry-details"><summary>Details</summary><dl><div><dt>Event ID</dt><dd>{entry.event_id || entry.seq}</dd></div><div><dt>Event type</dt><dd>{entry.event}</dd></div><div><dt>Integrity hash</dt><dd>{entry.hash || 'Not recorded'}</dd></div></dl><pre>{JSON.stringify(entry.payload || {}, null, 2)}</pre></details>
         </td>
-      </tr>
-      {open
-        ? [...group.events].sort((a, b) => dateSort === 'newest' ? Number(b.seq) - Number(a.seq) : Number(a.seq) - Number(b.seq)).map((entry) => {
-            const m = EVENT_LABELS[entry.event] || { label: entry.event, tone: 'muted' };
-            return (
-              <tr key={entry.event_id || entry.seq} className="audit-event-row">
-                <td className="num muted">{entry.seq}</td>
-                <td className="mono muted">{formatTimestamp(entry.ts)}</td>
-                <td>
-                  <span className={`event event-${m.tone}`}>{m.label}</span>
-                </td>
-                <td className="mono">{entry.incident_id || '—'}</td>
-                <td className="muted small">{entry.actor}</td>
-                <td className="muted small detail-cell">{eventDetail(entry)}</td>
-                <td className="mono muted small" title={entry.hash}>
-                  {shortId(entry.hash, 6)}
-                </td>
-              </tr>
-            );
-          })
-        : null}
-    </>
-  );
+      </tr>;
+    })}
+  </>;
 }
 
 export default function AuditLog({ mode, refreshToken }) {
@@ -134,7 +118,6 @@ export default function AuditLog({ mode, refreshToken }) {
   const [eventFilter, setEventFilter] = useState('all');
   const [actorFilter, setActorFilter] = useState('all');
   const [dateSort, setDateSort] = useState('newest');
-  const [caseFilter, setCaseFilter] = useState('all');
   const [openCases, setOpenCases] = useState(() => new Set());
   const load = useCallback(async () => {
     if (mode === 'offline') {
@@ -187,6 +170,7 @@ export default function AuditLog({ mode, refreshToken }) {
         entry.event_id,
         entry.event,
         entry.actor,
+        displayActor(entry.actor),
         EVENT_LABELS[entry.event]?.label,
         eventDetail(entry)
       ].filter(Boolean).join(' ').toLowerCase();
@@ -203,7 +187,7 @@ export default function AuditLog({ mode, refreshToken }) {
         actorFilter === 'all' ||
         entry.actor === actorFilter;
 
-      return matchesSearch && matchesEvent && matchesActor;
+      return matchesSearch && matchesEvent && matchesActor && (eventFilter === 'triage.tool_call' || !!searchQuery.trim() || entry.event !== 'triage.tool_call');
     })
     .sort((a, b) => {
       // Audit sequence gives us a stable event order.
@@ -218,18 +202,11 @@ export default function AuditLog({ mode, refreshToken }) {
 
   // Filter the loaded audit events first, then retain the case-grouped view.
   const matchingGroups = groupByCase(filteredEntries);
-  const visibleGroups = (caseFilter === 'all'
-    ? matchingGroups
-    : matchingGroups.filter((group) => group.incidentId === caseFilter)
-  ).sort((a, b) => {
+  const visibleGroups = matchingGroups.sort((a, b) => {
     const aSeq = Math.max(...a.events.map((entry) => Number(entry.seq) || 0));
     const bSeq = Math.max(...b.events.map((entry) => Number(entry.seq) || 0));
     return dateSort === 'newest' ? bSeq - aSeq : aSeq - bSeq;
   });
-
-  const visibleEventCount = visibleGroups.reduce(
-    (total, group) => total + group.events.length, 0
-  );
 
   return (
     <section className="page audit-log-page">
@@ -257,8 +234,7 @@ export default function AuditLog({ mode, refreshToken }) {
           <div>
             <strong>The API is offline.</strong>
             <p>
-              Audit records live in the backend, so there is nothing to show from the bundled
-              preview. This page never fabricates audit entries from browser state.
+              Connect to the local service to view saved audit records.
             </p>
           </div>
         </div>
@@ -275,93 +251,22 @@ export default function AuditLog({ mode, refreshToken }) {
       ) : null}
 
       {state.status === 'ready' ? (
-        <section className="panel">
-          <div className="panel-head">
-            <div>
-              <h2>Cases</h2>
-              <p>Click a case to expand every recorded event for it.</p>
-            </div>
-            <div className="audit-filter">
-              <label className="audit-filter-label" htmlFor="audit-case-filter">Case</label>
-              <select
-                id="audit-case-filter"
-                value={caseFilter}
-                onChange={(event) => setCaseFilter(event.target.value)}
-              >
-                <option value="all">All cases ({groups.length})</option>
-                {groups.map((group) => (
-                  <option key={group.incidentId} value={group.incidentId}>
-                    {group.incidentId} ({group.events.length})
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
+        <>
           <div className="audit-filters">
-            <input
+            <label className="audit-search-field"><span>Search activity</span><input
               type="search"
               placeholder="Search case ID, event, or analyst..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              aria-label="Search audit events"
-            />
+            /></label>
 
-            <select
-              value={eventFilter}
-              onChange={(e) => setEventFilter(e.target.value)}
-              aria-label="Filter by event type"
-            >
-              <option value="all">All Event Types</option>
-              {eventTypes.map((type) => (
-                <option key={type} value={type}>
-                  {EVENT_LABELS[type]?.label || type}
-                </option>
-              ))}
-            </select>
+            <SelectField label="Event type" value={eventFilter} onChange={setEventFilter} options={[{ value: 'all', label: 'Key events' }, ...eventTypes.map((type) => ({ value: type, label: EVENT_LABELS[type]?.label || type }))]} />
+            <SelectField label="Performed by" value={actorFilter} onChange={setActorFilter} options={[{ value: 'all', label: 'All actors' }, ...actors.map((actor) => ({ value: actor, label: displayActor(actor) }))]} />
+            <SelectField label="Sort by" value={dateSort} onChange={setDateSort} options={[{ value: 'newest', label: 'Newest first' }, { value: 'oldest', label: 'Oldest first' }]} />
 
-            <select
-              value={actorFilter}
-              onChange={(e) => setActorFilter(e.target.value)}
-              aria-label="Filter by actor"
-            >
-              <option value="all">All Actors</option>
-              {actors.map((actor) => (
-                <option key={actor} value={actor}>
-                  {actor}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={dateSort}
-              onChange={(e) => setDateSort(e.target.value)}
-              aria-label="Sort audit events"
-            >
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-            </select>
-
-            <div className="audit-filter-bottom">
-              <span>
-                Showing {visibleEventCount} of {state.entries.length} loaded events
-              </span>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchQuery('');
-                  setEventFilter('all');
-                  setActorFilter('all');
-                  setDateSort('newest');
-                  setCaseFilter('all');
-                }}
-              >
-                Clear filters
-              </button>
-            </div>
           </div>
 
+          <section className="panel">
           {groups.length === 0 ? (
             <div className="empty">
               <Icon name="audit" size={20} />
@@ -370,23 +275,13 @@ export default function AuditLog({ mode, refreshToken }) {
           ) : (
             <div className="table-wrap">
               <table className="table audit-table">
-                <thead>
-                  <tr>
-                    <th className="num">#</th>
-                    <th>Time</th>
-                    <th>Event</th>
-                    <th>Incident</th>
-                    <th>Actor</th>
-                    <th>Detail</th>
-                    <th>Hash</th>
-                  </tr>
-                </thead>
+                <thead><tr><th colSpan={4} className="audit-case-heading">Case</th></tr></thead>
                 <tbody>
                   {visibleGroups.map((group) => (
                     <CaseGroup
                       key={group.incidentId}
                       group={group}
-                      open={caseFilter !== 'all' || openCases.has(group.incidentId)}
+                      open={openCases.has(group.incidentId)}
                       onToggle={() => toggleCase(group.incidentId)}
                       dateSort={dateSort}
                     />
@@ -401,6 +296,7 @@ export default function AuditLog({ mode, refreshToken }) {
             </div>
           )}
         </section>
+        </>
       ) : null}
     </section>
   );

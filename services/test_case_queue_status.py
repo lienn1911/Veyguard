@@ -41,7 +41,7 @@ class CaseQueueStatusTests(unittest.TestCase):
                 checks = recommendations.generate_recommendations(data, incident_id)
                 with closing(sqlite3.connect(db_path)) as db, db:
                     for check in checks[:1]:
-                        db.execute('INSERT INTO decisions VALUES (?, ?, ?, ?, ?, ?, ?)',
+                        db.execute('INSERT INTO decisions (recommendation_id, incident_id, action, description, evidence_ids, decision, analyst_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
                                    (check['id'], incident_id, check['action'], check['description'],
                                     json.dumps(check['evidence_ids']), 'APPROVED', 'Analyst'))
                 item = api.case_queue(data)[incident_id]
@@ -51,7 +51,7 @@ class CaseQueueStatusTests(unittest.TestCase):
 
                 with closing(sqlite3.connect(db_path)) as db, db:
                     for check in checks[1:]:
-                        db.execute('INSERT INTO decisions VALUES (?, ?, ?, ?, ?, ?, ?)',
+                        db.execute('INSERT INTO decisions (recommendation_id, incident_id, action, description, evidence_ids, decision, analyst_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
                                    (check['id'], incident_id, check['action'], check['description'],
                                     json.dumps(check['evidence_ids']), 'APPROVED', 'Analyst'))
 
