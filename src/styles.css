@@ -1882,3 +1882,39 @@ button:focus-visible{outline-color:#a889d9}
 .password-dialog-hint{color:#80718f;font-size:11px;line-height:1.5}.password-dialog-error{padding:10px;border-radius:8px;background:#fff0f2;color:#a52d43;font-size:12px}
 .password-dialog footer{display:flex;justify-content:flex-end;gap:9px;margin-top:20px}.password-dialog footer button{padding:10px 14px;border:1px solid #d9cbea;border-radius:8px;background:#f7f2fc;color:#624398;font:inherit;font-size:12px;font-weight:700;cursor:pointer}.password-dialog footer button:last-child{border-color:#7254b5;background:#7254b5;color:#fff}.password-dialog footer button:disabled{opacity:.55;cursor:wait}
 .auth-loading{display:grid;min-height:100vh;place-items:center;background:#f7f4fb;color:#7254b5;font-size:14px}.login-notice{padding:10px 12px;border-radius:8px;background:#eaf6ee;color:#276b42;font-size:12px}
+/* VeyGuard Login Logo */
+.veyguard-login-logo {
+  display: block;
+  width: 520px;
+  max-width: 95%;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.login-brand-scene {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* VeyGuard Login Logo Size Fix */
+
+.login-brand-side .login-brand-scene {
+  width: 100%;
+  max-width: none;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-brand-side .veyguard-login-logo {
+  display: block;
+  width: 550px;
+  max-width: 85%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+  margin: 0 auto;
+}
