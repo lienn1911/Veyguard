@@ -30,12 +30,14 @@ class PendingWorkTests(unittest.TestCase):
                  alert('E', 'DoS', 's2', 'd1', 3), alert('F', 'DDoS', 's3', 'd1', 3)]
         cases = group_alerts(items)
         grouped = {frozenset(case['alert_ids']): case for case in cases}
-        self.assertEqual(grouped[frozenset({'A', 'B'})]['destination_ip'], 'Multiple destinations')
-        self.assertEqual(grouped[frozenset({'D', 'E'})]['source_ip'], 'Multiple sources')
+        self.assertIn(frozenset({'A'}), grouped)
+        self.assertIn(frozenset({'B'}), grouped)
+        self.assertIn(frozenset({'D'}), grouped)
+        self.assertIn(frozenset({'E'}), grouped)
         self.assertIn(frozenset({'C'}), grouped)
         self.assertIn(frozenset({'F'}), grouped)
-        self.assertIn(grouped[frozenset({'D', 'E'})]['incident_id'],
-                      grouped[frozenset({'A', 'B'})]['related_incident_ids'])
+        self.assertIn(grouped[frozenset({'D'})]['incident_id'],
+                      grouped[frozenset({'A'})]['related_incident_ids'])
 
     def test_ai_numeric_claim_requires_stored_statistic(self):
         dataset = Dataset(DATA)
@@ -77,6 +79,7 @@ class PendingWorkTests(unittest.TestCase):
     def test_likely_benign_confirmation_requires_reason(self):
         with tempfile.TemporaryDirectory() as folder:
             service = object.__new__(TriageService)
+            service.dataset = Dataset(DATA)
             service.store = TriageStore(Path(folder) / 'state.json')
             service.audit = AuditLog(Path(folder) / 'audit.db')
             case_id = DATA['incidents'][0]['incident_id']

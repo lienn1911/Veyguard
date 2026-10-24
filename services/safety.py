@@ -5,7 +5,7 @@ another teammate). They are the invariants this module enforces on itself so a
 misconfigured or missing guardrail cannot turn a model proposal into a closure:
 
 * the agent has no write tools at all (structural, see :mod:`services.tools`);
-* a ``Likely Benign`` proposal on a PortScan / DoS / DDoS incident always needs
+* a ``Likely Benign`` proposal on a PortScan / DoS / DDoS / BruteForce incident always needs
   an explicit human confirmation before it can be treated as benign;
 * nothing in this service may change severity or close an incident.
 """
@@ -40,6 +40,7 @@ class SafetyAssessment:
     auto_close_permitted: bool = False
     severity_change: str | None = None
     closure_sensitive: bool = False
+    allowed: bool = True
 
     def as_dict(self) -> dict:
         return {
@@ -50,6 +51,7 @@ class SafetyAssessment:
             "auto_close_permitted": self.auto_close_permitted,
             "severity_change": self.severity_change,
             "closure_sensitive": self.closure_sensitive,
+            "allowed": self.allowed,
             "prohibited_actions": list(PROHIBITED_ACTIONS),
         }
 

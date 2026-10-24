@@ -1,6 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import AlertReview from './components/AlertReview.jsx';
-import AlertQueue from './components/AlertQueue.jsx';
 import Dashboard from './components/Dashboard.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import AlertMascot from './components/AlertMascot.jsx';
@@ -22,7 +21,6 @@ export default function App() {
   const [logoutError, setLogoutError] = useState('');
   const [page, setPage] = useState('dashboard');
   const [selectedCaseId, setSelectedCaseId] = useState(null);
-  const [selectedAlertId, setSelectedAlertId] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem('soc-sidebar-collapsed') === 'true');
   const [notification, setNotification] = useState(false);
@@ -32,8 +30,11 @@ export default function App() {
   const searchButton = useRef(null);
   const [searchPanelPosition, setSearchPanelPosition] = useState(null);
   const searchTerm = searchQuery.trim().toLowerCase();
-  const caseResults = searchTerm ? data.incidents.filter((incident) => `${caseTitle(incident)} ${incident.incident_id} ${incident.source_ip} ${incident.destination_ip} ${incident.type}`.toLowerCase().includes(searchTerm)).slice(0, 5) : [];
-  const alertResults = searchTerm ? data.alerts.filter((alert) => `${alert.type} ${alert.alert_id} ${alert.source_ip} ${alert.destination_ip} ${alert.rule_basis}`.toLowerCase().includes(searchTerm)).slice(0, 5) : [];
+  const caseResults = searchTerm ? data.incidents.filter((incident) => {
+    const matchesCase = `${caseTitle(incident)} ${incident.incident_id} ${incident.source_ip} ${incident.destination_ip} ${incident.type}`.toLowerCase().includes(searchTerm);
+    const matchesEvidence = data.alerts.some((alert) => alert.incident_id === incident.incident_id && `${alert.alert_id} ${alert.rule_basis}`.toLowerCase().includes(searchTerm));
+    return matchesCase || matchesEvidence;
+  }).slice(0, 5) : [];
 
   useEffect(() => {
     fetch('/api/auth/session').then(async (response) => {
@@ -110,10 +111,6 @@ export default function App() {
     selectPage('review');
   }
 
-  function openAlert(alert) {
-    setSelectedAlertId(alert.alert_id);
-    selectPage('alerts');
-  }
 
   function toggleSidebar() {
     setSidebarCollapsed((current) => {
@@ -170,24 +167,21 @@ export default function App() {
         <header className={`topbar${searchOpen ? ' search-active' : ''}`}>
           <button className="desktop-menu" aria-label={sidebarCollapsed ? 'Expand navigation' : 'Collapse navigation'} onClick={() => window.matchMedia('(max-width: 760px)').matches ? setSidebarOpen(true) : toggleSidebar()}><Icon name="menu" size={20} /></button>
           <strong className={`topbar-brand${sidebarCollapsed ? ' icon-only' : ''}`}>{sidebarCollapsed ? <img className="topbar-brand-logo" src="/soc-desk-logo-focus.png" alt="SOC Desk" /> : 'SOC Desk'}</strong>
-          <div ref={searchButton} className="topbar-search"><Icon name="search" size={17} /><input ref={searchInput} aria-label="Search cases and alerts" placeholder="Search cases and alerts" value={searchQuery} onFocus={() => setSearchOpen(true)} onChange={(event) => { setSearchQuery(event.target.value); setSearchOpen(true); }} onKeyDown={(event) => { if (event.key === 'Enter') { if (caseResults[0]) openCase(caseResults[0].incident_id); else if (alertResults[0]) openAlert(alertResults[0]); } }} /><span>(ctrl + /)</span></div>
-          <button className="topbar-icon" aria-label="Alerts" onClick={() => selectPage('alerts')}><Icon name="bell" size={19} /><span className="topbar-tooltip" role="tooltip">Alerts</span></button>
+          <div ref={searchButton} className="topbar-search"><Icon name="search" size={17} /><input ref={searchInput} aria-label="Search cases" placeholder="Search cases" value={searchQuery} onFocus={() => setSearchOpen(true)} onChange={(event) => { setSearchQuery(event.target.value); setSearchOpen(true); }} onKeyDown={(event) => { if (event.key === 'Enter') { if (caseResults[0]) openCase(caseResults[0].incident_id); } }} /><span>(ctrl + /)</span></div>
         </header>
 
-        {searchOpen && <div className="search-backdrop" onMouseDown={() => setSearchOpen(false)}><div className="search-panel" style={searchPanelPosition || undefined} role="region" aria-label="Search results" onMouseDown={(event) => event.stopPropagation()}><div className="search-results">{searchTerm ? <>{caseResults.length > 0 && <><h2>Cases</h2>{caseResults.map((incident) => <button type="button" key={incident.incident_id} onClick={() => openCase(incident.incident_id)}><strong>{caseTitle(incident)}</strong><span>{incident.source_ip} → {incident.destination_ip}</span></button>)}</>}{alertResults.length > 0 && <><h2>Alerts</h2>{alertResults.map((alert) => <button type="button" key={alert.alert_id} onClick={() => openAlert(alert)}><strong>{alert.type} · {alert.alert_id}</strong><span>{alert.source_ip} → {alert.destination_ip}</span></button>)}</>}{caseResults.length + alertResults.length === 0 && <p>No matching cases or alerts</p>}</> : <p>Search by IP address, alert type, or record ID.</p>}</div></div></div>}
+        {searchOpen && <div className="search-backdrop" onMouseDown={() => setSearchOpen(false)}><div className="search-panel" style={searchPanelPosition || undefined} role="region" aria-label="Search results" onMouseDown={(event) => event.stopPropagation()}><div className="search-results">{searchTerm ? <>{caseResults.length > 0 && <><h2>Cases</h2>{caseResults.map((incident) => <button type="button" key={incident.incident_id} onClick={() => openCase(incident.incident_id)}><strong>{caseTitle(incident)}</strong><span>{incident.source_ip} → {incident.destination_ip}</span></button>)}</>}{caseResults.length === 0 && <p>No matching cases</p>}</> : <p>Search by IP address, activity type, case ID or alert ID.</p>}</div></div></div>}
 
-        <main className={`main-content${page === 'review' || page === 'cases' || page === 'alerts' ? ' investigation-main-content' : ''}`}>
-          {(page === 'cases' || page === 'alerts') && <nav className={`investigation-switch${page === 'alerts' ? ' show-alerts' : ''}`} aria-label="Investigation views"><button type="button" className={page === 'cases' ? 'active' : ''} aria-current={page === 'cases' ? 'page' : undefined} onClick={() => selectPage('cases')}>Cases</button><button type="button" className={page === 'alerts' ? 'active' : ''} aria-current={page === 'alerts' ? 'page' : undefined} onClick={() => selectPage('alerts')}>Alerts</button></nav>}
+        <main className={`main-content${page === 'dashboard' ? ' home-main-content' : ''}${page === 'review' || page === 'cases' ? ' investigation-main-content' : ''}`}>
           {page === 'audit' ? (
             <AuditLog mode="live" />
           ) : page === 'settings' ? (
             <AISettings />
-          ) : page === 'alerts' ? (
-            <AlertQueue onOpenCase={openCase} selectedAlertId={selectedAlertId} />
+
           ) : page === 'review' || page === 'cases' ? (
             <AlertReview mode={page} selectedId={selectedCaseId} onSelectCase={openCase} onCases={() => selectPage('cases')} onAudit={() => selectPage('audit')} username={username} />
           ) : (
-            <Dashboard onReview={(id) => id ? openCase(id) : selectPage('cases')} onAlerts={(alert) => alert ? openAlert(alert) : selectPage('alerts')} username={username} />
+            <Dashboard onReview={(id) => id ? openCase(id) : selectPage('cases')} username={username} />
           )}
         </main>
       </div>

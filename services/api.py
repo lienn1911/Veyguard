@@ -2,6 +2,7 @@ import json
 import os
 import secrets
 import sqlite3
+import threading
 from contextlib import closing
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -14,14 +15,28 @@ from services.config import ConfigError, load_settings, proposed_ai_settings, sa
 from services.ai_settings import test_connection
 from services.providers import describe_providers
 from services.data_store import Dataset
+from services.raw_flows import database_status, query_case_flows
 from services.triage import TriageService
 from services.unified_audit import append_in_transaction, entries as audit_entries, initialize as initialize_audit, verify as verify_audit
 from services import auth
+from services.auto_analysis import AutoAnalysis
+from services.review_priority import effective_priority, latest_overrides, save_priority
+from services.validation import check_case_time_claims
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / 'src' / 'real-alerts.json'
 _ai_service = None
+_auto_analysis = None
+_auto_lock = threading.Lock()
+
+
+def auto_analysis():
+    global _auto_analysis
+    with _auto_lock:
+        if _auto_analysis is None:
+            _auto_analysis = AutoAnalysis(DATA, ROOT / 'data' / 'auto-analysis.json', ai_assessment, ai_service)
+        return _auto_analysis
 
 
 def ai_service():
@@ -41,6 +56,9 @@ def ai_assessment(incident_id):
     service = ai_service()
     if service.settings.is_mock:
         return {'status': 'not_configured', 'assessment': None, 'mode': 'mock'}
+    progress = service.progress(incident_id)
+    if progress and progress['running']:
+        return {'status': 'running', 'assessment': None, 'mode': service.status()['mode'], 'progress': progress}
     stored = service.latest(incident_id)
     latest = stored.get('latest') if stored else None
     if not latest or latest.get('provider') != service.settings.provider or latest.get('model') != service.settings.model:
@@ -57,13 +75,16 @@ def ai_assessment(incident_id):
                           if key in ('incident_id', 'limit')},
         } for call in trace.get('tool_calls', [])],
     }
-    run = {'provider': latest.get('provider'), 'model': latest.get('model'),
+    run = {'run_metadata': {key: latest.get(key) for key in ('started_at', 'completed_at', 'duration_ms')},
+           'validation': latest.get('validation'),
+           'provider': latest.get('provider'), 'model': latest.get('model'),
            'run_id': latest.get('run_id'), 'investigation': investigation}
     if latest['status'] != 'ok':
         return {'status': 'unavailable', 'assessment': None, 'mode': service.status()['mode'], 'error': latest.get('error'), **run}
     return {'status': 'ready', 'mode': service.status()['mode'], **run, 'decision': (stored.get('decision') or {'status': 'pending'}), 'assessment': {
         'verdict': latest['verdict'], 'confidence': latest['confidence'], 'summary': latest['reason'],
         'evidence_ids': latest['evidence_ids'], 'findings': latest['findings'], 'limitations': latest['limitations'],
+        'technique_mappings': latest.get('technique_mappings') or [],
         'next_steps': (latest.get('proposal') or {}).get('next_steps') or [],
         'requires_confirmation': latest['requires_confirmation'], 'run_id': latest['run_id'],
     }}
@@ -99,9 +120,18 @@ def case_record(data, incident_id):
     )
 
     if saved:
+        record = dict(saved['payload'])
+        incident = next(item for item in data['incidents'] if item['incident_id'] == incident_id)
+        alerts = [item for item in data['alerts'] if item['alert_id'] in incident['alert_ids']]
+        current = ai_assessment(incident_id) if record.get('ai_run_id') else {}
+        invalid_run = (current.get('run_id') == record.get('ai_run_id') and
+                       (current.get('error') or {}).get('code') == 'EVIDENCE_INTEGRITY_FAILED')
+        if record.get('ai_summary') and (invalid_run or check_case_time_claims(record['ai_summary'], incident, alerts)):
+            record.update(ai_summary=None, ai_verdict=None, ai_decision=None, ai_findings=[], ai_mappings=[], ai_evidence_ids=[], ai_confidence=None, ai_limitations=None, ai_status='unavailable',
+                          ai_error='The historical AI summary conflicts with the recorded case time range. The original audit snapshot is retained; rerun investigation before relying on the AI conclusion.')
         return {
             'status': 'resolved' if resolved else 'saved',
-            'record': saved['payload'],
+            'record': record,
             'event_id': saved['event_id'],
             'saved_at': saved['ts'],
             'resolution': resolved['payload'] if resolved else None,
@@ -109,15 +139,33 @@ def case_record(data, incident_id):
         }
     decisions = saved_decisions(incident_id)
     checks = generate_recommendations(data, incident_id)
-    ready = len(decisions) == len(checks) and all(item['id'] in decisions for item in checks)
     assessment = ai_assessment(incident_id)
     ai_result = assessment.get('assessment') if assessment.get('status') == 'ready' else None
-    return {'status': 'ready' if ready else 'waiting_for_review', 'record': {
+    plan_checks = annotate_ai_next_steps(checks, (ai_result or {}).get('next_steps', []))
+    incident = next(item for item in data['incidents'] if item['incident_id'] == incident_id)
+    priority_event = next((item for item in reversed(events) if item['event'] == 'CASE_REVIEW_PRIORITY_SET'), None)
+    return {'status': 'ready', 'record': {
+        'review_priority': effective_priority(data, incident, priority_event['payload'] if priority_event else None),
         'case_summary': case_summary(data, incident_id),
+        'ai_investigation': assessment.get('investigation'),
+        'ai_run_metadata': assessment.get('run_metadata'),
+        'ai_validation': assessment.get('validation'),
+        'ai_evidence_ids': ai_result.get('evidence_ids', []) if ai_result else [],
+        'ai_confidence': ai_result.get('confidence') if ai_result else None,
+        'ai_findings': ai_result.get('findings', []) if ai_result else [],
+        'ai_limitations': ai_result.get('limitations') if ai_result else None,
+        'ai_mappings': ai_result.get('technique_mappings', []) if ai_result else [],
+        'analyst_review': assessment.get('decision'),
+        'activity': events,
+        'investigation_steps': [{'id': check['id'], 'text': check['description'], 'decision': decisions.get(check['id']),
+            'evidence_ids': check.get('ai_evidence_ids') or check.get('evidence_ids', []), 'reason': check.get('ai_reason'),
+            'events': [event for event in events if event['payload'].get('recommendation_id') == check['id']]} for check in plan_checks if check.get('ai_suggested') or check['id'] in decisions],
         'ai_summary': ai_result.get('summary') if ai_result else None,
         'ai_verdict': ai_result.get('verdict') if ai_result else None,
         'ai_run_id': ai_result.get('run_id') if ai_result else None,
         'ai_decision': (assessment.get('decision') or {}).get('status') if ai_result else None,
+        'ai_status': assessment.get('status'),
+        'ai_error': (assessment.get('error') or {}).get('message') if isinstance(assessment.get('error'), dict) else None,
         'approved_checks': sum(value == 'approved' for value in decisions.values()),
         'rejected_checks': sum(value == 'rejected' for value in decisions.values()),
         'total_checks': len(checks),
@@ -130,8 +178,6 @@ def save_case_record(data, incident_id, analyst):
     prepared = case_record(data, incident_id)
     if prepared['status'] in ('saved', 'resolved'):
         return prepared
-    if prepared['status'] != 'ready':
-        raise ValueError('Review every recommended step before saving the case record')
     with closing(sqlite3.connect(DB_PATH, timeout=30)) as db, db:
         db.execute('BEGIN IMMEDIATE')
         existing = db.execute("SELECT event_id, ts, payload FROM audit_events WHERE incident_id = ? AND event = 'CASE_RECORD_SAVED' ORDER BY seq DESC LIMIT 1", (incident_id,)).fetchone()
@@ -226,6 +272,7 @@ def case_queue(data):
         owners = dict(db.execute('SELECT incident_id, analyst_id FROM case_assignments'))
         activity = dict(db.execute('SELECT incident_id, MAX(ts) FROM audit_events GROUP BY incident_id')) if db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='audit_events'").fetchone() else {}
         analyst_activity = {row[0] for row in db.execute("SELECT DISTINCT incident_id FROM audit_events WHERE event = 'ANALYST_NOTE_ADDED'")}
+        priority_overrides = latest_overrides(db)
         resolved_cases = {
             row[0]
             for row in db.execute(
@@ -250,24 +297,24 @@ def case_queue(data):
                        for incident in data['incidents']}
 
     def has_pending_approval(incident_id):
-        if incident_id in resolved_cases:
-            return False
-
-        total = expected_checks[incident_id]
-        decided = len(check_decisions.get(incident_id, []))
-
-        return total > 0 and decided < total
+        stored = triage.latest(incident_id) or {}
+        latest = stored.get('latest') or {}
+        ready = (not triage.settings.is_mock and latest.get('status') == 'ok'
+                 and latest.get('provider') == triage.settings.provider
+                 and latest.get('model') == triage.settings.model)
+        return bool(incident_id not in resolved_cases and ready and (
+            (stored.get('decision') or {}).get('status', 'pending') == 'pending'
+            or (expected_checks[incident_id] > 0 and not check_decisions.get(incident_id)
+                and (latest.get('proposal') or {}).get('next_steps'))))
 
     def checks_complete(incident_id):
-        return len(check_decisions.get(incident_id, [])) == expected_checks[incident_id]
+        return bool(check_decisions.get(incident_id))
     def status_for(incident_id):
         if incident_id in resolved_cases:
             return 'Resolved'
 
         checks = check_decisions.get(incident_id, [])
         if checks:
-            if not checks_complete(incident_id):
-                return 'Review in progress'
             approved = checks.count('APPROVED')
             if approved == len(checks):
                 return 'Approved steps completed' if completed.get(incident_id, 0) == approved else 'Next steps approved'
@@ -304,6 +351,7 @@ def case_queue(data):
                 incident['incident_id']
             ),
             'owner': owners.get(incident['incident_id']),
+            'review_priority': effective_priority(data, incident, priority_overrides.get(incident['incident_id'])),
             'last_activity': activity.get(incident['incident_id']),
         }
         for incident in data['incidents']
@@ -315,9 +363,11 @@ def pending_tasks():
     with closing(sqlite3.connect(DB_PATH)) as db:
         rows = db.execute(
             """
-            SELECT DISTINCT incident_id
-            FROM audit_events
-            WHERE event = 'CASE_RESOLVED'
+            SELECT d.recommendation_id, d.incident_id, d.description, d.analyst_id
+            FROM decisions d
+            LEFT JOIN task_completions t ON t.recommendation_id = d.recommendation_id
+            WHERE d.decision = 'APPROVED' AND t.recommendation_id IS NULL
+            ORDER BY d.incident_id, d.recommendation_id
             """
         ).fetchall()
     return [{'id': task_id, 'incident_id': incident_id, 'text': description, 'approved_by': analyst}
@@ -409,6 +459,9 @@ class Handler(BaseHTTPRequestHandler):
             if path.path == '/api/ai/settings':
                 self.send_json(200, public_ai_settings(load_settings()))
                 return
+            if path.path == '/api/ai/auto-analysis':
+                self.send_json(200, auto_analysis().status())
+                return
             if path.path == '/api/audit':
                 raw_limit = parse_qs(path.query).get('limit', ['100'])[0]
                 limit = max(1, min(int(raw_limit), 500))
@@ -425,7 +478,21 @@ class Handler(BaseHTTPRequestHandler):
                 return
             incident_id, action = self.route()
             data = json.loads(DATA.read_text(encoding='utf-8'))
-            if action == 'recommendations':
+            if action == 'raw-flows':
+                incident = next((item for item in data['incidents'] if item['incident_id'] == incident_id), None)
+                if not incident:
+                    raise ValueError('Unknown case')
+                status = database_status()
+                if not status['available']:
+                    self.send_json(200, status)
+                    return
+                query = parse_qs(path.query)
+                case_alerts = [item for item in data['alerts'] if item['alert_id'] in incident['alert_ids']]
+                result = query_case_flows(incident, case_alerts,
+                                          minute=query.get('minute', [None])[0],
+                                          page=int(query.get('page', ['1'])[0]))
+                self.send_json(200, {'available': True, **result})
+            elif action == 'recommendations':
                 recommendations = generate_recommendations(data, incident_id)
                 assessment = ai_assessment(incident_id)
                 ai_ready = assessment.get('status') == 'ready'
@@ -485,6 +552,10 @@ class Handler(BaseHTTPRequestHandler):
                 auth.change_password(session, payload.get('current_password'), payload.get('new_password'))
                 self.send_json(200, {'changed': True}, {'Set-Cookie': auth.clear_cookie()})
                 return
+            if path == '/api/ai/auto-analysis':
+                self.require_csrf(session)
+                self.send_json(200, auto_analysis().set_enabled(self.request_body().get('enabled')))
+                return
             self.require_csrf(session)
             settings_path = urlsplit(self.path).path
             if settings_path in {'/api/ai/settings', '/api/ai/settings/test'}:
@@ -517,19 +588,28 @@ class Handler(BaseHTTPRequestHandler):
                 if length < 1 or length > 1024:
                     raise ValueError('Invalid request size')
                 request = json.loads(self.rfile.read(length))
-                incident_id = complete_task(unquote(task_parts[2]), request.get('analyst'))
+                if request.get('analyst') != session['username']:
+                    raise ValueError('The signed-in analyst must match the reviewer')
+                incident_id = complete_task(unquote(task_parts[2]), session['username'])
                 self.send_json(200, {'incident_id': incident_id, 'tasks': pending_tasks()})
                 return
             incident_id, action = self.route()
-            if action == 'ai-assessment':
+            if action in ('ai-assessment', 'auto-check'):
                 if not any(item['incident_id'] == incident_id for item in json.loads(DATA.read_text(encoding='utf-8'))['incidents']):
                     raise ValueError('Unknown case')
                 try:
                     if ai_service().settings.is_mock:
                         self.send_json(409, {'status': 'not_configured', 'assessment': None, 'error': {'message': 'Connect a live AI provider in Settings before running AI check.'}})
                         return
-                    result = ai_service().investigate(incident_id)
-                    self.send_json(200 if result['status'] == 'ok' else 502, ai_assessment(incident_id))
+                    if action == 'auto-check':
+                        self.request_body()
+                        result = auto_analysis().investigate(incident_id, only_if_needed=True)
+                    else:
+                        result = auto_analysis().investigate(incident_id)
+                    payload = ai_assessment(incident_id)
+                    if result['status'] == 'busy':
+                        payload['queued'] = True
+                    self.send_json(202 if result['status'] == 'busy' else 200 if result['status'] in ('ok', 'skipped') else 502, payload)
                 except Exception as error:
                     self.send_json(503, {'status': 'unavailable', 'assessment': None, 'error': {'message': str(error)}})
                 return
@@ -552,13 +632,22 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json(200, case_record(data, incident_id))
                 return
 
-            if action not in {'approval', 'assign', 'notes', 'ai-decision', 'record'}:
+            if action not in {'approval', 'assign', 'notes', 'ai-decision', 'record', 'priority'}:
                 raise ValueError('Unknown endpoint')
             length = int(self.headers.get('Content-Length', '0'))
             if length < 1 or length > 16384:
                 raise ValueError('Invalid request size')
             request = json.loads(self.rfile.read(length))
             data = json.loads(DATA.read_text(encoding='utf-8'))
+            if not isinstance(request, dict):
+                raise ValueError('JSON request must be an object')
+            if action == 'priority':
+                if request.get('analyst') != session['username']:
+                    raise ValueError('The signed-in analyst must match the reviewer')
+                priority = save_priority(data, incident_id, request.get('level'), request.get('reason'),
+                                         session['username'], request.get('confirmed'), DB_PATH)
+                self.send_json(200, {'review_priority': priority})
+                return
             if action == 'record':
                 if request.get('analyst') != session['username']:
                     raise ValueError('The signed-in analyst must match the reviewer')
@@ -573,7 +662,9 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json(200, {'decision': decision['decision'], 'assessment': ai_assessment(incident_id)})
                 return
             if action == 'notes':
-                note = add_note(data, incident_id, request.get('analyst'), request.get('evidence_id'), request.get('text'))
+                if request.get('analyst') != session['username']:
+                    raise ValueError('The signed-in analyst must match the reviewer')
+                note = add_note(data, incident_id, session['username'], request.get('evidence_id'), request.get('text'))
                 self.send_json(200, {'note': note})
                 return
             if action == 'assign':
@@ -589,29 +680,35 @@ class Handler(BaseHTTPRequestHandler):
                     if db.execute('SELECT 1 FROM case_assignments WHERE incident_id = ?', (incident_id,)).fetchone():
                         raise ValueError('Case is already assigned')
                     db.execute('INSERT INTO case_assignments VALUES (?, ?, ?)', (incident_id, analyst.strip(), timestamp))
-                    append_in_transaction(db, 'CASE_ASSIGNED', incident_id=incident_id, actor=f'analyst:{analyst.strip()}',
+                    append_in_transaction(db, 'CASE_ASSIGNED', incident_id=incident_id, actor=f"analyst:{session['username']}",
                                           payload={'analyst_id': analyst.strip()})
                 self.send_json(200, {'case': case_queue(data)[incident_id]})
                 return
             recommendations = generate_recommendations(data, incident_id)
+            assessment = ai_assessment(incident_id)
+            if (assessment.get('error') or {}).get('code') == 'EVIDENCE_INTEGRITY_FAILED':
+                raise ValueError('Rerun AI investigation: the saved result conflicts with current evidence and cannot support approval.')
             decisions = request.get('decisions')
             analyst = request.get('analyst')
             ids = {item['id'] for item in recommendations}
-            if not isinstance(analyst, str) or not analyst.strip() or not isinstance(decisions, dict) or set(decisions) != ids or set(decisions.values()) - {'approved', 'rejected'}:
-                raise ValueError('An analyst must approve or reject every suggested check')
+            if analyst != session['username']:
+                raise ValueError('The signed-in analyst must match the reviewer')
+            if not isinstance(analyst, str) or not analyst.strip() or not isinstance(decisions, dict) or not decisions or set(decisions) - ids or set(decisions.values()) - {'approved', 'rejected'}:
+                raise ValueError('Select valid investigation steps to approve or reject')
             init_db()
             with closing(sqlite3.connect(DB_PATH)) as db:
                 existing = db.execute('SELECT recommendation_id FROM decisions WHERE incident_id = ?', (incident_id,)).fetchall()
             if existing:
                 raise ValueError('Decisions for this case have already been saved')
             for item in recommendations:
-                save_decision(data, incident_id, item['id'], decisions[item['id']].upper(), analyst, 'Needs Review')
+                if item['id'] in decisions:
+                    save_decision(data, incident_id, item['id'], decisions[item['id']].upper(), analyst, 'Needs Review')
             note = None
             if 'approved' in decisions.values():
                 note = get_case_note(incident_id)
                 note['summary'] = case_summary(data, incident_id)
-                note['approved_checks'] = [{'id': item['id'], 'text': item['description']} for item in recommendations if decisions[item['id']] == 'approved']
-                log_event(incident_id, 'CASE_NOTE_DRAFTED', {'analyst_id': analyst.strip(), 'evidence_ids': sorted({e for item in recommendations if decisions[item['id']] == 'approved' for e in item['evidence_ids']})})
+                note['approved_checks'] = [{'id': item['id'], 'text': item['description']} for item in recommendations if decisions.get(item['id']) == 'approved']
+                log_event(incident_id, 'CASE_NOTE_DRAFTED', {'analyst_id': analyst.strip(), 'evidence_ids': sorted({e for item in recommendations if decisions.get(item['id']) == 'approved' for e in item['evidence_ids']})})
             self.send_json(200, {'note': note, 'events': audit_events(incident_id)})
         except auth.AuthError as error:
             self.send_json(error.status, {'error': str(error)}, {'Retry-After': str(error.retry_after)} if error.retry_after else None)

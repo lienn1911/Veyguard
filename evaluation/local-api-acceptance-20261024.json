@@ -1,0 +1,9 @@
+{
+  "/api/auth/session": {
+    "status": 200,
+    "authenticated": false
+  },
+  "/api/cases/queue": {
+    "status": 401
+  }
+}

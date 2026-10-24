@@ -1,0 +1,72 @@
+{
+  "kind": "independent-ai-holdout",
+  "frozen_at": "2026-10-23T16:40:23.933761+00:00",
+  "reviewed_by": "Codex automated provenance and label-consistency review; no human expert adjudication",
+  "label_source": "Original CIDDS class/attackType; labels not included in model-facing files",
+  "selection": "First encountered group key per target attack and first two distinct normal keys in week 1 CSV order; full groups must be pure; no substitution; fixed before AI calls",
+  "limitations": "Five purposive groups, shared source with detector holdout, external-domain diagnostic only; not statistically representative or expert-adjudicated AI accuracy.",
+  "source_archive_sha256": "5145D13B2C4EE278390743964F242759FFBF2823336DC7361B4D7255A04C54D9",
+  "development_archive_sha256": [
+    "7BDBEF286F8893F31C6DB12105FA097FA5C2DCC6733179037A08129D150EA27A"
+  ],
+  "alerts_sha256": "ABAEF5D37AC3B0C387154D56B1C52377B8334EEFB8A14339FBE544E9D0BA7AAC",
+  "timelines_sha256": "B0BBCEBE0625BFD9A68064403FC466B2D95E1A034D860626AAF75FB1F7823BB1",
+  "prompt_sha256": "65BF18D09C123D8BCDAEF25E03BA549ED6AD3EC937BA0BAA09E9905B72852D45",
+  "case_ids": [
+    "INC-D9D1FB6CD534",
+    "INC-069E4369969F",
+    "INC-A58D81981C47",
+    "INC-D1C1AB486361",
+    "INC-97CEA87F41B5"
+  ],
+  "reference_labels": {
+    "INC-D9D1FB6CD534": "Benign",
+    "INC-069E4369969F": "Benign",
+    "INC-A58D81981C47": "Attack",
+    "INC-D1C1AB486361": "Attack",
+    "INC-97CEA87F41B5": "Attack"
+  },
+  "selection_records": [
+    {
+      "incident_id": "INC-D9D1FB6CD534",
+      "source": "192.168.100.5",
+      "destination": "192.168.220.15",
+      "minute": "2017-03-15 00:01",
+      "dataset_truth": "Benign",
+      "detector_prediction": null
+    },
+    {
+      "incident_id": "INC-069E4369969F",
+      "source": "192.168.100.5",
+      "destination": "192.168.220.16",
+      "minute": "2017-03-15 00:01",
+      "dataset_truth": "Benign",
+      "detector_prediction": null
+    },
+    {
+      "incident_id": "INC-A58D81981C47",
+      "source": "192.168.200.4",
+      "destination": "192.168.220.16",
+      "minute": "2017-03-15 00:01",
+      "dataset_truth": "PortScan",
+      "detector_prediction": null
+    },
+    {
+      "incident_id": "INC-D1C1AB486361",
+      "source": "192.168.220.16",
+      "destination": "192.168.220.255",
+      "minute": "2017-03-15 13:07",
+      "dataset_truth": "DoS",
+      "detector_prediction": null
+    },
+    {
+      "incident_id": "INC-97CEA87F41B5",
+      "source": "192.168.200.4",
+      "destination": "192.168.220.16",
+      "minute": "2017-03-20 10:01",
+      "dataset_truth": "BruteForce",
+      "detector_prediction": null
+    }
+  ],
+  "adapter_sha256": "DE866E8C810E02FF1C32140D7EDD3A94511B84DBC67236BC11D0434150A80A31"
+}

@@ -6,22 +6,20 @@ $base = (Resolve-Path -LiteralPath $ProjectRoot).Path
 $python = (Get-Command python.exe -ErrorAction Stop).Source
 
 try {
-    $apiProcesses = @(Get-CimInstance Win32_Process | Where-Object {
-        $_.Name -in @('python.exe', 'pythonw.exe') -and
-        $_.CommandLine -match '(?i)-m\s+services\.api\s*$'
-    })
     $listeners = @(Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue)
-    $apiIds = @($apiProcesses | ForEach-Object { $_.ProcessId })
-
-    foreach ($listener in $listeners) {
-        if ($apiIds -notcontains $listener.OwningProcess) {
-            throw "Port $port belongs to another program (PID $($listener.OwningProcess)). Close it before starting SOC Desk."
-        }
-    }
-
-    # Windows can allow several SO_REUSEADDR Python servers on the same port.
-    # Stop every exact services.api instance after confirming the port owner.
     if ($listeners.Count -gt 0) {
+        $apiProcesses = @(Get-CimInstance Win32_Process | Where-Object {
+            $_.Name -in @('python.exe', 'pythonw.exe') -and
+            $_.CommandLine -match '(?i)-m\s+services\.api\s*$'
+        })
+        $apiIds = @($apiProcesses | ForEach-Object { $_.ProcessId })
+        foreach ($listener in $listeners) {
+            if ($apiIds -notcontains $listener.OwningProcess) {
+                throw "Port $port belongs to another program (PID $($listener.OwningProcess)). Close it before starting SOC Desk."
+            }
+        }
+
+        # Stop every exact services.api instance after confirming the port owner.
         foreach ($process in $apiProcesses) {
             Stop-Process -Id $process.ProcessId -Force -ErrorAction Stop
         }

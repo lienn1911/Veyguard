@@ -1,0 +1,420 @@
+{
+  "updated_at": "2026-10-23T16:33:10Z",
+  "incidents": {
+    "INC-F4ED19468E0C": {
+      "runs": [
+        {
+          "run_id": "TRG-91FB0759E7",
+          "incident_id": "INC-F4ED19468E0C",
+          "provider": "codex",
+          "model": "default",
+          "mode": "live",
+          "started_at": "2026-10-23T16:32:28Z",
+          "completed_at": "2026-10-23T16:33:10Z",
+          "duration_ms": 42688,
+          "investigation": {
+            "steps": 5,
+            "tool_calls": [
+              {
+                "step": 1,
+                "tool": "get_incident_details",
+                "arguments": {
+                  "incident_id": "INC-F4ED19468E0C"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              },
+              {
+                "step": 2,
+                "tool": "get_related_alerts",
+                "arguments": {
+                  "incident_id": "INC-F4ED19468E0C"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 1
+              },
+              {
+                "step": 3,
+                "tool": "get_network_flows",
+                "arguments": {
+                  "incident_id": "INC-F4ED19468E0C",
+                  "limit": 20
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 6
+              },
+              {
+                "step": 4,
+                "tool": "get_incident_statistics",
+                "arguments": {
+                  "incident_id": "INC-F4ED19468E0C"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              }
+            ],
+            "blocked_attempts": [],
+            "tool_errors": 0,
+            "corrections": 0
+          },
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ],
+          "status": "ok",
+          "verdict": "Needs Review",
+          "confidence": "medium",
+          "reason": "Observed: ALT-4980D1D9E4EA reports 958 flows across 689 destination ports in one minute, triggering PortScan. Retained flows show source port 443 communicating with high destination ports and small packet counts, including FLOW-EB76E800FC90 and FLOW-A91CE7F2D370. Inference: the aggregate pattern is compatible with scanning, but the sampled direction and ports could also represent return traffic; the available evidence does not establish connection initiation or hostile intent.",
+          "evidence_ids": [
+            "ALT-4980D1D9E4EA",
+            "FLOW-EB76E800FC90",
+            "FLOW-A91CE7F2D370"
+          ],
+          "findings": [
+            {
+              "observation": "The detection counted 689 destination ports and 2 source ports within one minute.",
+              "evidence_ids": [
+                "ALT-4980D1D9E4EA"
+              ]
+            },
+            {
+              "observation": "Sampled traffic includes source port 443 to destination port 51617 with 2 packets and destination port 51834 with 3 packets; these records do not establish who initiated the connections.",
+              "evidence_ids": [
+                "FLOW-EB76E800FC90",
+                "FLOW-A91CE7F2D370"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-4980D1D9E4EA",
+              "technique_id": "T1046",
+              "reason": "Tentative Network Service Discovery mapping based on the PortScan alert's broad destination-port coverage. Connection initiation and actual service probing remain unconfirmed, so this is not a confirmed attack mapping."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Review connection direction, TCP flags and corresponding reverse traffic to distinguish initiated probes from service responses.",
+              "evidence_ids": [
+                "FLOW-EB76E800FC90",
+                "FLOW-A91CE7F2D370"
+              ]
+            },
+            {
+              "action": "ESCALATE_TO_ANALYST",
+              "reason": "Resolve the discrepancy between broad destination-port coverage and the ambiguous sampled traffic. This PortScan category requires explicit analyst confirmation before closure.",
+              "evidence_ids": [
+                "ALT-4980D1D9E4EA"
+              ]
+            }
+          ],
+          "limitations": "Only 6 sampled flows are retained. TCP flags, connection initiation, reverse-flow correlation, payloads and application context are unavailable; neither scanning intent nor a legitimate explanation can be confirmed.",
+          "proposal": {
+            "incident_id": "INC-F4ED19468E0C",
+            "verdict": "Needs Review",
+            "confidence": "medium",
+            "reason": "Observed: ALT-4980D1D9E4EA reports 958 flows across 689 destination ports in one minute, triggering PortScan. Retained flows show source port 443 communicating with high destination ports and small packet counts, including FLOW-EB76E800FC90 and FLOW-A91CE7F2D370. Inference: the aggregate pattern is compatible with scanning, but the sampled direction and ports could also represent return traffic; the available evidence does not establish connection initiation or hostile intent.",
+            "evidence_ids": [
+              "ALT-4980D1D9E4EA",
+              "FLOW-EB76E800FC90",
+              "FLOW-A91CE7F2D370"
+            ],
+            "findings": [
+              {
+                "observation": "The detection counted 689 destination ports and 2 source ports within one minute.",
+                "evidence_ids": [
+                  "ALT-4980D1D9E4EA"
+                ]
+              },
+              {
+                "observation": "Sampled traffic includes source port 443 to destination port 51617 with 2 packets and destination port 51834 with 3 packets; these records do not establish who initiated the connections.",
+                "evidence_ids": [
+                  "FLOW-EB76E800FC90",
+                  "FLOW-A91CE7F2D370"
+                ]
+              }
+            ],
+            "technique_mappings": [
+              {
+                "evidence_id": "ALT-4980D1D9E4EA",
+                "technique_id": "T1046",
+                "reason": "Tentative Network Service Discovery mapping based on the PortScan alert's broad destination-port coverage. Connection initiation and actual service probing remain unconfirmed, so this is not a confirmed attack mapping."
+              }
+            ],
+            "next_steps": [
+              {
+                "action": "REVIEW_NETWORK_FLOWS",
+                "reason": "Review connection direction, TCP flags and corresponding reverse traffic to distinguish initiated probes from service responses.",
+                "evidence_ids": [
+                  "FLOW-EB76E800FC90",
+                  "FLOW-A91CE7F2D370"
+                ]
+              },
+              {
+                "action": "ESCALATE_TO_ANALYST",
+                "reason": "Resolve the discrepancy between broad destination-port coverage and the ambiguous sampled traffic. This PortScan category requires explicit analyst confirmation before closure.",
+                "evidence_ids": [
+                  "ALT-4980D1D9E4EA"
+                ]
+              }
+            ],
+            "limitations": "Only 6 sampled flows are retained. TCP flags, connection initiation, reverse-flow correlation, payloads and application context are unavailable; neither scanning intent nor a legitimate explanation can be confirmed."
+          },
+          "error": null,
+          "validation": {
+            "ok": true,
+            "issues": []
+          },
+          "requires_confirmation": false,
+          "guardrail": {
+            "verdict": "Needs Review",
+            "requires_confirmation": false,
+            "reasons": [
+              "Insufficient evidence: analyst review is mandatory."
+            ],
+            "source": "services.guardrails.evaluate_proposal",
+            "auto_close_permitted": false,
+            "severity_change": null,
+            "closure_sensitive": false,
+            "prohibited_actions": [
+              "close_incident",
+              "dismiss_incident",
+              "downgrade_severity",
+              "execute_remediation",
+              "modify_evidence",
+              "approve_recommendation",
+              "override_analyst_decision"
+            ]
+          }
+        }
+      ],
+      "decision": {
+        "status": "pending",
+        "analyst": null,
+        "note": null,
+        "at": null
+      },
+      "latest": {
+        "run_id": "TRG-91FB0759E7",
+        "incident_id": "INC-F4ED19468E0C",
+        "provider": "codex",
+        "model": "default",
+        "mode": "live",
+        "started_at": "2026-10-23T16:32:28Z",
+        "completed_at": "2026-10-23T16:33:10Z",
+        "duration_ms": 42688,
+        "investigation": {
+          "steps": 5,
+          "tool_calls": [
+            {
+              "step": 1,
+              "tool": "get_incident_details",
+              "arguments": {
+                "incident_id": "INC-F4ED19468E0C"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            },
+            {
+              "step": 2,
+              "tool": "get_related_alerts",
+              "arguments": {
+                "incident_id": "INC-F4ED19468E0C"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 1
+            },
+            {
+              "step": 3,
+              "tool": "get_network_flows",
+              "arguments": {
+                "incident_id": "INC-F4ED19468E0C",
+                "limit": 20
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 6
+            },
+            {
+              "step": 4,
+              "tool": "get_incident_statistics",
+              "arguments": {
+                "incident_id": "INC-F4ED19468E0C"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            }
+          ],
+          "blocked_attempts": [],
+          "tool_errors": 0,
+          "corrections": 0
+        },
+        "prohibited_actions": [
+          "close_incident",
+          "dismiss_incident",
+          "downgrade_severity",
+          "execute_remediation",
+          "modify_evidence",
+          "approve_recommendation",
+          "override_analyst_decision"
+        ],
+        "status": "ok",
+        "verdict": "Needs Review",
+        "confidence": "medium",
+        "reason": "Observed: ALT-4980D1D9E4EA reports 958 flows across 689 destination ports in one minute, triggering PortScan. Retained flows show source port 443 communicating with high destination ports and small packet counts, including FLOW-EB76E800FC90 and FLOW-A91CE7F2D370. Inference: the aggregate pattern is compatible with scanning, but the sampled direction and ports could also represent return traffic; the available evidence does not establish connection initiation or hostile intent.",
+        "evidence_ids": [
+          "ALT-4980D1D9E4EA",
+          "FLOW-EB76E800FC90",
+          "FLOW-A91CE7F2D370"
+        ],
+        "findings": [
+          {
+            "observation": "The detection counted 689 destination ports and 2 source ports within one minute.",
+            "evidence_ids": [
+              "ALT-4980D1D9E4EA"
+            ]
+          },
+          {
+            "observation": "Sampled traffic includes source port 443 to destination port 51617 with 2 packets and destination port 51834 with 3 packets; these records do not establish who initiated the connections.",
+            "evidence_ids": [
+              "FLOW-EB76E800FC90",
+              "FLOW-A91CE7F2D370"
+            ]
+          }
+        ],
+        "technique_mappings": [
+          {
+            "evidence_id": "ALT-4980D1D9E4EA",
+            "technique_id": "T1046",
+            "reason": "Tentative Network Service Discovery mapping based on the PortScan alert's broad destination-port coverage. Connection initiation and actual service probing remain unconfirmed, so this is not a confirmed attack mapping."
+          }
+        ],
+        "next_steps": [
+          {
+            "action": "REVIEW_NETWORK_FLOWS",
+            "reason": "Review connection direction, TCP flags and corresponding reverse traffic to distinguish initiated probes from service responses.",
+            "evidence_ids": [
+              "FLOW-EB76E800FC90",
+              "FLOW-A91CE7F2D370"
+            ]
+          },
+          {
+            "action": "ESCALATE_TO_ANALYST",
+            "reason": "Resolve the discrepancy between broad destination-port coverage and the ambiguous sampled traffic. This PortScan category requires explicit analyst confirmation before closure.",
+            "evidence_ids": [
+              "ALT-4980D1D9E4EA"
+            ]
+          }
+        ],
+        "limitations": "Only 6 sampled flows are retained. TCP flags, connection initiation, reverse-flow correlation, payloads and application context are unavailable; neither scanning intent nor a legitimate explanation can be confirmed.",
+        "proposal": {
+          "incident_id": "INC-F4ED19468E0C",
+          "verdict": "Needs Review",
+          "confidence": "medium",
+          "reason": "Observed: ALT-4980D1D9E4EA reports 958 flows across 689 destination ports in one minute, triggering PortScan. Retained flows show source port 443 communicating with high destination ports and small packet counts, including FLOW-EB76E800FC90 and FLOW-A91CE7F2D370. Inference: the aggregate pattern is compatible with scanning, but the sampled direction and ports could also represent return traffic; the available evidence does not establish connection initiation or hostile intent.",
+          "evidence_ids": [
+            "ALT-4980D1D9E4EA",
+            "FLOW-EB76E800FC90",
+            "FLOW-A91CE7F2D370"
+          ],
+          "findings": [
+            {
+              "observation": "The detection counted 689 destination ports and 2 source ports within one minute.",
+              "evidence_ids": [
+                "ALT-4980D1D9E4EA"
+              ]
+            },
+            {
+              "observation": "Sampled traffic includes source port 443 to destination port 51617 with 2 packets and destination port 51834 with 3 packets; these records do not establish who initiated the connections.",
+              "evidence_ids": [
+                "FLOW-EB76E800FC90",
+                "FLOW-A91CE7F2D370"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-4980D1D9E4EA",
+              "technique_id": "T1046",
+              "reason": "Tentative Network Service Discovery mapping based on the PortScan alert's broad destination-port coverage. Connection initiation and actual service probing remain unconfirmed, so this is not a confirmed attack mapping."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Review connection direction, TCP flags and corresponding reverse traffic to distinguish initiated probes from service responses.",
+              "evidence_ids": [
+                "FLOW-EB76E800FC90",
+                "FLOW-A91CE7F2D370"
+              ]
+            },
+            {
+              "action": "ESCALATE_TO_ANALYST",
+              "reason": "Resolve the discrepancy between broad destination-port coverage and the ambiguous sampled traffic. This PortScan category requires explicit analyst confirmation before closure.",
+              "evidence_ids": [
+                "ALT-4980D1D9E4EA"
+              ]
+            }
+          ],
+          "limitations": "Only 6 sampled flows are retained. TCP flags, connection initiation, reverse-flow correlation, payloads and application context are unavailable; neither scanning intent nor a legitimate explanation can be confirmed."
+        },
+        "error": null,
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "requires_confirmation": false,
+        "guardrail": {
+          "verdict": "Needs Review",
+          "requires_confirmation": false,
+          "reasons": [
+            "Insufficient evidence: analyst review is mandatory."
+          ],
+          "source": "services.guardrails.evaluate_proposal",
+          "auto_close_permitted": false,
+          "severity_change": null,
+          "closure_sensitive": false,
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ]
+        }
+      },
+      "updated_at": "2026-10-23T16:33:10Z"
+    }
+  }
+}

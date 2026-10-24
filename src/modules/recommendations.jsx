@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { apiFetch } from '../apiFetch.js';
+import Icon from '../components/Icon.jsx';
+
+const stepPurpose = {
+  REVIEW_NETWORK_FLOWS: 'Check ports, packet counts and traffic patterns.',
+  CHECK_RELATED_ALERTS: 'Compare the rule matches and their supporting evidence.',
+  REVIEW_INCIDENT_TIMELINE: 'Check when the activity started and how it changed.',
+  ESCALATE_TO_ANALYST: 'Review the evidence before deciding whether to escalate.',
+};
 
 const endpoint = (id, action) => `/api/cases/${encodeURIComponent(id)}/${action}`;
 
-export default function NextSteps({ incidentId, analystName, onEvidence, onTimeline, onReviewed }) {
+export default function NextSteps({ incidentId, analystName, onEvidence, onTimeline, onReviewed, onCaseRecord, onOverview }) {
   const [proposal, setProposal] = useState(null);
   const [decisions, setDecisions] = useState({});
   const [events, setEvents] = useState([]);
@@ -54,30 +62,31 @@ export default function NextSteps({ incidentId, analystName, onEvidence, onTimel
     }
   }
 
-  const complete = proposal?.checks.every((item) => decisions[item.id]);
+  const checks = proposal?.checks || [];
+  const reviewed = checks.filter((item) => decisions[item.id]).length;
+  const approved = checks.filter((item) => decisions[item.id] === 'approved').length;
+  const aiChecks = checks.filter((item) => item.ai_suggested);
+  const renderCheck = (item, index) => <li className="recommendation-row" key={item.id}>
+    <span className="recommendation-number" aria-hidden="true">{index + 1}</span>
+    <div className="recommendation-content">
+      <h3>{item.text}</h3>
+      <p>{stepPurpose[item.action]}</p>
+      {item.ai_suggested && <details className="recommendation-rationale"><summary>Reason and evidence</summary><p>{item.ai_reason}</p><div>{(item.ai_evidence_ids || []).map((id) => <button type="button" key={id} onClick={() => onEvidence(id)}>{id}</button>)}</div></details>}
+    </div>
+    <div className="recommendation-choice" role="group" aria-label={`Decision: ${item.text}`}>
+      <button type="button" disabled={submitted || saving} className={decisions[item.id] === 'approved' ? 'selected approved' : ''} aria-pressed={decisions[item.id] === 'approved'} onClick={() => setDecisions({ ...decisions, [item.id]: 'approved' })}>Approve</button>
+      <button type="button" disabled={submitted || saving} className={decisions[item.id] === 'rejected' ? 'selected rejected' : ''} aria-pressed={decisions[item.id] === 'rejected'} onClick={() => setDecisions({ ...decisions, [item.id]: 'rejected' })}>Reject</button>
+    </div>
+  </li>;
 
-  return <section className="process-panel next-steps" aria-label="Next steps">
-    <div className="process-panel-head"><h3>Recommended next steps</h3></div>
-    <p className="process-note">AI suggestions are grounded in the case evidence and limited to safe investigation steps. Review each step before saving your decision.</p>
+  return <section className="recommendations-workspace" aria-label="Investigation plan">
     {error && <p className="review-error" role="alert">{error}</p>}
-    {!proposal && !error && <p className="process-note">Loading checks…</p>}
+    {!proposal && !error && <p className="process-note" role="status">Loading investigation steps…</p>}
     {proposal && <>
-      {!proposal.checks.some((item) => item.ai_suggested) && <p className="process-note">{proposal.ai_status === 'ready' ? 'This AI check did not produce a validated next step. The safe case-rule checks remain available below.' : 'Run AI check to see case-specific suggestions. The safe case-rule checks remain available below.'}</p>}
-      <div className="check-list">{proposal.checks.map((item) => <div className="check-item" key={item.id}>
-        <p>{item.ai_suggested && <span className="recommendation-ai-badge">AI suggested</span>}{item.text}</p>
-        {item.ai_suggested && <div className="recommendation-ai-reason"><p>{item.ai_reason}</p><div>{item.ai_evidence_ids.map((id) => <button type="button" key={id} onClick={() => onEvidence(id)}>{id}</button>)}</div></div>}
-        <button className="check-evidence" type="button" onClick={() => item.action === 'REVIEW_INCIDENT_TIMELINE' ? onTimeline() : onEvidence(item.evidence_ids[0])}>{item.action === 'REVIEW_INCIDENT_TIMELINE' ? 'View timeline' : item.action === 'REVIEW_NETWORK_FLOWS' ? 'View flows' : 'View evidence'}</button>
-        <div className="check-actions" aria-label={`Decision for ${item.id}`}>
-          <button type="button" disabled={submitted} className={decisions[item.id] === 'approved' ? 'selected' : ''} aria-pressed={decisions[item.id] === 'approved'} onClick={() => setDecisions({ ...decisions, [item.id]: 'approved' })}>Approve</button>
-          <button type="button" disabled={submitted} className={decisions[item.id] === 'rejected' ? 'selected' : ''} aria-pressed={decisions[item.id] === 'rejected'} onClick={() => setDecisions({ ...decisions, [item.id]: 'rejected' })}>Reject</button>
-        </div>
-      </div>)}</div>
-      {!submitted && <div className="review-approval"><label htmlFor="analyst-name">Reviewed by</label><input id="analyst-name" value={analystName || ''} readOnly /><button type="button" disabled={!complete || !analystName || saving} onClick={submit}>{saving ? 'Saving…' : 'Save step decisions'}</button></div>}
-      {submitted && <p className="process-note" role="status">Step decisions saved. Continue to Case record to save the final summary.</p>}
-      {note && <div className="case-note"><strong>Case note draft</strong><p>{note.summary}</p><ul>{note.approved_checks.map((item) => <li key={item.id}>{item.text}</li>)}</ul><small>Needs Review · Draft only</small></div>}
-      {submitted && !note && <p className="process-note">All checks were rejected. No case note was drafted.</p>}
+      {aiChecks.length ? <><ol className="recommendations-list">{aiChecks.map(renderCheck)}</ol></> : <div className="recommendations-empty" role="status"><span className="recommendations-empty-icon"><Icon name={proposal.ai_status === 'ready' ? 'checkCircle' : 'alert'} size={25} /></span><div className="recommendations-empty-copy"><strong>{proposal.ai_status === 'ready' ? 'No next steps proposed' : 'No AI recommendations yet'}</strong><p>{proposal.ai_status === 'ready' ? 'The investigation finished without suggesting a step.' : 'AI investigation did not finish.'}</p></div>{proposal.ai_status !== 'ready' && onOverview && <button type="button" className="recommendations-empty-action" onClick={onOverview}>Open Overview <Icon name="arrow" size={15} /></button>}</div>}
+      {!submitted && aiChecks.length > 0 && <div className="recommendations-review-actions"><button type="button" className="recommendations-primary" disabled={!reviewed || !analystName || saving} onClick={submit}>{saving ? 'Saving…' : 'Save decisions'}</button></div>}
+      {note && <details className="recommendations-details"><summary>Case note draft</summary><p>{note.summary}</p><ul>{note.approved_checks.map((item) => <li key={item.id}>{item.text}</li>)}</ul></details>}
     </>}
-    <div className="workflow-guardrail"><strong>Human control</strong><p>No automatic closure, dismissal, or priority downgrade.</p></div>
-    <details className="audit-details"><summary>Activity history · {events.length}</summary><ol>{events.map((event, index) => <li key={index}><time>{event.time.slice(0, 19).replace('T', ' ')}</time> · {event.action.replaceAll('_', ' ').toLowerCase()}{event.decision ? ` · ${event.decision.toLowerCase()}` : ''}{event.analyst_id ? ` · ${event.analyst_id}` : ''}</li>)}</ol></details>
+    <details className="recommendations-details"><summary>Activity history · {events.length}</summary><ol>{events.map((event, index) => <li key={index}><time>{event.time.slice(0, 19).replace('T', ' ')}</time> · {event.action.replaceAll('_', ' ').toLowerCase()}{event.decision ? ` · ${event.decision.toLowerCase()}` : ''}{event.analyst_id ? ` · ${event.analyst_id}` : ''}</li>)}</ol></details>
   </section>;
 }

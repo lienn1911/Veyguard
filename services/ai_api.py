@@ -189,7 +189,7 @@ def create_app() -> FastAPI:
         items = []
         for incident_id in dataset.incident_ids():
             analyst = dataset.analyst_incident(incident_id)
-            stored = store.get(incident_id) if store else None
+            stored = services.triage.latest(incident_id) if services.triage else None
             latest = (stored or {}).get("latest") or {}
             decision = (stored or {}).get("decision") or {"status": "pending"}
             items.append(
@@ -222,7 +222,7 @@ def create_app() -> FastAPI:
     def get_incident(incident_id: str) -> dict:
         dataset = services.require_dataset()
         analyst = dataset.analyst_incident(incident_id)
-        stored = services.triage.store.get(incident_id) if services.triage else None
+        stored = services.triage.latest(incident_id) if services.triage else None
         return {
             "incident": analyst,
             "evidence": dataset.analyst_evidence(incident_id),

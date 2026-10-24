@@ -1,0 +1,26 @@
+{
+  "kind": "offline-native-ui-acceptance",
+  "ai": "mock with explicitly simulated plan",
+  "case": "INC-A787E11F2A22",
+  "evidence_opened": "FLOW-C633F74D8637",
+  "ui_actions": [
+    "open suggested evidence",
+    "select approve",
+    "save decisions",
+    "save case record"
+  ],
+  "decision_actor": "AcceptanceTester",
+  "audit_verified": true,
+  "event_types": [
+    "ANALYST_DECISION",
+    "CASE_NOTE_DRAFTED",
+    "CASE_RECORD_SAVED",
+    "analyst.decision",
+    "triage.completed",
+    "triage.error",
+    "triage.started",
+    "triage.tool_call"
+  ],
+  "production_approval": false,
+  "final_live_ai_acceptance": false
+}

@@ -1,0 +1,966 @@
+{
+  "schema_version": 2,
+  "scope": [
+    "PortScan",
+    "DoS",
+    "BruteForce"
+  ],
+  "evaluation_status": "historical_development_only",
+  "provenance": {
+    "archive_sha256": "7bdbef286f8893f31c6db12105fa097fa5c2dcc6733179037a08129d150ea27a",
+    "detector_sha256": "dd7fc92d3d9621ccd05c4fa176db9fe4d1b83ae94bfd85a63d56ad237a41f406",
+    "evaluator_sha256": "e569d710f88b83b05df20305278a6d728d6fdafd34e77e5ddb05d9b5d91b14c3",
+    "python": "3.12.14",
+    "manifest": null,
+    "independence_limit": "Hashes verify declared separation, not prior human exposure or duplicate traffic."
+  },
+  "errors": [
+    {
+      "source_file": "TrafficLabelling /Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-07T13:05",
+      "actual": "PortScan",
+      "predicted": "No alert",
+      "labels": {
+        "PortScan": 5
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-07T13:06",
+      "actual": "PortScan",
+      "predicted": "No alert",
+      "labels": {
+        "PortScan": 2
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-07T13:52",
+      "actual": "PortScan",
+      "predicted": "No alert",
+      "labels": {
+        "PortScan": 1
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-07T13:55",
+      "actual": "PortScan",
+      "predicted": "No alert",
+      "labels": {
+        "PortScan": 30
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-07T13:56",
+      "actual": "PortScan",
+      "predicted": "No alert",
+      "labels": {
+        "PortScan": 45
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-07T13:57",
+      "actual": "PortScan",
+      "predicted": "No alert",
+      "labels": {
+        "PortScan": 29
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-07T13:58",
+      "actual": "PortScan",
+      "predicted": "No alert",
+      "labels": {
+        "PortScan": 11
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-07T13:59",
+      "actual": "PortScan",
+      "predicted": "No alert",
+      "labels": {
+        "PortScan": 62
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-07T14:00",
+      "actual": "PortScan",
+      "predicted": "No alert",
+      "labels": {
+        "PortScan": 49
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-07T14:14",
+      "actual": "PortScan",
+      "predicted": "No alert",
+      "labels": {
+        "PortScan": 70
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-07T14:15",
+      "actual": "PortScan",
+      "predicted": "No alert",
+      "labels": {
+        "PortScan": 64
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-07T14:16",
+      "actual": "PortScan",
+      "predicted": "No alert",
+      "labels": {
+        "PortScan": 4
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-07T15:03",
+      "actual": "PortScan",
+      "predicted": "No alert",
+      "labels": {
+        "PortScan": 2
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-07T15:12",
+      "actual": "PortScan",
+      "predicted": "No alert",
+      "labels": {
+        "PortScan": 1
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-07T15:13",
+      "actual": "PortScan",
+      "predicted": "No alert",
+      "labels": {
+        "PortScan": 1
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-07T15:21",
+      "actual": "PortScan",
+      "predicted": "No alert",
+      "labels": {
+        "PortScan": 1
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Tuesday-WorkingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-04T03:07",
+      "actual": "BruteForce",
+      "predicted": "No alert",
+      "labels": {
+        "SSH-Patator": 23
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Tuesday-WorkingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-04T03:11",
+      "actual": "BruteForce",
+      "predicted": "No alert",
+      "labels": {
+        "SSH-Patator": 38
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Tuesday-WorkingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-04T09:17",
+      "actual": "BruteForce",
+      "predicted": "No alert",
+      "labels": {
+        "FTP-Patator": 1
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Tuesday-WorkingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-04T10:20",
+      "actual": "BruteForce",
+      "predicted": "No alert",
+      "labels": {
+        "FTP-Patator": 34
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Tuesday-WorkingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-04T10:30",
+      "actual": "BruteForce",
+      "predicted": "No alert",
+      "labels": {
+        "FTP-Patator": 1
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Tuesday-WorkingHours.pcap_ISCX.csv",
+      "source_ip": "173.223.152.83",
+      "destination_ip": "192.168.10.25",
+      "minute": "2017-07-04T11:07",
+      "actual": "Benign",
+      "predicted": "PortScan",
+      "labels": {
+        "BENIGN": 958
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Tuesday-WorkingHours.pcap_ISCX.csv",
+      "source_ip": "192.168.10.25",
+      "destination_ip": "173.223.152.83",
+      "minute": "2017-07-04T11:07",
+      "actual": "Benign",
+      "predicted": "DoS",
+      "labels": {
+        "BENIGN": 1137
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T02:24",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 4
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T02:25",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 1
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T09:01",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 1
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T09:48",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 323
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T09:49",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 401
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T09:50",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 265
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T09:51",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 259
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T09:52",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 207
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T09:53",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 191
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T09:54",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 292
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T09:55",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 337
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T09:56",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 116
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T09:57",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 271
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T09:58",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 256
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T09:59",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 282
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:00",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 178
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:01",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 209
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:02",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 345
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:03",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 154
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:04",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 253
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:05",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 290
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:06",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 246
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:07",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 208
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:08",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 272
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:09",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 262
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:10",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 171
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:11",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS slowloris": 2
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:15",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 1011
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:16",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 36
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:17",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 62
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:18",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 70
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:19",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 323
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:22",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 1026
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:23",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 29
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:24",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 68
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:25",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 537
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:26",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 844
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:27",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 37
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:28",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 76
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:29",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 25
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:32",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 151
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:33",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 1015
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:34",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 37
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:35",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 24
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:36",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 1
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T10:37",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Slowhttptest": 127
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T11:01",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Hulk": 202
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T11:06",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Hulk": 124
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T11:07",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS Hulk": 21
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T11:10",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS GoldenEye": 711
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T11:14",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS GoldenEye": 312
+      }
+    },
+    {
+      "source_file": "TrafficLabelling /Wednesday-workingHours.pcap_ISCX.csv",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "minute": "2017-07-05T11:19",
+      "actual": "DoS",
+      "predicted": "No alert",
+      "labels": {
+        "DoS GoldenEye": 776
+      }
+    }
+  ],
+  "excluded_predictions": {
+    "No alert": 11
+  },
+  "unit": "source/destination/minute groups",
+  "files_evaluated": [
+    "Monday-WorkingHours.pcap_ISCX.csv",
+    "Tuesday-WorkingHours.pcap_ISCX.csv",
+    "Wednesday-workingHours.pcap_ISCX.csv",
+    "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv"
+  ],
+  "rules": {
+    "portscan_min_destination_ports": 100,
+    "portscan_min_source_port_ratio": 2,
+    "portscan_min_flows": 100,
+    "portscan_high_density_min_destination_ports": 250,
+    "portscan_high_density_min_source_ports": 2,
+    "dos_min_flows": 1000,
+    "dos_min_packets": 10000,
+    "dos_max_destination_ports": 10,
+    "dos_min_source_ports": 10,
+    "ddos_min_sources": 3,
+    "bruteforce_min_flows_to_login_port": 50
+  },
+  "groups_scanned": 356103,
+  "monday_review_candidates": 0,
+  "excluded_ambiguous_groups": {
+    "Other attack": 11
+  },
+  "per_type": {
+    "PortScan": {
+      "true_positive": 11,
+      "false_positive": 1,
+      "false_negative": 16,
+      "false_positive_from_benign": 1,
+      "other_attack_type_predictions": 0,
+      "missed_without_alert": 16,
+      "precision": 0.9167,
+      "recall": 0.4074
+    },
+    "DoS": {
+      "true_positive": 23,
+      "false_positive": 1,
+      "false_negative": 52,
+      "false_positive_from_benign": 1,
+      "other_attack_type_predictions": 0,
+      "missed_without_alert": 52,
+      "precision": 0.9583,
+      "recall": 0.3067
+    },
+    "BruteForce": {
+      "true_positive": 122,
+      "false_positive": 0,
+      "false_negative": 5,
+      "false_positive_from_benign": 0,
+      "other_attack_type_predictions": 0,
+      "missed_without_alert": 5,
+      "precision": 1.0,
+      "recall": 0.9606
+    }
+  },
+  "attack_detection": {
+    "true_negative": 355861,
+    "benign_groups": 355863,
+    "false_positive_rate": 5.6201e-06,
+    "true_positive": 156,
+    "false_positive": 2,
+    "false_negative": 73,
+    "precision": 0.9873,
+    "recall": 0.6812,
+    "detected_by_label": {
+      "PortScan": 11,
+      "DoS": 23,
+      "BruteForce": 122
+    }
+  },
+  "confusion": [
+    {
+      "actual": "Benign",
+      "predicted": "DoS",
+      "groups": 1
+    },
+    {
+      "actual": "Benign",
+      "predicted": "No alert",
+      "groups": 355861
+    },
+    {
+      "actual": "Benign",
+      "predicted": "PortScan",
+      "groups": 1
+    },
+    {
+      "actual": "BruteForce",
+      "predicted": "BruteForce",
+      "groups": 122
+    },
+    {
+      "actual": "BruteForce",
+      "predicted": "No alert",
+      "groups": 5
+    },
+    {
+      "actual": "DoS",
+      "predicted": "DoS",
+      "groups": 23
+    },
+    {
+      "actual": "DoS",
+      "predicted": "No alert",
+      "groups": 52
+    },
+    {
+      "actual": "PortScan",
+      "predicted": "No alert",
+      "groups": 16
+    },
+    {
+      "actual": "PortScan",
+      "predicted": "PortScan",
+      "groups": 11
+    }
+  ]
+}

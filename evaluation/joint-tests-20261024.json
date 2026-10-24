@@ -1,0 +1,11 @@
+{
+  "tests": "254",
+  "failures": "0",
+  "errors": "0",
+  "skipped": "0",
+  "time": "7.382",
+  "timestamp": "2026-10-24T00:42:40.214883+08:00",
+  "command": "python -m pytest tests services evaluation -q --basetemp=<isolated-workspace-temp>",
+  "environment": "Python 3.12.10; pytest 9.1.1 from data/tools; Windows socket tests run outside the filesystem/network sandbox; all temp/state files isolated.",
+  "warning": "Starlette testclient warns that its httpx adapter is deprecated; no failed tests."
+}

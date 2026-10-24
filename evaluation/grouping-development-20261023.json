@@ -1,0 +1,303 @@
+{
+  "status": "historical_development_only",
+  "source_artifact": "data/alerts-evaluation-20261023.json",
+  "source_artifact_sha256": "b23b77b1405952bac69aef61d1f799fc73000291fc4f2445d96c605b76d26f7c",
+  "evaluator_sha256": "c074bf956e4db0896e3cc24f69eaf6cd49b39270b4b6f79e62ace290f7efa68c",
+  "review_heuristic_enabled": false,
+  "alerts": 158,
+  "cases": 9,
+  "cases_by_type": {
+    "BruteForce": 2,
+    "DoS": 3,
+    "PortScan": 4
+  },
+  "pure_benign_alert_cases": 2,
+  "mixed_label_cases": 0,
+  "limit": "Alert-bearing cases only; cannot estimate case-level recall or benign case false-positive rate.",
+  "case_details": [
+    {
+      "incident_id": "INC-0E02B5204014",
+      "type": "BruteForce",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "window_start": "2017-07-04T02:09:00",
+      "window_end": "2017-07-04T03:10:00",
+      "alert_ids": [
+        "ALT-966E00DAC3F4",
+        "ALT-6FB3C7103E6C",
+        "ALT-1946B75AD9BD",
+        "ALT-782B451E7A88",
+        "ALT-924373DAD849",
+        "ALT-5901FA934881",
+        "ALT-FB64EF115FB4",
+        "ALT-BBBF5B1D5DBF",
+        "ALT-4FA4D9E993D7",
+        "ALT-F4081D6981D1",
+        "ALT-4B1CA0F9367D",
+        "ALT-120932201AA2",
+        "ALT-9FF32C106D8B",
+        "ALT-248EC79023EE",
+        "ALT-95F9B02D104B",
+        "ALT-C9C457A41654",
+        "ALT-A28B7C1302E1",
+        "ALT-7840F3790895",
+        "ALT-25AE1ECCEAB7",
+        "ALT-15AAE428D81F",
+        "ALT-F42FB774ECD1",
+        "ALT-44B023B0C93E",
+        "ALT-490382FB4545",
+        "ALT-EA84507BEA62",
+        "ALT-20E8FE9E1F47",
+        "ALT-A1A5551E7845",
+        "ALT-28C9ADBF1805",
+        "ALT-02AD19B26E09",
+        "ALT-3019C8B14A93",
+        "ALT-F8A8F8C3AF7E",
+        "ALT-7525B5C0D3BB",
+        "ALT-6608E1AA206A",
+        "ALT-40FBA7BEB20E",
+        "ALT-1834CB232982",
+        "ALT-567F6BF6BD4E",
+        "ALT-58D9D3D2E824",
+        "ALT-2BCA1B0DC608",
+        "ALT-0C4AF663F0FB",
+        "ALT-333176FFFB46",
+        "ALT-88990EA0176E",
+        "ALT-D3C4A27621FC",
+        "ALT-857ACCE8E528",
+        "ALT-B68E0145A79C",
+        "ALT-C5F62EDA403D",
+        "ALT-B6E1232DE830",
+        "ALT-45A9A11FA060",
+        "ALT-E1F292949DB3",
+        "ALT-BDE17CA8BB40",
+        "ALT-53FAB429C4D3",
+        "ALT-20AFFA7A797F",
+        "ALT-DD37F8ECA1D6",
+        "ALT-01F7F2F0359B",
+        "ALT-5A9DABC34C89",
+        "ALT-124AADB5DDE4",
+        "ALT-CD715D4F6B4E",
+        "ALT-DB85A114575C",
+        "ALT-BEDD55EB1F1F",
+        "ALT-45854E61DF1F",
+        "ALT-F55E7885DCA8",
+        "ALT-567BD05C54D3",
+        "ALT-F36E390D1C17"
+      ],
+      "evaluation_truth": "BruteForce",
+      "dataset_labels": {
+        "SSH-Patator": 5836
+      }
+    },
+    {
+      "incident_id": "INC-A787E11F2A22",
+      "type": "BruteForce",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "window_start": "2017-07-04T09:19:00",
+      "window_end": "2017-07-04T10:19:00",
+      "alert_ids": [
+        "ALT-9FE0D0887CB4",
+        "ALT-1D0BDA5EC198",
+        "ALT-9A26E844399E",
+        "ALT-8BB75A5FA49A",
+        "ALT-9CB30AF453B3",
+        "ALT-F8EC77DF0D64",
+        "ALT-D5637D42A9B2",
+        "ALT-4359CB9FCA78",
+        "ALT-9D92F5AEC31F",
+        "ALT-C37AE03CDAC6",
+        "ALT-2141E27D8478",
+        "ALT-C9D390CE58E1",
+        "ALT-92D9C196D55D",
+        "ALT-3C7DBDF44E1F",
+        "ALT-E299FA3CAF57",
+        "ALT-989D3F1BB412",
+        "ALT-CAAF1D78EA7F",
+        "ALT-95F963D95FB0",
+        "ALT-CFADCAE56979",
+        "ALT-265E7D618E4E",
+        "ALT-6A5629629685",
+        "ALT-91DDD4F488C1",
+        "ALT-16610C41EA03",
+        "ALT-63796CEDAA6B",
+        "ALT-AF69C7577922",
+        "ALT-E73A1F6B410E",
+        "ALT-E6E1B800A398",
+        "ALT-1CBA3A4179CB",
+        "ALT-63F945D75B0E",
+        "ALT-ED8FBBECE5E9",
+        "ALT-5BB2B5EE4F1A",
+        "ALT-2E8763685A6C",
+        "ALT-9136FAC76C21",
+        "ALT-20142CC3DD85",
+        "ALT-C89C257C4C7E",
+        "ALT-5B11F460FC85",
+        "ALT-1D3B8E384002",
+        "ALT-24B1DDD9064F",
+        "ALT-1F9675EE94D5",
+        "ALT-1020F2B2BFC0",
+        "ALT-C9241CB8F6B2",
+        "ALT-2991D41BDB28",
+        "ALT-66139AE269AE",
+        "ALT-D8B3DF03A5C2",
+        "ALT-345DD060DE4B",
+        "ALT-90255EB81E89",
+        "ALT-C0A4082A2C05",
+        "ALT-03B64506EB20",
+        "ALT-9EA419D840DB",
+        "ALT-9C5B1F7499DF",
+        "ALT-1806B9106314",
+        "ALT-097A35629708",
+        "ALT-B92E44B9FB54",
+        "ALT-CC180C9C9EF9",
+        "ALT-D8E8FDADDB8D",
+        "ALT-BF279DB82D01",
+        "ALT-AF2ED455E657",
+        "ALT-254EC6603804",
+        "ALT-03FB37BAF8FF",
+        "ALT-870D799D1BB9",
+        "ALT-078D0292390D"
+      ],
+      "evaluation_truth": "BruteForce",
+      "dataset_labels": {
+        "FTP-Patator": 7902
+      }
+    },
+    {
+      "incident_id": "INC-AC3AA3CF2A0C",
+      "type": "DoS",
+      "source_ip": "192.168.10.25",
+      "destination_ip": "173.223.152.83",
+      "window_start": "2017-07-04T11:07:00",
+      "window_end": "2017-07-04T11:07:00",
+      "alert_ids": [
+        "ALT-07AA831A34A7"
+      ],
+      "evaluation_truth": "Benign",
+      "dataset_labels": {
+        "BENIGN": 1137
+      }
+    },
+    {
+      "incident_id": "INC-F4ED19468E0C",
+      "type": "PortScan",
+      "source_ip": "173.223.152.83",
+      "destination_ip": "192.168.10.25",
+      "window_start": "2017-07-04T11:07:00",
+      "window_end": "2017-07-04T11:07:00",
+      "alert_ids": [
+        "ALT-4980D1D9E4EA"
+      ],
+      "evaluation_truth": "Benign",
+      "dataset_labels": {
+        "BENIGN": 958
+      }
+    },
+    {
+      "incident_id": "INC-6CD483A5911A",
+      "type": "DoS",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "window_start": "2017-07-05T10:43:00",
+      "window_end": "2017-07-05T11:00:00",
+      "alert_ids": [
+        "ALT-4AF3D618FAA9",
+        "ALT-9941B48CD40E",
+        "ALT-5716F9F63616",
+        "ALT-C64FF27D6BC3",
+        "ALT-153D8C605865",
+        "ALT-B7B337D90D54",
+        "ALT-A1338EA4EA37",
+        "ALT-6C150237DF05",
+        "ALT-0AD500D5F174",
+        "ALT-4BCF234A07D5",
+        "ALT-D317DD55C73D",
+        "ALT-622A15CB8286",
+        "ALT-0F36B4CE6526",
+        "ALT-9DC3FDF87630",
+        "ALT-65E00C8425EB",
+        "ALT-1531E8BA8E6B",
+        "ALT-C512020215ED",
+        "ALT-59F52DEAAE01"
+      ],
+      "evaluation_truth": "DoS",
+      "dataset_labels": {
+        "DoS Hulk": 230726
+      }
+    },
+    {
+      "incident_id": "INC-F36100AAEA03",
+      "type": "DoS",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "window_start": "2017-07-05T11:11:00",
+      "window_end": "2017-07-05T11:18:00",
+      "alert_ids": [
+        "ALT-39260A636212",
+        "ALT-44407CE8193F",
+        "ALT-5A8B67DA5FDA",
+        "ALT-824919629D5A",
+        "ALT-1DD87573CCA1"
+      ],
+      "evaluation_truth": "DoS",
+      "dataset_labels": {
+        "DoS GoldenEye": 8494
+      }
+    },
+    {
+      "incident_id": "INC-169BFBAAF1BA",
+      "type": "PortScan",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "window_start": "2017-07-07T14:51:00",
+      "window_end": "2017-07-07T14:56:00",
+      "alert_ids": [
+        "ALT-42EFA95BAA3C",
+        "ALT-5730B62A74DF",
+        "ALT-4B6C1C9535B8",
+        "ALT-597B373A7FFA",
+        "ALT-976AF2FEDE2B",
+        "ALT-53816A277932"
+      ],
+      "evaluation_truth": "PortScan",
+      "dataset_labels": {
+        "PortScan": 138493
+      }
+    },
+    {
+      "incident_id": "INC-8007F80E149A",
+      "type": "PortScan",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "window_start": "2017-07-07T15:08:00",
+      "window_end": "2017-07-07T15:10:00",
+      "alert_ids": [
+        "ALT-8E27CE54C72C",
+        "ALT-9F0B5D191D40",
+        "ALT-565B9F19AAF2"
+      ],
+      "evaluation_truth": "PortScan",
+      "dataset_labels": {
+        "PortScan": 11036
+      }
+    },
+    {
+      "incident_id": "INC-31A089E15B82",
+      "type": "PortScan",
+      "source_ip": "172.16.0.1",
+      "destination_ip": "192.168.10.50",
+      "window_start": "2017-07-07T15:22:00",
+      "window_end": "2017-07-07T15:23:00",
+      "alert_ids": [
+        "ALT-F1591F6905C8",
+        "ALT-0584996CF671"
+      ],
+      "evaluation_truth": "PortScan",
+      "dataset_labels": {
+        "PortScan": 9024
+      }
+    }
+  ]
+}

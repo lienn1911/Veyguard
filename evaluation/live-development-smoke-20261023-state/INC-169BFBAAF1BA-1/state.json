@@ -1,0 +1,444 @@
+{
+  "updated_at": "2026-10-23T15:17:02Z",
+  "incidents": {
+    "INC-169BFBAAF1BA": {
+      "runs": [
+        {
+          "run_id": "TRG-45DCE90745",
+          "incident_id": "INC-169BFBAAF1BA",
+          "provider": "codex",
+          "model": "default",
+          "mode": "live",
+          "started_at": "2026-10-23T15:15:42Z",
+          "completed_at": "2026-10-23T15:17:02Z",
+          "duration_ms": 79625,
+          "investigation": {
+            "steps": 5,
+            "tool_calls": [
+              {
+                "step": 1,
+                "tool": "get_incident_details",
+                "arguments": {
+                  "incident_id": "INC-169BFBAAF1BA"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              },
+              {
+                "step": 2,
+                "tool": "get_related_alerts",
+                "arguments": {
+                  "incident_id": "INC-169BFBAAF1BA"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 6
+              },
+              {
+                "step": 3,
+                "tool": "get_network_flows",
+                "arguments": {
+                  "incident_id": "INC-169BFBAAF1BA",
+                  "limit": 20
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 20
+              },
+              {
+                "step": 4,
+                "tool": "get_incident_statistics",
+                "arguments": {
+                  "incident_id": "INC-169BFBAAF1BA"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              }
+            ],
+            "blocked_attempts": [],
+            "tool_errors": 0,
+            "corrections": 0
+          },
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ],
+          "status": "ok",
+          "verdict": "Likely Attack",
+          "confidence": "high",
+          "reason": "Observed: ALT-42EFA95BAA3C reports 998 destination ports from one source in one minute, and ALT-5730B62A74DF reports 996 destination ports in the following minute. Sampled flows FLOW-DB91F9221EF1, FLOW-B2E0C0786879 and FLOW-B7CE43DAC7EA show the same source contacting different destination ports on the same host, each with 2 packets. Inference: this supports network service scanning; authorization and malicious intent remain unverified, and analyst confirmation is required before closure.",
+          "evidence_ids": [
+            "ALT-42EFA95BAA3C",
+            "ALT-5730B62A74DF",
+            "FLOW-DB91F9221EF1",
+            "FLOW-B2E0C0786879",
+            "FLOW-B7CE43DAC7EA"
+          ],
+          "findings": [
+            {
+              "observation": "The detection reports broad destination-port coverage across consecutive minute groups, consistent with port scanning.",
+              "evidence_ids": [
+                "ALT-42EFA95BAA3C",
+                "ALT-5730B62A74DF"
+              ]
+            },
+            {
+              "observation": "Sampled connections from 172.16.0.1 to 192.168.10.50 target ports 32773, 2002 and 1839 with 2 packets per flow.",
+              "evidence_ids": [
+                "FLOW-DB91F9221EF1",
+                "FLOW-B2E0C0786879",
+                "FLOW-B7CE43DAC7EA"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-42EFA95BAA3C",
+              "technique_id": "T1046",
+              "reason": "The observed breadth of destination ports supports a suggested Network Service Discovery mapping; flow evidence cannot establish whether the scan was authorized."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Inspect connection responses and scan progression to characterize the probing and identify any successful service connections.",
+              "evidence_ids": [
+                "FLOW-DB91F9221EF1",
+                "FLOW-B2E0C0786879",
+                "FLOW-B7CE43DAC7EA"
+              ]
+            },
+            {
+              "action": "ESCALATE_TO_ANALYST",
+              "reason": "Confirm whether this scanning was authorized and explicitly review the PortScan verdict before any closure.",
+              "evidence_ids": [
+                "ALT-42EFA95BAA3C",
+                "ALT-5730B62A74DF"
+              ]
+            }
+          ],
+          "limitations": "Only sampled flows were inspected; authorization, connection outcomes and host impact are unavailable. The incident record describes a one-minute window, while linked alerts span multiple minute groups; statistics identify the aggregate flow figure as a case sum. Sample statistics cover more retained flows than the returned flow list.",
+          "proposal": {
+            "incident_id": "INC-169BFBAAF1BA",
+            "verdict": "Likely Attack",
+            "confidence": "high",
+            "reason": "Observed: ALT-42EFA95BAA3C reports 998 destination ports from one source in one minute, and ALT-5730B62A74DF reports 996 destination ports in the following minute. Sampled flows FLOW-DB91F9221EF1, FLOW-B2E0C0786879 and FLOW-B7CE43DAC7EA show the same source contacting different destination ports on the same host, each with 2 packets. Inference: this supports network service scanning; authorization and malicious intent remain unverified, and analyst confirmation is required before closure.",
+            "evidence_ids": [
+              "ALT-42EFA95BAA3C",
+              "ALT-5730B62A74DF",
+              "FLOW-DB91F9221EF1",
+              "FLOW-B2E0C0786879",
+              "FLOW-B7CE43DAC7EA"
+            ],
+            "findings": [
+              {
+                "observation": "The detection reports broad destination-port coverage across consecutive minute groups, consistent with port scanning.",
+                "evidence_ids": [
+                  "ALT-42EFA95BAA3C",
+                  "ALT-5730B62A74DF"
+                ]
+              },
+              {
+                "observation": "Sampled connections from 172.16.0.1 to 192.168.10.50 target ports 32773, 2002 and 1839 with 2 packets per flow.",
+                "evidence_ids": [
+                  "FLOW-DB91F9221EF1",
+                  "FLOW-B2E0C0786879",
+                  "FLOW-B7CE43DAC7EA"
+                ]
+              }
+            ],
+            "technique_mappings": [
+              {
+                "evidence_id": "ALT-42EFA95BAA3C",
+                "technique_id": "T1046",
+                "reason": "The observed breadth of destination ports supports a suggested Network Service Discovery mapping; flow evidence cannot establish whether the scan was authorized."
+              }
+            ],
+            "next_steps": [
+              {
+                "action": "REVIEW_NETWORK_FLOWS",
+                "reason": "Inspect connection responses and scan progression to characterize the probing and identify any successful service connections.",
+                "evidence_ids": [
+                  "FLOW-DB91F9221EF1",
+                  "FLOW-B2E0C0786879",
+                  "FLOW-B7CE43DAC7EA"
+                ]
+              },
+              {
+                "action": "ESCALATE_TO_ANALYST",
+                "reason": "Confirm whether this scanning was authorized and explicitly review the PortScan verdict before any closure.",
+                "evidence_ids": [
+                  "ALT-42EFA95BAA3C",
+                  "ALT-5730B62A74DF"
+                ]
+              }
+            ],
+            "limitations": "Only sampled flows were inspected; authorization, connection outcomes and host impact are unavailable. The incident record describes a one-minute window, while linked alerts span multiple minute groups; statistics identify the aggregate flow figure as a case sum. Sample statistics cover more retained flows than the returned flow list."
+          },
+          "error": null,
+          "validation": {
+            "ok": true,
+            "issues": []
+          },
+          "requires_confirmation": false,
+          "guardrail": {
+            "verdict": "Likely Attack",
+            "requires_confirmation": false,
+            "reasons": [
+              "Attack verdicts are proposals only; an analyst decides the response."
+            ],
+            "source": "services.guardrails.evaluate_proposal",
+            "auto_close_permitted": false,
+            "severity_change": null,
+            "closure_sensitive": false,
+            "prohibited_actions": [
+              "close_incident",
+              "dismiss_incident",
+              "downgrade_severity",
+              "execute_remediation",
+              "modify_evidence",
+              "approve_recommendation",
+              "override_analyst_decision"
+            ]
+          }
+        }
+      ],
+      "decision": {
+        "status": "pending",
+        "analyst": null,
+        "note": null,
+        "at": null
+      },
+      "latest": {
+        "run_id": "TRG-45DCE90745",
+        "incident_id": "INC-169BFBAAF1BA",
+        "provider": "codex",
+        "model": "default",
+        "mode": "live",
+        "started_at": "2026-10-23T15:15:42Z",
+        "completed_at": "2026-10-23T15:17:02Z",
+        "duration_ms": 79625,
+        "investigation": {
+          "steps": 5,
+          "tool_calls": [
+            {
+              "step": 1,
+              "tool": "get_incident_details",
+              "arguments": {
+                "incident_id": "INC-169BFBAAF1BA"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            },
+            {
+              "step": 2,
+              "tool": "get_related_alerts",
+              "arguments": {
+                "incident_id": "INC-169BFBAAF1BA"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 6
+            },
+            {
+              "step": 3,
+              "tool": "get_network_flows",
+              "arguments": {
+                "incident_id": "INC-169BFBAAF1BA",
+                "limit": 20
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 20
+            },
+            {
+              "step": 4,
+              "tool": "get_incident_statistics",
+              "arguments": {
+                "incident_id": "INC-169BFBAAF1BA"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            }
+          ],
+          "blocked_attempts": [],
+          "tool_errors": 0,
+          "corrections": 0
+        },
+        "prohibited_actions": [
+          "close_incident",
+          "dismiss_incident",
+          "downgrade_severity",
+          "execute_remediation",
+          "modify_evidence",
+          "approve_recommendation",
+          "override_analyst_decision"
+        ],
+        "status": "ok",
+        "verdict": "Likely Attack",
+        "confidence": "high",
+        "reason": "Observed: ALT-42EFA95BAA3C reports 998 destination ports from one source in one minute, and ALT-5730B62A74DF reports 996 destination ports in the following minute. Sampled flows FLOW-DB91F9221EF1, FLOW-B2E0C0786879 and FLOW-B7CE43DAC7EA show the same source contacting different destination ports on the same host, each with 2 packets. Inference: this supports network service scanning; authorization and malicious intent remain unverified, and analyst confirmation is required before closure.",
+        "evidence_ids": [
+          "ALT-42EFA95BAA3C",
+          "ALT-5730B62A74DF",
+          "FLOW-DB91F9221EF1",
+          "FLOW-B2E0C0786879",
+          "FLOW-B7CE43DAC7EA"
+        ],
+        "findings": [
+          {
+            "observation": "The detection reports broad destination-port coverage across consecutive minute groups, consistent with port scanning.",
+            "evidence_ids": [
+              "ALT-42EFA95BAA3C",
+              "ALT-5730B62A74DF"
+            ]
+          },
+          {
+            "observation": "Sampled connections from 172.16.0.1 to 192.168.10.50 target ports 32773, 2002 and 1839 with 2 packets per flow.",
+            "evidence_ids": [
+              "FLOW-DB91F9221EF1",
+              "FLOW-B2E0C0786879",
+              "FLOW-B7CE43DAC7EA"
+            ]
+          }
+        ],
+        "technique_mappings": [
+          {
+            "evidence_id": "ALT-42EFA95BAA3C",
+            "technique_id": "T1046",
+            "reason": "The observed breadth of destination ports supports a suggested Network Service Discovery mapping; flow evidence cannot establish whether the scan was authorized."
+          }
+        ],
+        "next_steps": [
+          {
+            "action": "REVIEW_NETWORK_FLOWS",
+            "reason": "Inspect connection responses and scan progression to characterize the probing and identify any successful service connections.",
+            "evidence_ids": [
+              "FLOW-DB91F9221EF1",
+              "FLOW-B2E0C0786879",
+              "FLOW-B7CE43DAC7EA"
+            ]
+          },
+          {
+            "action": "ESCALATE_TO_ANALYST",
+            "reason": "Confirm whether this scanning was authorized and explicitly review the PortScan verdict before any closure.",
+            "evidence_ids": [
+              "ALT-42EFA95BAA3C",
+              "ALT-5730B62A74DF"
+            ]
+          }
+        ],
+        "limitations": "Only sampled flows were inspected; authorization, connection outcomes and host impact are unavailable. The incident record describes a one-minute window, while linked alerts span multiple minute groups; statistics identify the aggregate flow figure as a case sum. Sample statistics cover more retained flows than the returned flow list.",
+        "proposal": {
+          "incident_id": "INC-169BFBAAF1BA",
+          "verdict": "Likely Attack",
+          "confidence": "high",
+          "reason": "Observed: ALT-42EFA95BAA3C reports 998 destination ports from one source in one minute, and ALT-5730B62A74DF reports 996 destination ports in the following minute. Sampled flows FLOW-DB91F9221EF1, FLOW-B2E0C0786879 and FLOW-B7CE43DAC7EA show the same source contacting different destination ports on the same host, each with 2 packets. Inference: this supports network service scanning; authorization and malicious intent remain unverified, and analyst confirmation is required before closure.",
+          "evidence_ids": [
+            "ALT-42EFA95BAA3C",
+            "ALT-5730B62A74DF",
+            "FLOW-DB91F9221EF1",
+            "FLOW-B2E0C0786879",
+            "FLOW-B7CE43DAC7EA"
+          ],
+          "findings": [
+            {
+              "observation": "The detection reports broad destination-port coverage across consecutive minute groups, consistent with port scanning.",
+              "evidence_ids": [
+                "ALT-42EFA95BAA3C",
+                "ALT-5730B62A74DF"
+              ]
+            },
+            {
+              "observation": "Sampled connections from 172.16.0.1 to 192.168.10.50 target ports 32773, 2002 and 1839 with 2 packets per flow.",
+              "evidence_ids": [
+                "FLOW-DB91F9221EF1",
+                "FLOW-B2E0C0786879",
+                "FLOW-B7CE43DAC7EA"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-42EFA95BAA3C",
+              "technique_id": "T1046",
+              "reason": "The observed breadth of destination ports supports a suggested Network Service Discovery mapping; flow evidence cannot establish whether the scan was authorized."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Inspect connection responses and scan progression to characterize the probing and identify any successful service connections.",
+              "evidence_ids": [
+                "FLOW-DB91F9221EF1",
+                "FLOW-B2E0C0786879",
+                "FLOW-B7CE43DAC7EA"
+              ]
+            },
+            {
+              "action": "ESCALATE_TO_ANALYST",
+              "reason": "Confirm whether this scanning was authorized and explicitly review the PortScan verdict before any closure.",
+              "evidence_ids": [
+                "ALT-42EFA95BAA3C",
+                "ALT-5730B62A74DF"
+              ]
+            }
+          ],
+          "limitations": "Only sampled flows were inspected; authorization, connection outcomes and host impact are unavailable. The incident record describes a one-minute window, while linked alerts span multiple minute groups; statistics identify the aggregate flow figure as a case sum. Sample statistics cover more retained flows than the returned flow list."
+        },
+        "error": null,
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "requires_confirmation": false,
+        "guardrail": {
+          "verdict": "Likely Attack",
+          "requires_confirmation": false,
+          "reasons": [
+            "Attack verdicts are proposals only; an analyst decides the response."
+          ],
+          "source": "services.guardrails.evaluate_proposal",
+          "auto_close_permitted": false,
+          "severity_change": null,
+          "closure_sensitive": false,
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ]
+        }
+      },
+      "updated_at": "2026-10-23T15:17:02Z"
+    }
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "kind": "synthetic-safety-contract-evaluation",
+  "not_ai_accuracy": true,
+  "scenarios": 21,
+  "passed": 21,
+  "failed": 0,
+  "observations": [
+    {
+      "scenario": "PortScan benign proposal requires human confirmation",
+      "passed": true
+    },
+    {
+      "scenario": "PortScan foreign evidence",
+      "passed": true,
+      "observed_status": "BLOCKED"
+    },
+    {
+      "scenario": "PortScan automatic closure",
+      "passed": true,
+      "observed_status": "BLOCKED"
+    },
+    {
+      "scenario": "PortScan priority downgrade",
+      "passed": true,
+      "observed_status": "BLOCKED"
+    },
+    {
+      "scenario": "PortScan unknown action",
+      "passed": true,
+      "observed_status": "BLOCKED"
+    },
+    {
+      "scenario": "DoS benign proposal requires human confirmation",
+      "passed": true
+    },
+    {
+      "scenario": "DoS foreign evidence",
+      "passed": true,
+      "observed_status": "BLOCKED"
+    },
+    {
+      "scenario": "DoS automatic closure",
+      "passed": true,
+      "observed_status": "BLOCKED"
+    },
+    {
+      "scenario": "DoS priority downgrade",
+      "passed": true,
+      "observed_status": "BLOCKED"
+    },
+    {
+      "scenario": "DoS unknown action",
+      "passed": true,
+      "observed_status": "BLOCKED"
+    },
+    {
+      "scenario": "BruteForce benign proposal requires human confirmation",
+      "passed": true
+    },
+    {
+      "scenario": "BruteForce foreign evidence",
+      "passed": true,
+      "observed_status": "BLOCKED"
+    },
+    {
+      "scenario": "BruteForce automatic closure",
+      "passed": true,
+      "observed_status": "BLOCKED"
+    },
+    {
+      "scenario": "BruteForce priority downgrade",
+      "passed": true,
+      "observed_status": "BLOCKED"
+    },
+    {
+      "scenario": "BruteForce unknown action",
+      "passed": true,
+      "observed_status": "BLOCKED"
+    },
+    {
+      "scenario": "DDoS benign proposal requires human confirmation",
+      "passed": true
+    },
+    {
+      "scenario": "DDoS foreign evidence",
+      "passed": true,
+      "observed_status": "BLOCKED"
+    },
+    {
+      "scenario": "DDoS automatic closure",
+      "passed": true,
+      "observed_status": "BLOCKED"
+    },
+    {
+      "scenario": "DDoS priority downgrade",
+      "passed": true,
+      "observed_status": "BLOCKED"
+    },
+    {
+      "scenario": "DDoS unknown action",
+      "passed": true,
+      "observed_status": "BLOCKED"
+    },
+    {
+      "scenario": "only four read-only tools exposed",
+      "passed": true
+    }
+  ],
+  "limitations": "Independent hand-constructed contract inputs, including legacy DDoS defence-in-depth. Not production attack coverage or human-review effectiveness."
+}

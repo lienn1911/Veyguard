@@ -42,14 +42,13 @@ def test_prohibited_actions_are_declared():
     assert "modify_evidence" in PROHIBITED_ACTIONS
 
 
-def test_bridge_falls_back_when_module5_is_empty():
+def test_bridge_uses_connected_module5():
     assessment = guardrail_bridge.assess(
         incident_id="INC-X", category="DoS", verdict="Likely Benign", evidence_ids=["FLOW-1"]
     )
     assert assessment.requires_confirmation is True
-    assert assessment.source == "module2-local"
-    assert any("Module 5 guardrail not connected" in reason for reason in assessment.reasons)
-    assert guardrail_bridge.module5_status()["connected"] is False
+    assert assessment.source == "services.guardrails.evaluate_proposal"
+    assert guardrail_bridge.module5_status()["connected"] is True
 
 
 def test_bridge_uses_module5_when_present(monkeypatch):
@@ -117,3 +116,21 @@ def test_bridge_accepts_positional_signature(monkeypatch):
     )
     assert assessment.requires_confirmation is True
     assert "positional ok" in assessment.reasons
+
+
+def test_explicit_remote_denial_is_preserved(monkeypatch):
+    monkeypatch.setattr(services_pkg.guardrails, 'evaluate_proposal', lambda **_: {
+        'allowed': False, 'requires_confirmation': False, 'reasons': ['Denied'],
+    })
+    assessment = guardrail_bridge.assess(incident_id='INC-TEST', category='DoS',
+                                        verdict='Likely Attack', evidence_ids=['ALT-TEST'])
+    assert assessment.allowed is False
+    assert assessment.auto_close_permitted is False
+
+
+def test_malformed_remote_result_fails_closed(monkeypatch):
+    monkeypatch.setattr(services_pkg.guardrails, 'evaluate_proposal', lambda **_: ['invalid'])
+    assessment = guardrail_bridge.assess(incident_id='INC-TEST', category='DoS',
+                                        verdict='Likely Benign', evidence_ids=['ALT-TEST'])
+    assert assessment.allowed is False
+    assert assessment.requires_confirmation is True

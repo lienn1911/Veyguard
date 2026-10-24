@@ -1,76 +1,7 @@
 {
   "timelines": [
     {
-      "incident_id": "INC-E60E221FB8A4",
-      "total_flows": 696,
-      "alert_count": 1,
-      "sampled_flows": 6,
-      "events": [
-        {
-          "timestamp": "2017-07-03T09:30:11",
-          "title": "192.168.10.5 \u2192 port 443",
-          "record_type": "flow",
-          "evidence_id": "FLOW-0BD86DB3A5BA",
-          "source_file": "Monday-WorkingHours.pcap_ISCX.csv",
-          "source_row": 13423,
-          "technique": "Unmapped"
-        },
-        {
-          "timestamp": "2017-07-03T09:30:11",
-          "title": "192.168.10.5 \u2192 port 443",
-          "record_type": "flow",
-          "evidence_id": "FLOW-516B211176E2",
-          "source_file": "Monday-WorkingHours.pcap_ISCX.csv",
-          "source_row": 13424,
-          "technique": "Unmapped"
-        },
-        {
-          "timestamp": "2017-07-03T09:30:11",
-          "title": "192.168.10.5 \u2192 port 443",
-          "record_type": "flow",
-          "evidence_id": "FLOW-C96C7141946A",
-          "source_file": "Monday-WorkingHours.pcap_ISCX.csv",
-          "source_row": 13425,
-          "technique": "Unmapped"
-        },
-        {
-          "timestamp": "2017-07-03T09:30:11",
-          "title": "192.168.10.5 \u2192 port 443",
-          "record_type": "flow",
-          "evidence_id": "FLOW-574B9914C17D",
-          "source_file": "Monday-WorkingHours.pcap_ISCX.csv",
-          "source_row": 13426,
-          "technique": "Unmapped"
-        },
-        {
-          "timestamp": "2017-07-03T09:30:12",
-          "title": "192.168.10.5 \u2192 port 443",
-          "record_type": "flow",
-          "evidence_id": "FLOW-641F22A396AE",
-          "source_file": "Monday-WorkingHours.pcap_ISCX.csv",
-          "source_row": 13434,
-          "technique": "Unmapped"
-        },
-        {
-          "timestamp": "2017-07-03T09:30:59",
-          "title": "192.168.10.5 \u2192 port 443",
-          "record_type": "flow",
-          "evidence_id": "FLOW-4F2211CEB15B",
-          "source_file": "Monday-WorkingHours.pcap_ISCX.csv",
-          "source_row": 14574,
-          "technique": "Unmapped"
-        },
-        {
-          "timestamp": "2017-07-03T09:30:59",
-          "title": "NeedsReview rule matched",
-          "record_type": "alert",
-          "evidence_id": "ALT-654FA18A686B",
-          "technique": "Unmapped"
-        }
-      ]
-    },
-    {
-      "incident_id": "INC-FBF1B9EDAD0B",
+      "incident_id": "INC-0E02B5204014",
       "total_flows": 5836,
       "alert_count": 61,
       "sampled_flows": 366,
@@ -3799,7 +3730,7 @@
       ]
     },
     {
-      "incident_id": "INC-34BB7D6057C6",
+      "incident_id": "INC-A787E11F2A22",
       "total_flows": 7902,
       "alert_count": 61,
       "sampled_flows": 366,
@@ -7528,7 +7459,7 @@
       ]
     },
     {
-      "incident_id": "INC-78CFE1BA04B6",
+      "incident_id": "INC-AC3AA3CF2A0C",
       "total_flows": 1137,
       "alert_count": 1,
       "sampled_flows": 6,
@@ -7597,7 +7528,7 @@
       ]
     },
     {
-      "incident_id": "INC-823D5A67632F",
+      "incident_id": "INC-F4ED19468E0C",
       "total_flows": 958,
       "alert_count": 1,
       "sampled_flows": 6,
@@ -7669,7 +7600,7 @@
       ]
     },
     {
-      "incident_id": "INC-303BE523B8D9",
+      "incident_id": "INC-6CD483A5911A",
       "total_flows": 230726,
       "alert_count": 18,
       "sampled_flows": 108,
@@ -8775,7 +8706,7 @@
       ]
     },
     {
-      "incident_id": "INC-11E58306FAA9",
+      "incident_id": "INC-F36100AAEA03",
       "total_flows": 8494,
       "alert_count": 5,
       "sampled_flows": 30,
@@ -9088,7 +9019,7 @@
       ]
     },
     {
-      "incident_id": "INC-168780F44274",
+      "incident_id": "INC-169BFBAAF1BA",
       "total_flows": 138493,
       "alert_count": 6,
       "sampled_flows": 36,
@@ -9480,7 +9411,7 @@
       ]
     },
     {
-      "incident_id": "INC-1AF7E2A4B437",
+      "incident_id": "INC-8007F80E149A",
       "total_flows": 11036,
       "alert_count": 3,
       "sampled_flows": 18,
@@ -9680,7 +9611,7 @@
       ]
     },
     {
-      "incident_id": "INC-BF1C405837C5",
+      "incident_id": "INC-31A089E15B82",
       "total_flows": 9024,
       "alert_count": 2,
       "sampled_flows": 12,

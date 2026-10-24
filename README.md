@@ -1,35 +1,43 @@
 # SOC Desk
 
+Latest integrated results and limitations: [JOINT_ACCEPTANCE.md](JOINT_ACCEPTANCE.md).
+
 ## Demo sign-in
 
 The local UI opens on a single-user sign-in screen. On first use, sign in as `administrator` / `Demo@1234`, then use the account menu at the bottom of the sidebar to change that password. The local API verifies the password and protects its routes with an eight-hour, HttpOnly session cookie and CSRF checks on writes. Changing the password signs out every session. The bundled historical preview JSON remains a static frontend asset, so this local demo is not a production access-control boundary for the dataset.
 
 The password hash is stored in Git-ignored `data/auth/account.json`, using a unique salt and scrypt. New passwords must have 15–128 characters; common choices are blocked, and five failed login or current-password attempts cause a fifteen-minute lockout. The lockout and active sessions are in this single local API process, so restarting it clears them and signs everyone out.
 
-Alert generation, incident grouping, and timeline reconstruction use the official CIC-IDS2017 `GeneratedLabelledFlows.zip`. Suggested investigation checks, analyst decisions, case-note drafts, and audit logging run in a local Python service. The AI check can now run the merged triage agent against a case's evidence; its default mock provider is explicitly labelled as a demo simulation.
+Alert generation, incident grouping, and timeline reconstruction use the official CIC-IDS2017 `GeneratedLabelledFlows.zip`. Suggested investigation checks, analyst decisions, case-note drafts, and audit logging run in a local Python service. The UI AI check requires a configured live provider. The explicit offline mock provider is for software tests, not AI performance reporting.
 
 ## Run the demo on Windows
 
-Install Node.js LTS (with npm) and Python 3.10 or newer, then open the project folder and run `start.cmd`. The script installs missing frontend and Python packages, starts the local API, and opens `http://127.0.0.1:5174`. The preview data is already in `src/real-alerts.json` and `src/real-timelines.json`; the large source archives are **not** needed to open the demo. Dependencies in `node_modules/` are machine-specific and are not part of the repository.
+Install Node.js LTS (with npm) and Python 3.10 or newer, then open the project folder and run `start.cmd`. The script installs missing frontend and Python packages, starts the local API, and opens `http://127.0.0.1:5174`. The bundled historical case data is already in `src/real-alerts.json`, `src/real-timelines.json`, and `src/raw-context.json`; the source archive is **not** needed to open the demo. Viewing all original records requires the local `data/raw-flows.db` import. Dependencies in `node_modules/` are machine-specific and are not part of the repository.
 
 If the frontend says `Cannot find package 'esbuild'`, run `npm install --include=optional` in the project folder and start again. If installation still fails, remove that machine's incomplete `node_modules` folder and rerun `npm install --include=optional`. Keep the terminal open while using the app; a startup error is shown there. The local API log is in `data/api.err.log`.
 
 ## Regenerate historical data (optional)
 
-The bundled demo contains 10 CIC-IDS2017 Cases: 2 suspected brute-force, 3 DoS, 4 PortScan, and 1 unclassified review candidate. Two of the attack-rule Cases are labeled Benign in the dataset and therefore provide real false-positive review examples. To refresh the data, run from the repository root:
+The bundled demo contains 9 CIC-IDS2017 Cases: 2 suspected brute-force, 3 DoS, and 4 PortScan. Two of the attack-rule Cases are labeled Benign in the dataset and therefore provide false-positive review examples. To refresh the data, run from the repository root:
 
 ```powershell
-python services/alerts.py path/to/GeneratedLabelledFlows.zip --include-monday-review -o src/real-alerts.json
+python services/alerts.py path/to/GeneratedLabelledFlows.zip -o src/real-alerts.json
 python services/timeline.py src/real-alerts.json -o src/real-timelines.json
+python -m services.raw_context path/to/GeneratedLabelledFlows.zip src/real-alerts.json -o src/raw-context.json
+python -m services.raw_flows path/to/GeneratedLabelledFlows.zip
 ```
 
-`start.cmd` starts Vite and the loopback Python review service. The frontend reads the tracked JSON files; the local review service writes `data/audit.db`. `data/` stays local and is ignored by Git. Only up to six sampled flow records per alert enter the tracked JSON; the large source archive stays local. The earlier Yatesbury DDoS demonstration is archived rather than included in this three-type queue.
+`start.cmd` starts Vite and the loopback Python review service. The frontend reads the tracked JSON files; the local review service writes `data/audit.db`. `data/` stays local and is ignored by Git. Only up to six sampled flow records per alert enter the tracked alert JSON. `raw-context.json` stores per-minute counts for the same source/destination pairs from one minute before through one minute after each case window. The `services.raw_flows` command imports every CSV row and field into the Git-ignored local `data/raw-flows.db`; the authenticated Timeline detail queries it in pages of 50. The large source archive stays local. The earlier Yatesbury DDoS demonstration is archived rather than included in this three-type queue. Regenerating case IDs leaves old local decisions and audit events under their original IDs; they are not transferred to new cases.
 
 ## Detection and grouping
 
-The script scans the Monday, Tuesday, Wednesday, and Friday PortScan flow CSVs. It detects one-minute source/destination groups. PortScan and DoS retain their prototype count/port rules. Suspected BruteForce requires at least 50 connections from one source to one target's FTP (21) or SSH (22) port in a minute. Flow counts cannot establish failed logins; authentication logs would be needed to confirm brute force. One unmatched high-volume Monday group becomes NeedsReview, selected without reading its label.
+The script scans the Monday, Tuesday, Wednesday, and Friday PortScan flow CSVs. It detects one-minute source/destination groups. PortScan and DoS retain their prototype count/port rules. Suspected BruteForce requires at least 50 connections from one source to one target's FTP (21) or SSH (22) port in a minute. Flow counts cannot establish failed logins; authentication logs would be needed to confirm brute force. Optional NeedsReview candidates are excluded from the bundled three-rule queue.
 
-Consecutive alerts are grouped by type and source CSV when their gap is at most five minutes: PortScan follows the source IP, DoS follows the destination IP, and suspected BruteForce follows the source/target/login-port tuple. Different types remain separate. Rule thresholds are prototype heuristics selected during development, not independently validated SOC policy. No rule match is not a Benign verdict.
+Consecutive alerts are grouped only when source CSV, rule type, ordered source/destination pair, and (for BruteForce) target login port match, with at most five minutes between consecutive alert minute starts. Different types remain separate. Rule thresholds are prototype heuristics selected during development, not independently validated SOC policy. No rule match is not a Benign verdict.
+
+The five-minute gap is a configurable design assumption, not a known incident boundary. Run `python -m services.evaluate_grouping_gap src/real-alerts.json` to compare one-, five-, and ten-minute gaps without changing the demo queue. The bundled 158 alerts form 11, 9, and 9 cases respectively; the one-minute setting splits two of the five-minute cases. Ground-truth labels do not identify campaign boundaries, so this comparison measures sensitivity rather than correctness. The saved result is in `evaluation/grouping-gap-sensitivity-20261024.json`.
+
+The AI starts with the case details, then chooses which read-only alert, flow, or statistics queries it needs. Every cited evidence ID must occur in returned tool data; a rule match remains a lead for investigation, not an AI or analyst attack verdict.
 
 The detector does not read dataset labels when matching or grouping alerts. Labels are kept for retrospective evaluation and are withheld from model-facing tools. A normal-labeled Case does not automatically receive a Likely Benign AI verdict: the live model may reasonably return Needs Review without business context.
 
@@ -41,11 +49,11 @@ Named rule predicates and thresholds live in `services/alerts.py`. `--include-mo
 
 ## Timeline
 
-`services/timeline.py` orders sampled source records and every alert in each incident by timestamp and CSV row. Each event carries an evidence ID that resolves to a flow or alert in the matching JSON export. PortScan alerts map to MITRE ATT&CK T1046; DDoS alerts map to T1498; events without sufficient evidence are Unmapped. The source timestamps have minute precision. Friday afternoon CSV hours are normalized to afternoon according to their filename.
+`services/timeline.py` orders sampled source records and every alert in each incident by timestamp and CSV row. Each event carries an evidence ID that resolves to a flow or alert in the matching JSON export. Rule-based ATT&CK hints are tentative; the AI may suggest a validated mapping or mark an alert Unmapped with a reason. Alert timestamps mark minute bucket starts, while sampled records retain their original seconds. Friday afternoon CSV hours are normalized to afternoon according to their filename.
 
-The Timeline view covers every minute between a case's first and last recorded event, including minutes without an exported rule match. It highlights the first match, peak matched minute, matched flow total, and linked sample count. Selecting a minute explains the detection basis and links to its alert evidence before navigating to the Evidence view. Blank minutes mean no exported rule match; the bundled preview does not include all raw network flows, so they must not be interpreted as zero traffic.
+The combined Timeline and evidence view shows each case minute plus one minute of context on either side. Opening a minute shows why it was flagged, if a rule fired, and the original CSV communication records for that source/destination pair when the local raw-flow database is available. A minute without a rule match is not a Benign verdict. The counts describe flow records, not individual packets or messages.
 
-The bundled data contains 10 Cases and 159 one-minute Alerts from the four selected CIC files. Regenerate after changing any rule or dataset input.
+The bundled data contains 9 Cases and 158 one-minute Alerts from the four selected CIC files. Regenerate the alert, timeline, and raw-context files together after changing any rule, grouping rule, or dataset input.
 
 ## Archived Yatesbury DDoS case (outside the current queue)
 
@@ -53,7 +61,7 @@ The additional historical case uses the SYN Flood DDoS scenario's `nsg.csv` reco
 
 ## Demo path
 
-Open Investigations to see the case list, then open the PortScan case. The five tabs can be selected directly. Timeline shows six one-minute PortScan alerts from 14:51 through 14:56, including the 14:54 match with 34,620 records across 997 destination ports. Select a point to see its detection basis and linked flow records. The alerts group because source IP, destination IP, and source CSV match and their gap is under five minutes.
+Open Investigations to see the case list, then open the PortScan case. The five tabs can be selected directly. Timeline & evidence shares one page: select a time point to jump to its original CSV records, alert, or linked samples below. The timeline shows six one-minute PortScan alerts from 14:51 through 14:56, including the 14:54 match with 34,620 records across 997 destination ports. The alerts group because source IP, destination IP, and source CSV match and their gap is under five minutes.
 
 The dataset label is shown separately from the rule result. It is a reference for evaluation, not the reason the rule fired. A PortScan rule match is a candidate incident; triage and any verdict belong to the other modules. Source timestamps have only minute precision, so events within one minute are ordered by CSV row where available.
 

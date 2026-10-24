@@ -1,0 +1,75 @@
+{
+  "kind": "external_domain_holdout",
+  "source": "CIDDS-001 OpenStack internal weeks 1-4",
+  "frozen_sha256": {
+    "archive": "5145d13b2c4ee278390743964f242759ffbf2823336dc7361b4d7255a04c54d9",
+    "detector": "dd7fc92d3d9621ccd05c4fa176db9fe4d1b83ae94bfd85a63d56ad237a41f406",
+    "adapter": "3fda87d8c9e4f6fe9af861b754f77e1bf57aa8c7edaead1e4645807bdf4cefc5"
+  },
+  "groups": {
+    "scored_groups": 5942316,
+    "excluded_ambiguous_or_out_of_scope_groups": 4260,
+    "mixed_benign_attack_groups": 786,
+    "members_scored": 4
+  },
+  "confusion": [
+    {
+      "truth": "Benign",
+      "prediction": "No rule",
+      "groups": 5900958
+    },
+    {
+      "truth": "BruteForce",
+      "prediction": "BruteForce",
+      "groups": 2
+    },
+    {
+      "truth": "BruteForce",
+      "prediction": "No rule",
+      "groups": 555
+    },
+    {
+      "truth": "DoS",
+      "prediction": "DoS",
+      "groups": 56
+    },
+    {
+      "truth": "DoS",
+      "prediction": "No rule",
+      "groups": 80
+    },
+    {
+      "truth": "PortScan",
+      "prediction": "No rule",
+      "groups": 40617
+    },
+    {
+      "truth": "PortScan",
+      "prediction": "PortScan",
+      "groups": 48
+    }
+  ],
+  "per_attack": {
+    "PortScan": {
+      "tp": 48,
+      "fp": 0,
+      "fn": 40617,
+      "precision": 1.0,
+      "recall": 0.0011803762449280708
+    },
+    "DoS": {
+      "tp": 56,
+      "fp": 0,
+      "fn": 80,
+      "precision": 1.0,
+      "recall": 0.4117647058823529
+    },
+    "BruteForce": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 555,
+      "precision": 1.0,
+      "recall": 0.003590664272890485
+    }
+  }
+}

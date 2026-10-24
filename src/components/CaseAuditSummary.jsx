@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 const labels = {
+  CASE_REVIEW_PRIORITY_SET: 'Review priority changed',
   ANALYST_DECISION: 'Investigation step reviewed',
   CASE_NOTE_DRAFTED: 'Case note drafted',
   ANALYST_NOTE_ADDED: 'Analyst note added',
@@ -15,6 +16,7 @@ const labels = {
 };
 
 function eventDetail(event) {
+  if (event.action === 'CASE_REVIEW_PRIORITY_SET') return `${event.previous_level} → ${event.level || 'Rule suggestion'} · ${event.reason}`;
   if (event.action === 'triage.started') return [event.provider, event.model].filter(Boolean).join(' · ');
   if (event.action === 'triage.tool_call') return `${event.tool || 'Tool'} · ${event.blocked ? 'Blocked' : event.ok ? 'Completed' : event.error_code || 'Failed'}`;
   if (event.action === 'triage.completed') return [event.verdict, typeof event.confidence === 'number' ? `${Math.round(event.confidence * 100)}% confidence` : null].filter(Boolean).join(' · ');

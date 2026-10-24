@@ -1,0 +1,432 @@
+{
+  "updated_at": "2026-10-23T16:32:28Z",
+  "incidents": {
+    "INC-AC3AA3CF2A0C": {
+      "runs": [
+        {
+          "run_id": "TRG-790F63EE53",
+          "incident_id": "INC-AC3AA3CF2A0C",
+          "provider": "codex",
+          "model": "default",
+          "mode": "live",
+          "started_at": "2026-10-23T16:31:48Z",
+          "completed_at": "2026-10-23T16:32:28Z",
+          "duration_ms": 39360,
+          "investigation": {
+            "steps": 5,
+            "tool_calls": [
+              {
+                "step": 1,
+                "tool": "get_incident_details",
+                "arguments": {
+                  "incident_id": "INC-AC3AA3CF2A0C"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              },
+              {
+                "step": 2,
+                "tool": "get_related_alerts",
+                "arguments": {
+                  "incident_id": "INC-AC3AA3CF2A0C"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 1
+              },
+              {
+                "step": 3,
+                "tool": "get_network_flows",
+                "arguments": {
+                  "incident_id": "INC-AC3AA3CF2A0C",
+                  "limit": 20
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 6
+              },
+              {
+                "step": 4,
+                "tool": "get_incident_statistics",
+                "arguments": {
+                  "incident_id": "INC-AC3AA3CF2A0C"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              }
+            ],
+            "blocked_attempts": [],
+            "tool_errors": 0,
+            "corrections": 0
+          },
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ],
+          "status": "ok",
+          "verdict": "Needs Review",
+          "confidence": "medium",
+          "reason": "Observed: ALT-07AA831A34A7 reports 1137 flows and 16165 packets in one minute from one source toward one destination, triggering the DoS rule. The retained flows show connections to destination port 443 with varying packet counts (FLOW-C69B848C3A94, FLOW-AF8741C3657B, FLOW-F746F81188BB). Inference: the concentrated activity warrants investigation, but the limited sample and lack of service-impact evidence do not establish a hostile flood or a legitimate explanation.",
+          "evidence_ids": [
+            "ALT-07AA831A34A7",
+            "FLOW-C69B848C3A94",
+            "FLOW-AF8741C3657B",
+            "FLOW-F746F81188BB"
+          ],
+          "findings": [
+            {
+              "observation": "The DoS alert records 1137 flows, 16165 packets, two destination ports and one source in its one-minute aggregation window.",
+              "evidence_ids": [
+                "ALT-07AA831A34A7"
+              ]
+            },
+            {
+              "observation": "Sampled connections from 192.168.10.25 to 173.223.152.83 on destination port 443 include packet counts of 15, 40 and 4; these records alone cannot establish service disruption.",
+              "evidence_ids": [
+                "FLOW-C69B848C3A94",
+                "FLOW-AF8741C3657B",
+                "FLOW-F746F81188BB"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-07AA831A34A7",
+              "technique_id": "Unmapped",
+              "reason": "The DoS rule and flow counts do not establish denial-of-service impact. The alert reports one source, so it does not support a multiple-source DDoS mapping."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Review connection behavior and available response details to assess whether the sampled HTTPS activity reflects abusive repetition or legitimate use.",
+              "evidence_ids": [
+                "FLOW-C69B848C3A94",
+                "FLOW-AF8741C3657B",
+                "FLOW-F746F81188BB"
+              ]
+            },
+            {
+              "action": "ESCALATE_TO_ANALYST",
+              "reason": "Have an analyst assess the DoS alert against service telemetry and surrounding activity; this category requires explicit analyst confirmation before closure.",
+              "evidence_ids": [
+                "ALT-07AA831A34A7"
+              ]
+            }
+          ],
+          "limitations": "Only six retained flow records were available. Connection durations, byte volumes, TCP flags, application context, service availability and surrounding-window behavior were unavailable; malicious intent and denial-of-service impact could not be determined.",
+          "proposal": {
+            "incident_id": "INC-AC3AA3CF2A0C",
+            "verdict": "Needs Review",
+            "confidence": "medium",
+            "reason": "Observed: ALT-07AA831A34A7 reports 1137 flows and 16165 packets in one minute from one source toward one destination, triggering the DoS rule. The retained flows show connections to destination port 443 with varying packet counts (FLOW-C69B848C3A94, FLOW-AF8741C3657B, FLOW-F746F81188BB). Inference: the concentrated activity warrants investigation, but the limited sample and lack of service-impact evidence do not establish a hostile flood or a legitimate explanation.",
+            "evidence_ids": [
+              "ALT-07AA831A34A7",
+              "FLOW-C69B848C3A94",
+              "FLOW-AF8741C3657B",
+              "FLOW-F746F81188BB"
+            ],
+            "findings": [
+              {
+                "observation": "The DoS alert records 1137 flows, 16165 packets, two destination ports and one source in its one-minute aggregation window.",
+                "evidence_ids": [
+                  "ALT-07AA831A34A7"
+                ]
+              },
+              {
+                "observation": "Sampled connections from 192.168.10.25 to 173.223.152.83 on destination port 443 include packet counts of 15, 40 and 4; these records alone cannot establish service disruption.",
+                "evidence_ids": [
+                  "FLOW-C69B848C3A94",
+                  "FLOW-AF8741C3657B",
+                  "FLOW-F746F81188BB"
+                ]
+              }
+            ],
+            "technique_mappings": [
+              {
+                "evidence_id": "ALT-07AA831A34A7",
+                "technique_id": "Unmapped",
+                "reason": "The DoS rule and flow counts do not establish denial-of-service impact. The alert reports one source, so it does not support a multiple-source DDoS mapping."
+              }
+            ],
+            "next_steps": [
+              {
+                "action": "REVIEW_NETWORK_FLOWS",
+                "reason": "Review connection behavior and available response details to assess whether the sampled HTTPS activity reflects abusive repetition or legitimate use.",
+                "evidence_ids": [
+                  "FLOW-C69B848C3A94",
+                  "FLOW-AF8741C3657B",
+                  "FLOW-F746F81188BB"
+                ]
+              },
+              {
+                "action": "ESCALATE_TO_ANALYST",
+                "reason": "Have an analyst assess the DoS alert against service telemetry and surrounding activity; this category requires explicit analyst confirmation before closure.",
+                "evidence_ids": [
+                  "ALT-07AA831A34A7"
+                ]
+              }
+            ],
+            "limitations": "Only six retained flow records were available. Connection durations, byte volumes, TCP flags, application context, service availability and surrounding-window behavior were unavailable; malicious intent and denial-of-service impact could not be determined."
+          },
+          "error": null,
+          "validation": {
+            "ok": true,
+            "issues": []
+          },
+          "requires_confirmation": false,
+          "guardrail": {
+            "verdict": "Needs Review",
+            "requires_confirmation": false,
+            "reasons": [
+              "Insufficient evidence: analyst review is mandatory."
+            ],
+            "source": "services.guardrails.evaluate_proposal",
+            "auto_close_permitted": false,
+            "severity_change": null,
+            "closure_sensitive": false,
+            "prohibited_actions": [
+              "close_incident",
+              "dismiss_incident",
+              "downgrade_severity",
+              "execute_remediation",
+              "modify_evidence",
+              "approve_recommendation",
+              "override_analyst_decision"
+            ]
+          }
+        }
+      ],
+      "decision": {
+        "status": "pending",
+        "analyst": null,
+        "note": null,
+        "at": null
+      },
+      "latest": {
+        "run_id": "TRG-790F63EE53",
+        "incident_id": "INC-AC3AA3CF2A0C",
+        "provider": "codex",
+        "model": "default",
+        "mode": "live",
+        "started_at": "2026-10-23T16:31:48Z",
+        "completed_at": "2026-10-23T16:32:28Z",
+        "duration_ms": 39360,
+        "investigation": {
+          "steps": 5,
+          "tool_calls": [
+            {
+              "step": 1,
+              "tool": "get_incident_details",
+              "arguments": {
+                "incident_id": "INC-AC3AA3CF2A0C"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            },
+            {
+              "step": 2,
+              "tool": "get_related_alerts",
+              "arguments": {
+                "incident_id": "INC-AC3AA3CF2A0C"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 1
+            },
+            {
+              "step": 3,
+              "tool": "get_network_flows",
+              "arguments": {
+                "incident_id": "INC-AC3AA3CF2A0C",
+                "limit": 20
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 6
+            },
+            {
+              "step": 4,
+              "tool": "get_incident_statistics",
+              "arguments": {
+                "incident_id": "INC-AC3AA3CF2A0C"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            }
+          ],
+          "blocked_attempts": [],
+          "tool_errors": 0,
+          "corrections": 0
+        },
+        "prohibited_actions": [
+          "close_incident",
+          "dismiss_incident",
+          "downgrade_severity",
+          "execute_remediation",
+          "modify_evidence",
+          "approve_recommendation",
+          "override_analyst_decision"
+        ],
+        "status": "ok",
+        "verdict": "Needs Review",
+        "confidence": "medium",
+        "reason": "Observed: ALT-07AA831A34A7 reports 1137 flows and 16165 packets in one minute from one source toward one destination, triggering the DoS rule. The retained flows show connections to destination port 443 with varying packet counts (FLOW-C69B848C3A94, FLOW-AF8741C3657B, FLOW-F746F81188BB). Inference: the concentrated activity warrants investigation, but the limited sample and lack of service-impact evidence do not establish a hostile flood or a legitimate explanation.",
+        "evidence_ids": [
+          "ALT-07AA831A34A7",
+          "FLOW-C69B848C3A94",
+          "FLOW-AF8741C3657B",
+          "FLOW-F746F81188BB"
+        ],
+        "findings": [
+          {
+            "observation": "The DoS alert records 1137 flows, 16165 packets, two destination ports and one source in its one-minute aggregation window.",
+            "evidence_ids": [
+              "ALT-07AA831A34A7"
+            ]
+          },
+          {
+            "observation": "Sampled connections from 192.168.10.25 to 173.223.152.83 on destination port 443 include packet counts of 15, 40 and 4; these records alone cannot establish service disruption.",
+            "evidence_ids": [
+              "FLOW-C69B848C3A94",
+              "FLOW-AF8741C3657B",
+              "FLOW-F746F81188BB"
+            ]
+          }
+        ],
+        "technique_mappings": [
+          {
+            "evidence_id": "ALT-07AA831A34A7",
+            "technique_id": "Unmapped",
+            "reason": "The DoS rule and flow counts do not establish denial-of-service impact. The alert reports one source, so it does not support a multiple-source DDoS mapping."
+          }
+        ],
+        "next_steps": [
+          {
+            "action": "REVIEW_NETWORK_FLOWS",
+            "reason": "Review connection behavior and available response details to assess whether the sampled HTTPS activity reflects abusive repetition or legitimate use.",
+            "evidence_ids": [
+              "FLOW-C69B848C3A94",
+              "FLOW-AF8741C3657B",
+              "FLOW-F746F81188BB"
+            ]
+          },
+          {
+            "action": "ESCALATE_TO_ANALYST",
+            "reason": "Have an analyst assess the DoS alert against service telemetry and surrounding activity; this category requires explicit analyst confirmation before closure.",
+            "evidence_ids": [
+              "ALT-07AA831A34A7"
+            ]
+          }
+        ],
+        "limitations": "Only six retained flow records were available. Connection durations, byte volumes, TCP flags, application context, service availability and surrounding-window behavior were unavailable; malicious intent and denial-of-service impact could not be determined.",
+        "proposal": {
+          "incident_id": "INC-AC3AA3CF2A0C",
+          "verdict": "Needs Review",
+          "confidence": "medium",
+          "reason": "Observed: ALT-07AA831A34A7 reports 1137 flows and 16165 packets in one minute from one source toward one destination, triggering the DoS rule. The retained flows show connections to destination port 443 with varying packet counts (FLOW-C69B848C3A94, FLOW-AF8741C3657B, FLOW-F746F81188BB). Inference: the concentrated activity warrants investigation, but the limited sample and lack of service-impact evidence do not establish a hostile flood or a legitimate explanation.",
+          "evidence_ids": [
+            "ALT-07AA831A34A7",
+            "FLOW-C69B848C3A94",
+            "FLOW-AF8741C3657B",
+            "FLOW-F746F81188BB"
+          ],
+          "findings": [
+            {
+              "observation": "The DoS alert records 1137 flows, 16165 packets, two destination ports and one source in its one-minute aggregation window.",
+              "evidence_ids": [
+                "ALT-07AA831A34A7"
+              ]
+            },
+            {
+              "observation": "Sampled connections from 192.168.10.25 to 173.223.152.83 on destination port 443 include packet counts of 15, 40 and 4; these records alone cannot establish service disruption.",
+              "evidence_ids": [
+                "FLOW-C69B848C3A94",
+                "FLOW-AF8741C3657B",
+                "FLOW-F746F81188BB"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-07AA831A34A7",
+              "technique_id": "Unmapped",
+              "reason": "The DoS rule and flow counts do not establish denial-of-service impact. The alert reports one source, so it does not support a multiple-source DDoS mapping."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Review connection behavior and available response details to assess whether the sampled HTTPS activity reflects abusive repetition or legitimate use.",
+              "evidence_ids": [
+                "FLOW-C69B848C3A94",
+                "FLOW-AF8741C3657B",
+                "FLOW-F746F81188BB"
+              ]
+            },
+            {
+              "action": "ESCALATE_TO_ANALYST",
+              "reason": "Have an analyst assess the DoS alert against service telemetry and surrounding activity; this category requires explicit analyst confirmation before closure.",
+              "evidence_ids": [
+                "ALT-07AA831A34A7"
+              ]
+            }
+          ],
+          "limitations": "Only six retained flow records were available. Connection durations, byte volumes, TCP flags, application context, service availability and surrounding-window behavior were unavailable; malicious intent and denial-of-service impact could not be determined."
+        },
+        "error": null,
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "requires_confirmation": false,
+        "guardrail": {
+          "verdict": "Needs Review",
+          "requires_confirmation": false,
+          "reasons": [
+            "Insufficient evidence: analyst review is mandatory."
+          ],
+          "source": "services.guardrails.evaluate_proposal",
+          "auto_close_permitted": false,
+          "severity_change": null,
+          "closure_sensitive": false,
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ]
+        }
+      },
+      "updated_at": "2026-10-23T16:32:28Z"
+    }
+  }
+}

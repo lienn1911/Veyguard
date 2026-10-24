@@ -1,0 +1,209 @@
+{
+  "kind": "development-smoke-only",
+  "created_at": "2026-10-23T16:34:35+00:00",
+  "manifest_sha256": "8ee14011b5453a0b2ef31e91b9310511dea3f50497bba06e68a88490ef83a64b",
+  "inputs": {
+    "alerts_sha256": "B23B77B1405952BAC69AEF61D1F799FC73000291FC4F2445D96C605B76D26F7C",
+    "timelines_sha256": "A2AD85C7C720F29BAE5DBAD7213E98D83B5DD5A8B02E94114FC98A4FE0A0562A",
+    "prompt_sha256": "65BF18D09C123D8BCDAEF25E03BA549ED6AD3EC937BA0BAA09E9905B72852D45"
+  },
+  "provider": "codex",
+  "model": "default",
+  "temperature": 0.0,
+  "max_steps": 6,
+  "max_tool_calls": 12,
+  "runs_per_case": 1,
+  "summary": {
+    "cases": 5,
+    "runs": 5,
+    "status_counts": {
+      "ok": 5
+    },
+    "verdict_counts": {
+      "Needs Review": 3,
+      "Likely Attack": 2
+    },
+    "median_tool_calls": 4,
+    "median_duration_ms": 42688,
+    "invalid_proposals": 0,
+    "invalid_proposal_rate": 0.0,
+    "evidence_validation_failures": 0
+  },
+  "runs": [
+    {
+      "incident_id": "INC-0E02B5204014",
+      "repetition": 1,
+      "run_id": "TRG-D8AB85CF30",
+      "provider": "codex",
+      "model": "default",
+      "status": "ok",
+      "verdict": "Needs Review",
+      "evidence_ids": [
+        "ALT-966E00DAC3F4",
+        "ALT-F36E390D1C17",
+        "FLOW-D5B77228996C",
+        "FLOW-D7DBC32CB5B7"
+      ],
+      "technique_mappings": [
+        {
+          "evidence_id": "ALT-966E00DAC3F4",
+          "technique_id": "Unmapped",
+          "reason": "Connection counts alone do not establish failed logins or credential guessing; authentication logs are unavailable."
+        }
+      ],
+      "tool_calls": 5,
+      "tool_sequence": [
+        "get_incident_details",
+        "get_related_alerts",
+        "get_network_flows",
+        "get_incident_statistics",
+        "get_related_alerts"
+      ],
+      "tool_errors": 0,
+      "duration_ms": 45844,
+      "validation_issues": [],
+      "error_code": null,
+      "audit_verified": true,
+      "analyst_decision": "pending"
+    },
+    {
+      "incident_id": "INC-AC3AA3CF2A0C",
+      "repetition": 1,
+      "run_id": "TRG-790F63EE53",
+      "provider": "codex",
+      "model": "default",
+      "status": "ok",
+      "verdict": "Needs Review",
+      "evidence_ids": [
+        "ALT-07AA831A34A7",
+        "FLOW-C69B848C3A94",
+        "FLOW-AF8741C3657B",
+        "FLOW-F746F81188BB"
+      ],
+      "technique_mappings": [
+        {
+          "evidence_id": "ALT-07AA831A34A7",
+          "technique_id": "Unmapped",
+          "reason": "The DoS rule and flow counts do not establish denial-of-service impact. The alert reports one source, so it does not support a multiple-source DDoS mapping."
+        }
+      ],
+      "tool_calls": 4,
+      "tool_sequence": [
+        "get_incident_details",
+        "get_related_alerts",
+        "get_network_flows",
+        "get_incident_statistics"
+      ],
+      "tool_errors": 0,
+      "duration_ms": 39360,
+      "validation_issues": [],
+      "error_code": null,
+      "audit_verified": true,
+      "analyst_decision": "pending"
+    },
+    {
+      "incident_id": "INC-F4ED19468E0C",
+      "repetition": 1,
+      "run_id": "TRG-91FB0759E7",
+      "provider": "codex",
+      "model": "default",
+      "status": "ok",
+      "verdict": "Needs Review",
+      "evidence_ids": [
+        "ALT-4980D1D9E4EA",
+        "FLOW-EB76E800FC90",
+        "FLOW-A91CE7F2D370"
+      ],
+      "technique_mappings": [
+        {
+          "evidence_id": "ALT-4980D1D9E4EA",
+          "technique_id": "T1046",
+          "reason": "Tentative Network Service Discovery mapping based on the PortScan alert's broad destination-port coverage. Connection initiation and actual service probing remain unconfirmed, so this is not a confirmed attack mapping."
+        }
+      ],
+      "tool_calls": 4,
+      "tool_sequence": [
+        "get_incident_details",
+        "get_related_alerts",
+        "get_network_flows",
+        "get_incident_statistics"
+      ],
+      "tool_errors": 0,
+      "duration_ms": 42688,
+      "validation_issues": [],
+      "error_code": null,
+      "audit_verified": true,
+      "analyst_decision": "pending"
+    },
+    {
+      "incident_id": "INC-6CD483A5911A",
+      "repetition": 1,
+      "run_id": "TRG-A6BEFA3871",
+      "provider": "codex",
+      "model": "default",
+      "status": "ok",
+      "verdict": "Likely Attack",
+      "evidence_ids": [
+        "ALT-4AF3D618FAA9",
+        "ALT-9941B48CD40E",
+        "FLOW-745C5543C223",
+        "FLOW-8FC7C816EF4A"
+      ],
+      "technique_mappings": [
+        {
+          "evidence_id": "ALT-4AF3D618FAA9",
+          "technique_id": "Unmapped",
+          "reason": "The DoS rule and flow volume do not establish denial-of-service impact. The alert reports one source, so evidence does not support a distributed-source T1498 mapping."
+        }
+      ],
+      "tool_calls": 4,
+      "tool_sequence": [
+        "get_incident_details",
+        "get_related_alerts",
+        "get_network_flows",
+        "get_incident_statistics"
+      ],
+      "tool_errors": 0,
+      "duration_ms": 42984,
+      "validation_issues": [],
+      "error_code": null,
+      "audit_verified": true,
+      "analyst_decision": "pending"
+    },
+    {
+      "incident_id": "INC-169BFBAAF1BA",
+      "repetition": 1,
+      "run_id": "TRG-DBB10AD7D8",
+      "provider": "codex",
+      "model": "default",
+      "status": "ok",
+      "verdict": "Likely Attack",
+      "evidence_ids": [
+        "ALT-42EFA95BAA3C",
+        "FLOW-DB91F9221EF1",
+        "FLOW-B2E0C0786879",
+        "FLOW-ACFBB0FC586C"
+      ],
+      "technique_mappings": [
+        {
+          "evidence_id": "ALT-42EFA95BAA3C",
+          "technique_id": "T1046",
+          "reason": "Broad destination-port probing supports a suggested Network Service Discovery mapping. Flow evidence cannot establish intent or whether scanning was authorized."
+        }
+      ],
+      "tool_calls": 4,
+      "tool_sequence": [
+        "get_incident_details",
+        "get_related_alerts",
+        "get_network_flows",
+        "get_incident_statistics"
+      ],
+      "tool_errors": 0,
+      "duration_ms": 39936,
+      "validation_issues": [],
+      "error_code": null,
+      "audit_verified": true,
+      "analyst_decision": "pending"
+    }
+  ]
+}

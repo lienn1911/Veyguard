@@ -15,7 +15,10 @@ act, and the backend never trusts its output.
 from __future__ import annotations
 
 import time
+import hashlib
+import json
 import uuid
+from threading import RLock
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Callable, Sequence
@@ -28,9 +31,10 @@ from .prompts import NUDGE_TOOL_USE, SYSTEM_PROMPT, correction_prompt, investiga
 from .providers import ChatProvider, ProviderError, ProviderNotConfigured, build_provider
 from .safety import PROHIBITED_ACTIONS
 from .store import TriageStore
-from .tools import ToolOutcome, ToolRegistry
+from .tools import ToolOutcome, ToolRegistry, bound_outcome
 from .validation import (
     ParseFailure,
+    Issue,
     ValidationReport,
     collect_numbers,
     extract_json_object,
@@ -101,6 +105,8 @@ class TriageService:
         store: TriageStore | None = None,
         provider_factory: Callable[[], ChatProvider] | None = None,
     ):
+        self._progress = {}
+        self._progress_lock = RLock()
         self.settings = settings
         self.dataset = dataset
         self.audit = audit or AuditLog(settings.audit_path)
@@ -110,7 +116,41 @@ class TriageService:
     # ------------------------------------------------------------------ read
     def latest(self, incident_id: str) -> dict | None:
         self.dataset.require(incident_id)  # KeyError -> 404
-        return self.store.get(incident_id)
+        stored = self.store.get(incident_id)
+        latest = (stored or {}).get("latest")
+        if not latest or latest.get("status") != "ok":
+            return stored
+        numbers = self.dataset.canonical_statistic_numbers(incident_id)
+        report = validate_proposal(
+            latest.get("proposal") or latest, incident_id=incident_id,
+            evidence_ids=self.dataset.evidence_ids(incident_id),
+            evidence_numbers=numbers, canonical_numbers=numbers,
+            tool_call_count=len((latest.get("investigation") or {}).get("tool_calls") or []),
+            alert_types_by_id={item["alert_id"]: item["type"] for item in self.dataset.agent_alerts(incident_id)},
+            incident=self.dataset.require(incident_id).incident,
+            case_alerts=self.dataset.agent_alerts(incident_id),
+        )
+        fingerprint = latest.get("evidence_fingerprint")
+        if fingerprint and fingerprint != self._evidence_fingerprint(incident_id):
+            report.issues.append(Issue("EVIDENCE_CHANGED", "Case evidence has changed since this AI investigation."))
+            report.ok = False
+        if not report.ok:
+            # Read-time projection only: preserve the historical run and analyst audit.
+            stored["latest"] = {**latest, "status": "rejected", "proposal": None,
+                "verdict": "Needs Review", "confidence": None, "reason": "AI result withheld after evidence revalidation.",
+                "findings": [], "evidence_ids": [], "next_steps": [], "technique_mappings": [], "limitations": "",
+                "validation": report.as_dict(),
+                "error": {"code": "EVIDENCE_INTEGRITY_FAILED", "message": "Saved AI result conflicts with current case evidence. Rerun investigation before reviewing it.", "detail": report.issue_messages()}}
+            stored["decision"] = {"status": "pending"}
+        return stored
+
+    def _evidence_fingerprint(self, incident_id: str) -> str:
+        evidence = {"case": self.dataset.agent_incident_details(incident_id),
+                    "alerts": self.dataset.agent_alerts(incident_id),
+                    "flows": [{key: flow.get(key) for key in ("flow_id", "timestamp", "source_ip", "source_port", "destination_ip", "destination_port", "packet_count")}
+                              for flow in self.dataset.evidence_flows(incident_id)],
+                    "statistics": self.dataset.agent_statistics(incident_id)}
+        return hashlib.sha256(json.dumps(evidence, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
     def status(self) -> dict:
         return {
@@ -120,7 +160,36 @@ class TriageService:
         }
 
     # ----------------------------------------------------------- investigate
+    def progress(self, incident_id: str) -> dict | None:
+        with self._progress_lock:
+            item = self._progress.get(incident_id)
+            return dict(item) if item else None
+
+    def _set_progress(self, incident_id, stage, percent, description, *, running=True):
+        with self._progress_lock:
+            previous = self._progress.get(incident_id, {})
+            self._progress[incident_id] = {
+                'stage': stage, 'percent': max(previous.get('percent', 0), percent),
+                'description': description, 'running': running,
+            }
+
     def investigate(self, incident_id: str) -> dict:
+        self.dataset.require(incident_id)
+        with self._progress_lock:
+            self._progress[incident_id] = {'stage': 'prepare', 'percent': 10,
+                'description': 'Preparing this case for read-only evidence checks.', 'running': True}
+        try:
+            result = self._investigate(incident_id)
+            if result['status'] == 'ok':
+                self._set_progress(incident_id, 'complete', 100, 'Assessment checked and ready for your review.', running=False)
+            else:
+                self._set_progress(incident_id, 'failed', 0, 'The check did not finish. Review the error before retrying.', running=False)
+            return result
+        except Exception:
+            self._set_progress(incident_id, 'failed', 0, 'The check did not finish. Review the error before retrying.', running=False)
+            raise
+
+    def _investigate(self, incident_id: str) -> dict:
         try:
             record = self.dataset.require(incident_id)
         except KeyError as exc:
@@ -203,6 +272,8 @@ class TriageService:
                 }
                 break
 
+            self._set_progress(incident_id, 'analyse' if trace.executed else 'evidence', 65 if trace.executed else 30,
+                'Comparing the retrieved evidence and drafting findings.' if trace.executed else 'AI is selecting and reading case evidence.')
             trace.steps += 1
             try:
                 turn = provider.complete(messages, ToolRegistry.definitions())
@@ -230,6 +301,7 @@ class TriageService:
                 for call in turn.tool_calls[:MAX_TOOL_CALLS_PER_TURN]:
                     if sum(1 for c in trace.tool_calls if not c["blocked"]) >= settings.max_tool_calls:
                         break
+                    self._set_progress(incident_id, 'evidence', 35, "Reading evidence: " + call.name.replace("_", " ") + ".")
                     call_started = time.monotonic()
                     if call.parse_error:
                         outcome = ToolOutcome(
@@ -251,6 +323,7 @@ class TriageService:
                                     "message": f"{type(exc).__name__}: {exc}",
                                 },
                             )
+                    outcome = bound_outcome(outcome, MAX_TOOL_RESULT_CHARS)
                     trace.add(trace.steps, outcome, (time.monotonic() - call_started) * 1000)
                     self.audit.append(
                         "triage.tool_call",
@@ -269,7 +342,7 @@ class TriageService:
                             "role": "tool",
                             "tool_call_id": call.id,
                             "name": call.name,
-                            "content": outcome.as_text()[:MAX_TOOL_RESULT_CHARS],
+                            "content": outcome.as_text(),
                         }
                     )
                 continue
@@ -296,8 +369,10 @@ class TriageService:
                 failure = {"code": exc.code, "message": exc.message}
                 break
 
+            self._set_progress(incident_id, 'validate', 85, 'Checking evidence references, numeric claims and case boundaries.')
             report = self._validate(payload, incident_id, trace)
             if report.ok and report.proposal:
+                self._set_progress(incident_id, 'save', 95, 'Preparing the assessment and recording its audit trail.')
                 return self._complete(
                     incident_id=incident_id,
                     record=record,
@@ -364,6 +439,9 @@ class TriageService:
             canonical_numbers=self.dataset.canonical_statistic_numbers(incident_id),
             tool_call_count=trace.executed,
             seen_evidence_ids=seen_ids,
+            alert_types_by_id={alert["alert_id"]: alert["type"] for alert in self.dataset.agent_alerts(incident_id)},
+            incident=self.dataset.require(incident_id).incident,
+            case_alerts=self.dataset.agent_alerts(incident_id),
         )
 
     def _base_record(
@@ -375,6 +453,7 @@ class TriageService:
             "provider": provider_name,
             "model": provider_model,
             "mode": "mock" if self.settings.is_mock else "live",
+            "evidence_fingerprint": self._evidence_fingerprint(incident_id),
             "started_at": started_at,
             "completed_at": _utc_now(),
             "duration_ms": int((time.monotonic() - started) * 1000),
@@ -402,6 +481,14 @@ class TriageService:
             verdict=proposal["verdict"],
             evidence_ids=proposal["evidence_ids"],
         )
+        if not guardrail.allowed:
+            return self._rejected(
+                incident_id=incident_id, run_id=run_id,
+                provider_name=provider_name, provider_model=provider_model,
+                report=ValidationReport(ok=False, proposal=None, issues=[
+                    Issue("GUARDRAIL_BLOCKED", "The safety guardrail rejected this proposal.")]),
+                trace=trace, started_at=started_at, started=started,
+            )
         result = {
             **self._base_record(
                 incident_id=incident_id,
@@ -418,6 +505,7 @@ class TriageService:
             "reason": proposal["reason"],
             "evidence_ids": proposal["evidence_ids"],
             "findings": proposal["findings"],
+            "technique_mappings": proposal["technique_mappings"],
             "next_steps": proposal["next_steps"],
             "limitations": proposal["limitations"],
             "proposal": proposal,
@@ -438,6 +526,7 @@ class TriageService:
                 "confidence": proposal["confidence"],
                 "evidence_ids": proposal["evidence_ids"],
                 "next_steps": proposal["next_steps"],
+                "technique_mappings": proposal["technique_mappings"],
                 "requires_confirmation": guardrail.requires_confirmation,
                 "guardrail_source": guardrail.source,
             },
@@ -539,7 +628,7 @@ class TriageService:
         analyst: str,
         note: str | None = None,
     ) -> dict:
-        stored = self.store.get(incident_id)
+        stored = self.latest(incident_id)
         if not stored or not stored.get("latest"):
             raise LookupError("No triage proposal exists for this incident yet.")
 

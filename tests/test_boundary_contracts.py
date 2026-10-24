@@ -26,24 +26,24 @@ def alert(number, kind, source, destination, minute=0):
 
 
 class GroupingContracts(unittest.TestCase):
-    def test_three_sources_one_ddos_destination_form_one_case(self):
+    def test_three_sources_one_ddos_destination_remain_separate_cases(self):
         incidents = group_alerts([
             alert(1, 'DDoS', '10.0.0.1', '192.0.2.1'),
             alert(2, 'DDoS', '10.0.0.2', '192.0.2.1', 1),
             alert(3, 'DDoS', '10.0.0.3', '192.0.2.1', 2),
         ])
-        self.assertEqual(len(incidents), 1)
-        self.assertEqual(incidents[0]['source_ip'], 'Multiple sources')
-        self.assertEqual(len(incidents[0]['alert_ids']), 3)
+        self.assertEqual(len(incidents), 3)
+        self.assertEqual({item['source_ip'] for item in incidents}, {'10.0.0.1', '10.0.0.2', '10.0.0.3'})
+        self.assertTrue(all(len(item['alert_ids']) == 1 for item in incidents))
 
-    def test_one_scanner_two_destinations_form_one_case(self):
+    def test_one_scanner_two_destinations_remain_separate_cases(self):
         incidents = group_alerts([
             alert(1, 'PortScan', '10.0.0.1', '192.0.2.1'),
             alert(2, 'PortScan', '10.0.0.1', '192.0.2.2', 1),
         ])
-        self.assertEqual(len(incidents), 1)
-        self.assertEqual(incidents[0]['destination_ip'], 'Multiple destinations')
-        self.assertEqual(len(incidents[0]['alert_ids']), 2)
+        self.assertEqual(len(incidents), 2)
+        self.assertEqual({item['destination_ip'] for item in incidents}, {'192.0.2.1', '192.0.2.2'})
+        self.assertTrue(all(len(item['alert_ids']) == 1 for item in incidents))
 
 
 class AuditContracts(unittest.TestCase):
@@ -79,9 +79,13 @@ class AuditContracts(unittest.TestCase):
 
 class AnalystContracts(unittest.TestCase):
     def test_likely_benign_attack_requires_reason_and_preserves_open_case(self):
-        with tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parents[1]) as directory:
+        scratch = Path(__file__).resolve().parents[1] / 'data' / 'test-temp'
+        scratch.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=scratch) as directory:
             root = Path(directory)
             service = object.__new__(TriageService)
+            from services.data_store import Dataset
+            service.dataset = Dataset({'incidents':[{'incident_id':'INC-1'}], 'alerts':[{'incident_id':'INC-1','alert_id':'A'}]})
             service.store = TriageStore(root / 'state.json')
             service.audit = AuditLog(root / 'audit.db')
             service.store.save_run({

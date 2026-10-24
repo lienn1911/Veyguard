@@ -37,7 +37,7 @@ def test_health_reports_mode_without_secrets(client):
     assert body["ai"]["provider"] == "mock"
     assert body["ai"]["mode"] == "mock"
     assert body["ai"]["key_configured"] is True
-    assert body["guardrail"]["connected"] is False
+    assert body["guardrail"]["connected"] is True
     assert body["recommendations"]["available"] is False
     serialized = str(body)
     assert "api_key" not in serialized.lower() or "key_configured" in serialized
@@ -59,7 +59,7 @@ def test_dataset_summary(client, dataset):
     body = client.get("/api/dataset").json()
     assert body["counts"]["incidents"] == len(dataset.incidents)
     assert body["counts"]["alerts"] == len(dataset.alerts)
-    assert set(body["counts"]["alert_categories"]) == {"PortScan", "DoS", "DDoS"}
+    assert set(body["counts"]["alert_categories"]) == {"PortScan", "DoS", "BruteForce"}
     assert body["counts"]["represented_flows"] > body["counts"]["sampled_flows"]
 
 

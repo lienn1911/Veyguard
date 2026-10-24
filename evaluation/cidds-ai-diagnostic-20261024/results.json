@@ -1,0 +1,222 @@
+{
+  "kind": "independent-ai-holdout",
+  "created_at": "2026-10-23T16:44:14+00:00",
+  "manifest_sha256": "ffc7377ee765bc40264a2360d0a43eedce2114cbd0a0e9bc27fe2b5bb56e8ef4",
+  "inputs": {
+    "alerts_sha256": "ABAEF5D37AC3B0C387154D56B1C52377B8334EEFB8A14339FBE544E9D0BA7AAC",
+    "timelines_sha256": "B0BBCEBE0625BFD9A68064403FC466B2D95E1A034D860626AAF75FB1F7823BB1",
+    "prompt_sha256": "65BF18D09C123D8BCDAEF25E03BA549ED6AD3EC937BA0BAA09E9905B72852D45"
+  },
+  "pipeline_sha256": {
+    "tools.py": "FE81BB3102C09D3F0208AA19ACF4B95731D909AC4BBEE6EBC9CA68E32A31B94C",
+    "triage.py": "74373AD144F4F4A4C055094034FCA33522C879FA38817F221FD7AEAEC86A79D7",
+    "validation.py": "716278BA50EA2A103F03F4C8CEE09CB24D21F6BDE6FC98CB2F0448FE3EBDD699",
+    "safety.py": "5655E90A197AE70FF9920A3EA554635FD0168BFEAE771AAAAEAA3C0FA09A648C",
+    "guardrail_bridge.py": "4C20647F5E0A745406121A9884F6A46737C578CDFBB311F4A4FE6BB90CB3CC84",
+    "guardrails.py": "6CD7EF4838A34C6B52D46C7F159D0A37A33398FAD5534324B0F6F8F2B7B77DBF",
+    "data_store.py": "1EBFD096D7C310CF8D515DFAB631C8C2C9B2075224DD546F11767E62DDCA1771",
+    "providers/codex_provider.py": "39E1B3E4F9029D95CB99AB419C811B7945DA1AD13C409D34AD03233E119FBC11"
+  },
+  "label_source": "Original CIDDS class/attackType; labels not included in model-facing files",
+  "reference_review": "Codex automated provenance and label-consistency review; no human expert adjudication",
+  "limitations": "Five purposive groups, shared source with detector holdout, external-domain diagnostic only; not statistically representative or expert-adjudicated AI accuracy.",
+  "provider": "codex",
+  "model": "default",
+  "temperature": 0.0,
+  "max_steps": 6,
+  "max_tool_calls": 12,
+  "runs_per_case": 1,
+  "summary": {
+    "cases": 5,
+    "runs": 5,
+    "status_counts": {
+      "ok": 5
+    },
+    "verdict_counts": {
+      "Needs Review": 5
+    },
+    "median_tool_calls": 4,
+    "median_duration_ms": 39391,
+    "invalid_proposals": 0,
+    "invalid_proposal_rate": 0.0,
+    "evidence_validation_failures": 0,
+    "reference_scoring": {
+      "unit": "case-run; repeats of one case are correlated and must not be counted as independent cases",
+      "attack_runs": 3,
+      "attack_called_likely_benign": 0,
+      "benign_runs": 2,
+      "benign_called_likely_attack": 0,
+      "needs_review_runs": 5
+    }
+  },
+  "runs": [
+    {
+      "incident_id": "INC-D9D1FB6CD534",
+      "repetition": 1,
+      "run_id": "TRG-D3DDF42D1B",
+      "provider": "codex",
+      "model": "default",
+      "status": "ok",
+      "verdict": "Needs Review",
+      "evidence_ids": [
+        "FLOW-31EC64972177",
+        "FLOW-7E30269994D2",
+        "ALT-E96CB4CFF868"
+      ],
+      "technique_mappings": [
+        {
+          "evidence_id": "ALT-E96CB4CFF868",
+          "technique_id": "Unmapped",
+          "reason": "The diagnostic alert and retained flows do not support a specific ATT&CK technique."
+        }
+      ],
+      "tool_calls": 4,
+      "tool_sequence": [
+        "get_incident_details",
+        "get_related_alerts",
+        "get_network_flows",
+        "get_incident_statistics"
+      ],
+      "tool_errors": 0,
+      "duration_ms": 39391,
+      "validation_issues": [],
+      "error_code": null,
+      "audit_verified": true,
+      "analyst_decision": "pending"
+    },
+    {
+      "incident_id": "INC-069E4369969F",
+      "repetition": 1,
+      "run_id": "TRG-CA0ABD0E90",
+      "provider": "codex",
+      "model": "default",
+      "status": "ok",
+      "verdict": "Needs Review",
+      "evidence_ids": [
+        "FLOW-50D3ACF42F28",
+        "ALT-70052D24BC63"
+      ],
+      "technique_mappings": [
+        {
+          "evidence_id": "ALT-70052D24BC63",
+          "technique_id": "Unmapped",
+          "reason": "The diagnostic alert and isolated flow do not support a specific ATT&CK technique."
+        }
+      ],
+      "tool_calls": 4,
+      "tool_sequence": [
+        "get_incident_details",
+        "get_related_alerts",
+        "get_network_flows",
+        "get_incident_statistics"
+      ],
+      "tool_errors": 0,
+      "duration_ms": 35281,
+      "validation_issues": [],
+      "error_code": null,
+      "audit_verified": true,
+      "analyst_decision": "pending"
+    },
+    {
+      "incident_id": "INC-A58D81981C47",
+      "repetition": 1,
+      "run_id": "TRG-8E7E0177FF",
+      "provider": "codex",
+      "model": "default",
+      "status": "ok",
+      "verdict": "Needs Review",
+      "evidence_ids": [
+        "FLOW-660C64FBCD87",
+        "ALT-0CD681C343F3"
+      ],
+      "technique_mappings": [
+        {
+          "evidence_id": "ALT-0CD681C343F3",
+          "technique_id": "Unmapped",
+          "reason": "The diagnostic alert and single-packet flow do not support an ATT&CK technique mapping."
+        }
+      ],
+      "tool_calls": 4,
+      "tool_sequence": [
+        "get_incident_details",
+        "get_related_alerts",
+        "get_network_flows",
+        "get_incident_statistics"
+      ],
+      "tool_errors": 0,
+      "duration_ms": 39922,
+      "validation_issues": [],
+      "error_code": null,
+      "audit_verified": true,
+      "analyst_decision": "pending"
+    },
+    {
+      "incident_id": "INC-D1C1AB486361",
+      "repetition": 1,
+      "run_id": "TRG-D4C352E159",
+      "provider": "codex",
+      "model": "default",
+      "status": "ok",
+      "verdict": "Needs Review",
+      "evidence_ids": [
+        "FLOW-E476DBF5A5A5",
+        "ALT-DE89263C8F89"
+      ],
+      "technique_mappings": [
+        {
+          "evidence_id": "ALT-DE89263C8F89",
+          "technique_id": "Unmapped",
+          "reason": "The diagnostic alert and single retained flow do not support a specific ATT&CK technique."
+        }
+      ],
+      "tool_calls": 4,
+      "tool_sequence": [
+        "get_incident_details",
+        "get_related_alerts",
+        "get_network_flows",
+        "get_incident_statistics"
+      ],
+      "tool_errors": 0,
+      "duration_ms": 36000,
+      "validation_issues": [],
+      "error_code": null,
+      "audit_verified": true,
+      "analyst_decision": "pending"
+    },
+    {
+      "incident_id": "INC-97CEA87F41B5",
+      "repetition": 1,
+      "run_id": "TRG-87136EF7BF",
+      "provider": "codex",
+      "model": "default",
+      "status": "ok",
+      "verdict": "Needs Review",
+      "evidence_ids": [
+        "ALT-2BC583606F58",
+        "FLOW-A32CBD03BA01",
+        "FLOW-D8D9099B31AE",
+        "FLOW-B670D2754421"
+      ],
+      "technique_mappings": [
+        {
+          "evidence_id": "ALT-2BC583606F58",
+          "technique_id": "Unmapped",
+          "reason": "The diagnostic alert and sampled flows do not establish service discovery, denial of service or credential guessing; destination-port diversity alone is insufficient."
+        }
+      ],
+      "tool_calls": 4,
+      "tool_sequence": [
+        "get_incident_details",
+        "get_related_alerts",
+        "get_network_flows",
+        "get_incident_statistics"
+      ],
+      "tool_errors": 0,
+      "duration_ms": 45313,
+      "validation_issues": [],
+      "error_code": null,
+      "audit_verified": true,
+      "analyst_decision": "pending"
+    }
+  ]
+}

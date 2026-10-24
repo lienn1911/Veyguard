@@ -1,0 +1,454 @@
+{
+  "updated_at": "2026-10-23T16:31:48Z",
+  "incidents": {
+    "INC-0E02B5204014": {
+      "runs": [
+        {
+          "run_id": "TRG-D8AB85CF30",
+          "incident_id": "INC-0E02B5204014",
+          "provider": "codex",
+          "model": "default",
+          "mode": "live",
+          "started_at": "2026-10-23T16:31:02Z",
+          "completed_at": "2026-10-23T16:31:48Z",
+          "duration_ms": 45844,
+          "investigation": {
+            "steps": 6,
+            "tool_calls": [
+              {
+                "step": 1,
+                "tool": "get_incident_details",
+                "arguments": {
+                  "incident_id": "INC-0E02B5204014"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              },
+              {
+                "step": 2,
+                "tool": "get_related_alerts",
+                "arguments": {
+                  "incident_id": "INC-0E02B5204014"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 31
+              },
+              {
+                "step": 3,
+                "tool": "get_network_flows",
+                "arguments": {
+                  "incident_id": "INC-0E02B5204014",
+                  "limit": 20
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 20
+              },
+              {
+                "step": 4,
+                "tool": "get_incident_statistics",
+                "arguments": {
+                  "incident_id": "INC-0E02B5204014"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              },
+              {
+                "step": 5,
+                "tool": "get_related_alerts",
+                "arguments": {
+                  "incident_id": "INC-0E02B5204014",
+                  "offset": 31
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 30
+              }
+            ],
+            "blocked_attempts": [],
+            "tool_errors": 0,
+            "corrections": 0
+          },
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ],
+          "status": "ok",
+          "verdict": "Needs Review",
+          "confidence": "medium",
+          "reason": "Observed: ALT-966E00DAC3F4 reports 89 connections to port 22 in one minute, and ALT-F36E390D1C17 reports continued activity at 03:10. FLOW-D5B77228996C and FLOW-D7DBC32CB5B7 corroborate connections from 172.16.0.1 to 192.168.10.50 on port 22. Inference: repeated connections warrant investigation, but flow evidence cannot establish credential guessing or a legitimate explanation without authentication and operational context.",
+          "evidence_ids": [
+            "ALT-966E00DAC3F4",
+            "ALT-F36E390D1C17",
+            "FLOW-D5B77228996C",
+            "FLOW-D7DBC32CB5B7"
+          ],
+          "findings": [
+            {
+              "observation": "Sampled flows show connections from 172.16.0.1 to 192.168.10.50 on destination port 22 with differing source ports.",
+              "evidence_ids": [
+                "FLOW-D5B77228996C",
+                "FLOW-D7DBC32CB5B7"
+              ]
+            },
+            {
+              "observation": "The BruteForce detection is based on connection counts; authentication outcomes are explicitly unavailable.",
+              "evidence_ids": [
+                "ALT-966E00DAC3F4"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-966E00DAC3F4",
+              "technique_id": "Unmapped",
+              "reason": "Connection counts alone do not establish failed logins or credential guessing; authentication logs are unavailable."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "ESCALATE_TO_ANALYST",
+              "reason": "Correlate the repeated connections with authentication logs and authorized activity. The BruteForce category requires explicit analyst confirmation before closure.",
+              "evidence_ids": [
+                "ALT-966E00DAC3F4",
+                "ALT-F36E390D1C17"
+              ]
+            },
+            {
+              "action": "REVIEW_INCIDENT_TIMELINE",
+              "reason": "Resolve the incident record's one-minute window against linked alerts spanning 02:09 through 03:10 before interpreting case totals.",
+              "evidence_ids": [
+                "ALT-966E00DAC3F4",
+                "ALT-F36E390D1C17"
+              ]
+            }
+          ],
+          "limitations": "Authentication outcomes, authorization context, and compromise status are unavailable. Individual flows are sampled. Statistics identify 5836 flows as the case sum, whereas the incident record associates that count with a one-minute window; the timeline scope requires reconciliation. This verdict is a proposal for analyst acceptance.",
+          "proposal": {
+            "incident_id": "INC-0E02B5204014",
+            "verdict": "Needs Review",
+            "confidence": "medium",
+            "reason": "Observed: ALT-966E00DAC3F4 reports 89 connections to port 22 in one minute, and ALT-F36E390D1C17 reports continued activity at 03:10. FLOW-D5B77228996C and FLOW-D7DBC32CB5B7 corroborate connections from 172.16.0.1 to 192.168.10.50 on port 22. Inference: repeated connections warrant investigation, but flow evidence cannot establish credential guessing or a legitimate explanation without authentication and operational context.",
+            "evidence_ids": [
+              "ALT-966E00DAC3F4",
+              "ALT-F36E390D1C17",
+              "FLOW-D5B77228996C",
+              "FLOW-D7DBC32CB5B7"
+            ],
+            "findings": [
+              {
+                "observation": "Sampled flows show connections from 172.16.0.1 to 192.168.10.50 on destination port 22 with differing source ports.",
+                "evidence_ids": [
+                  "FLOW-D5B77228996C",
+                  "FLOW-D7DBC32CB5B7"
+                ]
+              },
+              {
+                "observation": "The BruteForce detection is based on connection counts; authentication outcomes are explicitly unavailable.",
+                "evidence_ids": [
+                  "ALT-966E00DAC3F4"
+                ]
+              }
+            ],
+            "technique_mappings": [
+              {
+                "evidence_id": "ALT-966E00DAC3F4",
+                "technique_id": "Unmapped",
+                "reason": "Connection counts alone do not establish failed logins or credential guessing; authentication logs are unavailable."
+              }
+            ],
+            "next_steps": [
+              {
+                "action": "ESCALATE_TO_ANALYST",
+                "reason": "Correlate the repeated connections with authentication logs and authorized activity. The BruteForce category requires explicit analyst confirmation before closure.",
+                "evidence_ids": [
+                  "ALT-966E00DAC3F4",
+                  "ALT-F36E390D1C17"
+                ]
+              },
+              {
+                "action": "REVIEW_INCIDENT_TIMELINE",
+                "reason": "Resolve the incident record's one-minute window against linked alerts spanning 02:09 through 03:10 before interpreting case totals.",
+                "evidence_ids": [
+                  "ALT-966E00DAC3F4",
+                  "ALT-F36E390D1C17"
+                ]
+              }
+            ],
+            "limitations": "Authentication outcomes, authorization context, and compromise status are unavailable. Individual flows are sampled. Statistics identify 5836 flows as the case sum, whereas the incident record associates that count with a one-minute window; the timeline scope requires reconciliation. This verdict is a proposal for analyst acceptance."
+          },
+          "error": null,
+          "validation": {
+            "ok": true,
+            "issues": []
+          },
+          "requires_confirmation": false,
+          "guardrail": {
+            "verdict": "Needs Review",
+            "requires_confirmation": false,
+            "reasons": [
+              "Insufficient evidence: analyst review is mandatory."
+            ],
+            "source": "services.guardrails.evaluate_proposal",
+            "auto_close_permitted": false,
+            "severity_change": null,
+            "closure_sensitive": false,
+            "prohibited_actions": [
+              "close_incident",
+              "dismiss_incident",
+              "downgrade_severity",
+              "execute_remediation",
+              "modify_evidence",
+              "approve_recommendation",
+              "override_analyst_decision"
+            ]
+          }
+        }
+      ],
+      "decision": {
+        "status": "pending",
+        "analyst": null,
+        "note": null,
+        "at": null
+      },
+      "latest": {
+        "run_id": "TRG-D8AB85CF30",
+        "incident_id": "INC-0E02B5204014",
+        "provider": "codex",
+        "model": "default",
+        "mode": "live",
+        "started_at": "2026-10-23T16:31:02Z",
+        "completed_at": "2026-10-23T16:31:48Z",
+        "duration_ms": 45844,
+        "investigation": {
+          "steps": 6,
+          "tool_calls": [
+            {
+              "step": 1,
+              "tool": "get_incident_details",
+              "arguments": {
+                "incident_id": "INC-0E02B5204014"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            },
+            {
+              "step": 2,
+              "tool": "get_related_alerts",
+              "arguments": {
+                "incident_id": "INC-0E02B5204014"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 31
+            },
+            {
+              "step": 3,
+              "tool": "get_network_flows",
+              "arguments": {
+                "incident_id": "INC-0E02B5204014",
+                "limit": 20
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 20
+            },
+            {
+              "step": 4,
+              "tool": "get_incident_statistics",
+              "arguments": {
+                "incident_id": "INC-0E02B5204014"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            },
+            {
+              "step": 5,
+              "tool": "get_related_alerts",
+              "arguments": {
+                "incident_id": "INC-0E02B5204014",
+                "offset": 31
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 30
+            }
+          ],
+          "blocked_attempts": [],
+          "tool_errors": 0,
+          "corrections": 0
+        },
+        "prohibited_actions": [
+          "close_incident",
+          "dismiss_incident",
+          "downgrade_severity",
+          "execute_remediation",
+          "modify_evidence",
+          "approve_recommendation",
+          "override_analyst_decision"
+        ],
+        "status": "ok",
+        "verdict": "Needs Review",
+        "confidence": "medium",
+        "reason": "Observed: ALT-966E00DAC3F4 reports 89 connections to port 22 in one minute, and ALT-F36E390D1C17 reports continued activity at 03:10. FLOW-D5B77228996C and FLOW-D7DBC32CB5B7 corroborate connections from 172.16.0.1 to 192.168.10.50 on port 22. Inference: repeated connections warrant investigation, but flow evidence cannot establish credential guessing or a legitimate explanation without authentication and operational context.",
+        "evidence_ids": [
+          "ALT-966E00DAC3F4",
+          "ALT-F36E390D1C17",
+          "FLOW-D5B77228996C",
+          "FLOW-D7DBC32CB5B7"
+        ],
+        "findings": [
+          {
+            "observation": "Sampled flows show connections from 172.16.0.1 to 192.168.10.50 on destination port 22 with differing source ports.",
+            "evidence_ids": [
+              "FLOW-D5B77228996C",
+              "FLOW-D7DBC32CB5B7"
+            ]
+          },
+          {
+            "observation": "The BruteForce detection is based on connection counts; authentication outcomes are explicitly unavailable.",
+            "evidence_ids": [
+              "ALT-966E00DAC3F4"
+            ]
+          }
+        ],
+        "technique_mappings": [
+          {
+            "evidence_id": "ALT-966E00DAC3F4",
+            "technique_id": "Unmapped",
+            "reason": "Connection counts alone do not establish failed logins or credential guessing; authentication logs are unavailable."
+          }
+        ],
+        "next_steps": [
+          {
+            "action": "ESCALATE_TO_ANALYST",
+            "reason": "Correlate the repeated connections with authentication logs and authorized activity. The BruteForce category requires explicit analyst confirmation before closure.",
+            "evidence_ids": [
+              "ALT-966E00DAC3F4",
+              "ALT-F36E390D1C17"
+            ]
+          },
+          {
+            "action": "REVIEW_INCIDENT_TIMELINE",
+            "reason": "Resolve the incident record's one-minute window against linked alerts spanning 02:09 through 03:10 before interpreting case totals.",
+            "evidence_ids": [
+              "ALT-966E00DAC3F4",
+              "ALT-F36E390D1C17"
+            ]
+          }
+        ],
+        "limitations": "Authentication outcomes, authorization context, and compromise status are unavailable. Individual flows are sampled. Statistics identify 5836 flows as the case sum, whereas the incident record associates that count with a one-minute window; the timeline scope requires reconciliation. This verdict is a proposal for analyst acceptance.",
+        "proposal": {
+          "incident_id": "INC-0E02B5204014",
+          "verdict": "Needs Review",
+          "confidence": "medium",
+          "reason": "Observed: ALT-966E00DAC3F4 reports 89 connections to port 22 in one minute, and ALT-F36E390D1C17 reports continued activity at 03:10. FLOW-D5B77228996C and FLOW-D7DBC32CB5B7 corroborate connections from 172.16.0.1 to 192.168.10.50 on port 22. Inference: repeated connections warrant investigation, but flow evidence cannot establish credential guessing or a legitimate explanation without authentication and operational context.",
+          "evidence_ids": [
+            "ALT-966E00DAC3F4",
+            "ALT-F36E390D1C17",
+            "FLOW-D5B77228996C",
+            "FLOW-D7DBC32CB5B7"
+          ],
+          "findings": [
+            {
+              "observation": "Sampled flows show connections from 172.16.0.1 to 192.168.10.50 on destination port 22 with differing source ports.",
+              "evidence_ids": [
+                "FLOW-D5B77228996C",
+                "FLOW-D7DBC32CB5B7"
+              ]
+            },
+            {
+              "observation": "The BruteForce detection is based on connection counts; authentication outcomes are explicitly unavailable.",
+              "evidence_ids": [
+                "ALT-966E00DAC3F4"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-966E00DAC3F4",
+              "technique_id": "Unmapped",
+              "reason": "Connection counts alone do not establish failed logins or credential guessing; authentication logs are unavailable."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "ESCALATE_TO_ANALYST",
+              "reason": "Correlate the repeated connections with authentication logs and authorized activity. The BruteForce category requires explicit analyst confirmation before closure.",
+              "evidence_ids": [
+                "ALT-966E00DAC3F4",
+                "ALT-F36E390D1C17"
+              ]
+            },
+            {
+              "action": "REVIEW_INCIDENT_TIMELINE",
+              "reason": "Resolve the incident record's one-minute window against linked alerts spanning 02:09 through 03:10 before interpreting case totals.",
+              "evidence_ids": [
+                "ALT-966E00DAC3F4",
+                "ALT-F36E390D1C17"
+              ]
+            }
+          ],
+          "limitations": "Authentication outcomes, authorization context, and compromise status are unavailable. Individual flows are sampled. Statistics identify 5836 flows as the case sum, whereas the incident record associates that count with a one-minute window; the timeline scope requires reconciliation. This verdict is a proposal for analyst acceptance."
+        },
+        "error": null,
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "requires_confirmation": false,
+        "guardrail": {
+          "verdict": "Needs Review",
+          "requires_confirmation": false,
+          "reasons": [
+            "Insufficient evidence: analyst review is mandatory."
+          ],
+          "source": "services.guardrails.evaluate_proposal",
+          "auto_close_permitted": false,
+          "severity_change": null,
+          "closure_sensitive": false,
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ]
+        }
+      },
+      "updated_at": "2026-10-23T16:31:48Z"
+    }
+  }
+}

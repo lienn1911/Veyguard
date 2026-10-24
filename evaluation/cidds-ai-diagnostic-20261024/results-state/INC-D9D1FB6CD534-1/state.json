@@ -1,0 +1,394 @@
+{
+  "updated_at": "2026-10-23T16:41:38Z",
+  "incidents": {
+    "INC-D9D1FB6CD534": {
+      "runs": [
+        {
+          "run_id": "TRG-D3DDF42D1B",
+          "incident_id": "INC-D9D1FB6CD534",
+          "provider": "codex",
+          "model": "default",
+          "mode": "live",
+          "started_at": "2026-10-23T16:40:58Z",
+          "completed_at": "2026-10-23T16:41:38Z",
+          "duration_ms": 39391,
+          "investigation": {
+            "steps": 5,
+            "tool_calls": [
+              {
+                "step": 1,
+                "tool": "get_incident_details",
+                "arguments": {
+                  "incident_id": "INC-D9D1FB6CD534"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              },
+              {
+                "step": 2,
+                "tool": "get_related_alerts",
+                "arguments": {
+                  "incident_id": "INC-D9D1FB6CD534"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 1
+              },
+              {
+                "step": 3,
+                "tool": "get_network_flows",
+                "arguments": {
+                  "incident_id": "INC-D9D1FB6CD534",
+                  "limit": 20
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 2
+              },
+              {
+                "step": 4,
+                "tool": "get_incident_statistics",
+                "arguments": {
+                  "incident_id": "INC-D9D1FB6CD534"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              }
+            ],
+            "blocked_attempts": [],
+            "tool_errors": 0,
+            "corrections": 0
+          },
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ],
+          "status": "ok",
+          "verdict": "Needs Review",
+          "confidence": "low",
+          "reason": "Observed: FLOW-31EC64972177 and FLOW-7E30269994D2 each record one packet from 192.168.100.5:445 to 192.168.220.15:48888. ALT-E96CB4CFF868 reports two flow records in one minute and no matching attack rule. Inference: these records establish neither hostile intent nor a legitimate explanation, so analyst review is needed.",
+          "evidence_ids": [
+            "FLOW-31EC64972177",
+            "FLOW-7E30269994D2",
+            "ALT-E96CB4CFF868"
+          ],
+          "findings": [
+            {
+              "observation": "Both retained flow records show the same source and destination addresses and ports, with one packet per record.",
+              "evidence_ids": [
+                "FLOW-31EC64972177",
+                "FLOW-7E30269994D2"
+              ]
+            },
+            {
+              "observation": "The detection classified this as a diagnostic review candidate with no attack rule match; this does not establish benign activity.",
+              "evidence_ids": [
+                "ALT-E96CB4CFF868"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-E96CB4CFF868",
+              "technique_id": "Unmapped",
+              "reason": "The diagnostic alert and retained flows do not support a specific ATT&CK technique."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Review surrounding bidirectional traffic to determine the connection context for the recorded source port 445 and destination port 48888.",
+              "evidence_ids": [
+                "FLOW-31EC64972177",
+                "FLOW-7E30269994D2"
+              ]
+            }
+          ],
+          "limitations": "The supplied records lack protocol, TCP flags, payload, authentication outcomes, and application context. They cannot establish connection direction within a session, legitimate purpose, or malicious intent.",
+          "proposal": {
+            "incident_id": "INC-D9D1FB6CD534",
+            "verdict": "Needs Review",
+            "confidence": "low",
+            "reason": "Observed: FLOW-31EC64972177 and FLOW-7E30269994D2 each record one packet from 192.168.100.5:445 to 192.168.220.15:48888. ALT-E96CB4CFF868 reports two flow records in one minute and no matching attack rule. Inference: these records establish neither hostile intent nor a legitimate explanation, so analyst review is needed.",
+            "evidence_ids": [
+              "FLOW-31EC64972177",
+              "FLOW-7E30269994D2",
+              "ALT-E96CB4CFF868"
+            ],
+            "findings": [
+              {
+                "observation": "Both retained flow records show the same source and destination addresses and ports, with one packet per record.",
+                "evidence_ids": [
+                  "FLOW-31EC64972177",
+                  "FLOW-7E30269994D2"
+                ]
+              },
+              {
+                "observation": "The detection classified this as a diagnostic review candidate with no attack rule match; this does not establish benign activity.",
+                "evidence_ids": [
+                  "ALT-E96CB4CFF868"
+                ]
+              }
+            ],
+            "technique_mappings": [
+              {
+                "evidence_id": "ALT-E96CB4CFF868",
+                "technique_id": "Unmapped",
+                "reason": "The diagnostic alert and retained flows do not support a specific ATT&CK technique."
+              }
+            ],
+            "next_steps": [
+              {
+                "action": "REVIEW_NETWORK_FLOWS",
+                "reason": "Review surrounding bidirectional traffic to determine the connection context for the recorded source port 445 and destination port 48888.",
+                "evidence_ids": [
+                  "FLOW-31EC64972177",
+                  "FLOW-7E30269994D2"
+                ]
+              }
+            ],
+            "limitations": "The supplied records lack protocol, TCP flags, payload, authentication outcomes, and application context. They cannot establish connection direction within a session, legitimate purpose, or malicious intent."
+          },
+          "error": null,
+          "validation": {
+            "ok": true,
+            "issues": []
+          },
+          "requires_confirmation": false,
+          "guardrail": {
+            "verdict": "Needs Review",
+            "requires_confirmation": false,
+            "reasons": [
+              "Insufficient evidence: analyst review is mandatory."
+            ],
+            "source": "services.guardrails.evaluate_proposal",
+            "auto_close_permitted": false,
+            "severity_change": null,
+            "closure_sensitive": false,
+            "allowed": true,
+            "prohibited_actions": [
+              "close_incident",
+              "dismiss_incident",
+              "downgrade_severity",
+              "execute_remediation",
+              "modify_evidence",
+              "approve_recommendation",
+              "override_analyst_decision"
+            ]
+          }
+        }
+      ],
+      "decision": {
+        "status": "pending",
+        "analyst": null,
+        "note": null,
+        "at": null
+      },
+      "latest": {
+        "run_id": "TRG-D3DDF42D1B",
+        "incident_id": "INC-D9D1FB6CD534",
+        "provider": "codex",
+        "model": "default",
+        "mode": "live",
+        "started_at": "2026-10-23T16:40:58Z",
+        "completed_at": "2026-10-23T16:41:38Z",
+        "duration_ms": 39391,
+        "investigation": {
+          "steps": 5,
+          "tool_calls": [
+            {
+              "step": 1,
+              "tool": "get_incident_details",
+              "arguments": {
+                "incident_id": "INC-D9D1FB6CD534"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            },
+            {
+              "step": 2,
+              "tool": "get_related_alerts",
+              "arguments": {
+                "incident_id": "INC-D9D1FB6CD534"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 1
+            },
+            {
+              "step": 3,
+              "tool": "get_network_flows",
+              "arguments": {
+                "incident_id": "INC-D9D1FB6CD534",
+                "limit": 20
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 2
+            },
+            {
+              "step": 4,
+              "tool": "get_incident_statistics",
+              "arguments": {
+                "incident_id": "INC-D9D1FB6CD534"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            }
+          ],
+          "blocked_attempts": [],
+          "tool_errors": 0,
+          "corrections": 0
+        },
+        "prohibited_actions": [
+          "close_incident",
+          "dismiss_incident",
+          "downgrade_severity",
+          "execute_remediation",
+          "modify_evidence",
+          "approve_recommendation",
+          "override_analyst_decision"
+        ],
+        "status": "ok",
+        "verdict": "Needs Review",
+        "confidence": "low",
+        "reason": "Observed: FLOW-31EC64972177 and FLOW-7E30269994D2 each record one packet from 192.168.100.5:445 to 192.168.220.15:48888. ALT-E96CB4CFF868 reports two flow records in one minute and no matching attack rule. Inference: these records establish neither hostile intent nor a legitimate explanation, so analyst review is needed.",
+        "evidence_ids": [
+          "FLOW-31EC64972177",
+          "FLOW-7E30269994D2",
+          "ALT-E96CB4CFF868"
+        ],
+        "findings": [
+          {
+            "observation": "Both retained flow records show the same source and destination addresses and ports, with one packet per record.",
+            "evidence_ids": [
+              "FLOW-31EC64972177",
+              "FLOW-7E30269994D2"
+            ]
+          },
+          {
+            "observation": "The detection classified this as a diagnostic review candidate with no attack rule match; this does not establish benign activity.",
+            "evidence_ids": [
+              "ALT-E96CB4CFF868"
+            ]
+          }
+        ],
+        "technique_mappings": [
+          {
+            "evidence_id": "ALT-E96CB4CFF868",
+            "technique_id": "Unmapped",
+            "reason": "The diagnostic alert and retained flows do not support a specific ATT&CK technique."
+          }
+        ],
+        "next_steps": [
+          {
+            "action": "REVIEW_NETWORK_FLOWS",
+            "reason": "Review surrounding bidirectional traffic to determine the connection context for the recorded source port 445 and destination port 48888.",
+            "evidence_ids": [
+              "FLOW-31EC64972177",
+              "FLOW-7E30269994D2"
+            ]
+          }
+        ],
+        "limitations": "The supplied records lack protocol, TCP flags, payload, authentication outcomes, and application context. They cannot establish connection direction within a session, legitimate purpose, or malicious intent.",
+        "proposal": {
+          "incident_id": "INC-D9D1FB6CD534",
+          "verdict": "Needs Review",
+          "confidence": "low",
+          "reason": "Observed: FLOW-31EC64972177 and FLOW-7E30269994D2 each record one packet from 192.168.100.5:445 to 192.168.220.15:48888. ALT-E96CB4CFF868 reports two flow records in one minute and no matching attack rule. Inference: these records establish neither hostile intent nor a legitimate explanation, so analyst review is needed.",
+          "evidence_ids": [
+            "FLOW-31EC64972177",
+            "FLOW-7E30269994D2",
+            "ALT-E96CB4CFF868"
+          ],
+          "findings": [
+            {
+              "observation": "Both retained flow records show the same source and destination addresses and ports, with one packet per record.",
+              "evidence_ids": [
+                "FLOW-31EC64972177",
+                "FLOW-7E30269994D2"
+              ]
+            },
+            {
+              "observation": "The detection classified this as a diagnostic review candidate with no attack rule match; this does not establish benign activity.",
+              "evidence_ids": [
+                "ALT-E96CB4CFF868"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-E96CB4CFF868",
+              "technique_id": "Unmapped",
+              "reason": "The diagnostic alert and retained flows do not support a specific ATT&CK technique."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Review surrounding bidirectional traffic to determine the connection context for the recorded source port 445 and destination port 48888.",
+              "evidence_ids": [
+                "FLOW-31EC64972177",
+                "FLOW-7E30269994D2"
+              ]
+            }
+          ],
+          "limitations": "The supplied records lack protocol, TCP flags, payload, authentication outcomes, and application context. They cannot establish connection direction within a session, legitimate purpose, or malicious intent."
+        },
+        "error": null,
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "requires_confirmation": false,
+        "guardrail": {
+          "verdict": "Needs Review",
+          "requires_confirmation": false,
+          "reasons": [
+            "Insufficient evidence: analyst review is mandatory."
+          ],
+          "source": "services.guardrails.evaluate_proposal",
+          "auto_close_permitted": false,
+          "severity_change": null,
+          "closure_sensitive": false,
+          "allowed": true,
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ]
+        }
+      },
+      "updated_at": "2026-10-23T16:41:38Z"
+    }
+  }
+}

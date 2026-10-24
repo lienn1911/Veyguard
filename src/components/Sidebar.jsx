@@ -55,7 +55,7 @@ export default function Sidebar({ page, open, collapsed, onSelect, onLogout, log
   return <><aside className={`sidebar${open ? ' open' : ''}${collapsed ? ' collapsed' : ''}`} aria-label="Main navigation">
     <nav>{items.map((item, index) => item.section
       ? <div className="nav-section" key={item.section}>{item.section}</div>
-      : <button key={`${item.label}-${index}`} className={`nav-item${(page === item.page || ((page === 'review' || page === 'alerts') && item.page === 'cases')) ? ' active' : ''}`} aria-current={page === item.page || ((page === 'review' || page === 'alerts') && item.page === 'cases') ? 'page' : undefined} title={collapsed ? item.label : undefined} onClick={() => onSelect(item.page)}><Icon name={item.icon} size={20} /><span className="nav-label">{item.label}</span></button>
+      : <button key={`${item.label}-${index}`} className={`nav-item${(page === item.page || (page === 'review' && item.page === 'cases')) ? ' active' : ''}`} aria-current={page === item.page || (page === 'review' && item.page === 'cases') ? 'page' : undefined} title={collapsed ? item.label : undefined} onClick={() => onSelect(item.page)}><Icon name={item.icon} size={20} /><span className="nav-label">{item.label}</span></button>
     )}</nav>
     <div className="sidebar-account">
       {accountOpen && <div className="account-menu"><span>Signed in as {username}</span><button type="button" onClick={() => { setAccountOpen(false); setChangeOpen(true); }}>Change password</button><button type="button" onClick={onLogout}>Sign out</button>{logoutError && <span role="alert">{logoutError}</span>}</div>}

@@ -3,9 +3,9 @@
     "dataset": "CIC-IDS2017 GeneratedLabelledFlows",
     "archive": "GeneratedLabelledFlows.zip",
     "files": [
-      "Wednesday-workingHours.pcap_ISCX.csv",
-      "Tuesday-WorkingHours.pcap_ISCX.csv",
       "Monday-WorkingHours.pcap_ISCX.csv",
+      "Tuesday-WorkingHours.pcap_ISCX.csv",
+      "Wednesday-workingHours.pcap_ISCX.csv",
       "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv"
     ],
     "mode": "full",
@@ -26,16 +26,16 @@
     "ddos_min_sources": 3,
     "bruteforce_min_flows_to_login_port": 50,
     "unclassified_review_enabled": false,
-    "monday_review_enabled": true,
+    "monday_review_enabled": false,
     "unclassified_min_flows": 500,
     "unclassified_min_packets": 5000
   },
   "evaluation": {
     "groups_scanned": 356103,
-    "rule_matches": 159,
-    "incidents": 10,
-    "exported_incidents": 10,
-    "exported_alerts": 159
+    "rule_matches": 158,
+    "incidents": 9,
+    "exported_incidents": 9,
+    "exported_alerts": 158
   },
   "flows": [
     {
@@ -895,84 +895,6 @@
       "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
       "source_row": 279090,
       "original_flow_id": "172.16.0.1-192.168.10.50-57546-80-6"
-    },
-    {
-      "flow_id": "FLOW-0BD86DB3A5BA",
-      "timestamp": "2017-07-03T09:30:11",
-      "source_ip": "192.168.10.5",
-      "destination_ip": "162.208.20.178",
-      "destination_port": "443",
-      "source_port": "50073",
-      "packet_count": 12.0,
-      "dataset_label": "BENIGN",
-      "source_file": "Monday-WorkingHours.pcap_ISCX.csv",
-      "source_row": 13423,
-      "original_flow_id": "162.208.20.178-192.168.10.5-443-50073-6"
-    },
-    {
-      "flow_id": "FLOW-516B211176E2",
-      "timestamp": "2017-07-03T09:30:11",
-      "source_ip": "192.168.10.5",
-      "destination_ip": "162.208.20.178",
-      "destination_port": "443",
-      "source_port": "50074",
-      "packet_count": 12.0,
-      "dataset_label": "BENIGN",
-      "source_file": "Monday-WorkingHours.pcap_ISCX.csv",
-      "source_row": 13424,
-      "original_flow_id": "162.208.20.178-192.168.10.5-443-50074-6"
-    },
-    {
-      "flow_id": "FLOW-C96C7141946A",
-      "timestamp": "2017-07-03T09:30:11",
-      "source_ip": "192.168.10.5",
-      "destination_ip": "162.208.20.178",
-      "destination_port": "443",
-      "source_port": "50075",
-      "packet_count": 12.0,
-      "dataset_label": "BENIGN",
-      "source_file": "Monday-WorkingHours.pcap_ISCX.csv",
-      "source_row": 13425,
-      "original_flow_id": "162.208.20.178-192.168.10.5-443-50075-6"
-    },
-    {
-      "flow_id": "FLOW-574B9914C17D",
-      "timestamp": "2017-07-03T09:30:11",
-      "source_ip": "192.168.10.5",
-      "destination_ip": "162.208.20.178",
-      "destination_port": "443",
-      "source_port": "50080",
-      "packet_count": 12.0,
-      "dataset_label": "BENIGN",
-      "source_file": "Monday-WorkingHours.pcap_ISCX.csv",
-      "source_row": 13426,
-      "original_flow_id": "162.208.20.178-192.168.10.5-443-50080-6"
-    },
-    {
-      "flow_id": "FLOW-641F22A396AE",
-      "timestamp": "2017-07-03T09:30:12",
-      "source_ip": "192.168.10.5",
-      "destination_ip": "162.208.20.178",
-      "destination_port": "443",
-      "source_port": "50093",
-      "packet_count": 12.0,
-      "dataset_label": "BENIGN",
-      "source_file": "Monday-WorkingHours.pcap_ISCX.csv",
-      "source_row": 13434,
-      "original_flow_id": "162.208.20.178-192.168.10.5-443-50093-6"
-    },
-    {
-      "flow_id": "FLOW-4F2211CEB15B",
-      "timestamp": "2017-07-03T09:30:59",
-      "source_ip": "192.168.10.5",
-      "destination_ip": "162.208.20.178",
-      "destination_port": "443",
-      "source_port": "50819",
-      "packet_count": 12.0,
-      "dataset_label": "BENIGN",
-      "source_file": "Monday-WorkingHours.pcap_ISCX.csv",
-      "source_row": 14574,
-      "original_flow_id": "162.208.20.178-192.168.10.5-443-50819-6"
     },
     {
       "flow_id": "FLOW-D5B77228996C",
@@ -12467,7 +12389,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "998 destination ports, 16 source ports in one minute",
-      "incident_id": "INC-168780F44274"
+      "incident_id": "INC-169BFBAAF1BA"
     },
     {
       "alert_id": "ALT-5730B62A74DF",
@@ -12494,7 +12416,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "996 destination ports, 44 source ports in one minute",
-      "incident_id": "INC-168780F44274"
+      "incident_id": "INC-169BFBAAF1BA"
     },
     {
       "alert_id": "ALT-4B6C1C9535B8",
@@ -12521,7 +12443,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "996 destination ports, 4 source ports in one minute",
-      "incident_id": "INC-168780F44274"
+      "incident_id": "INC-169BFBAAF1BA"
     },
     {
       "alert_id": "ALT-597B373A7FFA",
@@ -12548,7 +12470,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "997 destination ports, 12906 source ports in one minute",
-      "incident_id": "INC-168780F44274"
+      "incident_id": "INC-169BFBAAF1BA"
     },
     {
       "alert_id": "ALT-976AF2FEDE2B",
@@ -12575,7 +12497,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "996 destination ports, 13497 source ports in one minute",
-      "incident_id": "INC-168780F44274"
+      "incident_id": "INC-169BFBAAF1BA"
     },
     {
       "alert_id": "ALT-53816A277932",
@@ -12602,7 +12524,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "987 destination ports, 952 source ports in one minute",
-      "incident_id": "INC-168780F44274"
+      "incident_id": "INC-169BFBAAF1BA"
     },
     {
       "alert_id": "ALT-8E27CE54C72C",
@@ -12629,7 +12551,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "999 destination ports, 53 source ports in one minute",
-      "incident_id": "INC-1AF7E2A4B437"
+      "incident_id": "INC-8007F80E149A"
     },
     {
       "alert_id": "ALT-9F0B5D191D40",
@@ -12656,7 +12578,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "998 destination ports, 45 source ports in one minute",
-      "incident_id": "INC-1AF7E2A4B437"
+      "incident_id": "INC-8007F80E149A"
     },
     {
       "alert_id": "ALT-565B9F19AAF2",
@@ -12683,7 +12605,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "999 destination ports, 23 source ports in one minute",
-      "incident_id": "INC-1AF7E2A4B437"
+      "incident_id": "INC-8007F80E149A"
     },
     {
       "alert_id": "ALT-F1591F6905C8",
@@ -12710,7 +12632,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "998 destination ports, 51 source ports in one minute",
-      "incident_id": "INC-BF1C405837C5"
+      "incident_id": "INC-31A089E15B82"
     },
     {
       "alert_id": "ALT-0584996CF671",
@@ -12737,34 +12659,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "999 destination ports, 46 source ports in one minute",
-      "incident_id": "INC-BF1C405837C5"
-    },
-    {
-      "alert_id": "ALT-654FA18A686B",
-      "type": "NeedsReview",
-      "timestamp": "2017-07-03T09:30:59",
-      "source_file": "Monday-WorkingHours.pcap_ISCX.csv",
-      "source_ip": "192.168.10.5",
-      "destination_ip": "162.208.20.178",
-      "flow_count": 696,
-      "destination_port_count": 1,
-      "source_port_count": 686,
-      "source_count": 1,
-      "target_port": null,
-      "evidence_sample_ids": [
-        "FLOW-0BD86DB3A5BA",
-        "FLOW-516B211176E2",
-        "FLOW-C96C7141946A",
-        "FLOW-574B9914C17D",
-        "FLOW-641F22A396AE",
-        "FLOW-4F2211CEB15B"
-      ],
-      "dataset_labels": {
-        "BENIGN": 696
-      },
-      "ddos_reference": false,
-      "rule_basis": "696 flows and 8070 packets in one minute; no known attack rule matched \u2014 analyst review needed",
-      "incident_id": "INC-E60E221FB8A4"
+      "incident_id": "INC-31A089E15B82"
     },
     {
       "alert_id": "ALT-966E00DAC3F4",
@@ -12791,7 +12686,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "89 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-6FB3C7103E6C",
@@ -12818,7 +12713,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "84 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-1946B75AD9BD",
@@ -12845,7 +12740,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "95 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-782B451E7A88",
@@ -12872,7 +12767,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "100 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-924373DAD849",
@@ -12899,7 +12794,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "102 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-5901FA934881",
@@ -12926,7 +12821,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "98 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-FB64EF115FB4",
@@ -12953,7 +12848,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "79 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-BBBF5B1D5DBF",
@@ -12980,7 +12875,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "84 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-4FA4D9E993D7",
@@ -13007,7 +12902,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "89 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-F4081D6981D1",
@@ -13034,7 +12929,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "93 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-4B1CA0F9367D",
@@ -13061,7 +12956,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "99 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-120932201AA2",
@@ -13088,7 +12983,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "104 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-9FF32C106D8B",
@@ -13115,7 +13010,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "98 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-248EC79023EE",
@@ -13142,7 +13037,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "94 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-95F9B02D104B",
@@ -13169,7 +13064,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "94 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-C9C457A41654",
@@ -13196,7 +13091,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "92 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-A28B7C1302E1",
@@ -13223,7 +13118,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "100 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-7840F3790895",
@@ -13250,7 +13145,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "110 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-25AE1ECCEAB7",
@@ -13277,7 +13172,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "100 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-15AAE428D81F",
@@ -13304,7 +13199,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "82 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-F42FB774ECD1",
@@ -13331,7 +13226,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "91 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-44B023B0C93E",
@@ -13358,7 +13253,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "90 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-490382FB4545",
@@ -13385,7 +13280,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "98 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-EA84507BEA62",
@@ -13412,7 +13307,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "100 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-20E8FE9E1F47",
@@ -13439,7 +13334,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "101 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-A1A5551E7845",
@@ -13466,7 +13361,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "101 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-28C9ADBF1805",
@@ -13493,7 +13388,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "89 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-02AD19B26E09",
@@ -13520,7 +13415,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "95 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-3019C8B14A93",
@@ -13547,7 +13442,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "103 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-F8A8F8C3AF7E",
@@ -13574,7 +13469,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "102 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-7525B5C0D3BB",
@@ -13601,7 +13496,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "106 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-6608E1AA206A",
@@ -13628,7 +13523,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "102 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-40FBA7BEB20E",
@@ -13655,7 +13550,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "90 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-1834CB232982",
@@ -13682,7 +13577,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "88 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-567F6BF6BD4E",
@@ -13709,7 +13604,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "92 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-58D9D3D2E824",
@@ -13736,7 +13631,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "100 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-2BCA1B0DC608",
@@ -13763,7 +13658,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "102 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-0C4AF663F0FB",
@@ -13790,7 +13685,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "101 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-333176FFFB46",
@@ -13817,7 +13712,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "94 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-88990EA0176E",
@@ -13844,7 +13739,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "92 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-D3C4A27621FC",
@@ -13871,7 +13766,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "91 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-857ACCE8E528",
@@ -13898,7 +13793,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "103 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-B68E0145A79C",
@@ -13925,7 +13820,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "106 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-C5F62EDA403D",
@@ -13952,7 +13847,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "100 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-B6E1232DE830",
@@ -13979,7 +13874,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "101 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-45A9A11FA060",
@@ -14006,7 +13901,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "97 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-E1F292949DB3",
@@ -14033,7 +13928,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "86 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-BDE17CA8BB40",
@@ -14060,7 +13955,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "95 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-53FAB429C4D3",
@@ -14087,7 +13982,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "99 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-20AFFA7A797F",
@@ -14114,7 +14009,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "99 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-DD37F8ECA1D6",
@@ -14141,7 +14036,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "99 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-01F7F2F0359B",
@@ -14168,7 +14063,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "94 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-5A9DABC34C89",
@@ -14195,7 +14090,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "70 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-124AADB5DDE4",
@@ -14222,7 +14117,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "95 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-CD715D4F6B4E",
@@ -14249,7 +14144,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "100 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-DB85A114575C",
@@ -14276,7 +14171,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "100 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-BEDD55EB1F1F",
@@ -14303,7 +14198,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "96 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-45854E61DF1F",
@@ -14330,7 +14225,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "99 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-F55E7885DCA8",
@@ -14357,7 +14252,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "76 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-567BD05C54D3",
@@ -14384,7 +14279,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "110 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-F36E390D1C17",
@@ -14411,7 +14306,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "97 connections to port 22 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-FBF1B9EDAD0B"
+      "incident_id": "INC-0E02B5204014"
     },
     {
       "alert_id": "ALT-9FE0D0887CB4",
@@ -14438,7 +14333,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "59 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-1D0BDA5EC198",
@@ -14465,7 +14360,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "137 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-9A26E844399E",
@@ -14492,7 +14387,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "126 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-8BB75A5FA49A",
@@ -14519,7 +14414,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "132 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-9CB30AF453B3",
@@ -14546,7 +14441,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "124 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-F8EC77DF0D64",
@@ -14573,7 +14468,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "146 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-D5637D42A9B2",
@@ -14600,7 +14495,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "133 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-4359CB9FCA78",
@@ -14627,7 +14522,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "128 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-9D92F5AEC31F",
@@ -14654,7 +14549,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "128 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-C37AE03CDAC6",
@@ -14681,7 +14576,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "136 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-2141E27D8478",
@@ -14708,7 +14603,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "123 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-C9D390CE58E1",
@@ -14735,7 +14630,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "121 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-92D9C196D55D",
@@ -14762,7 +14657,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "127 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-3C7DBDF44E1F",
@@ -14789,7 +14684,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "129 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-E299FA3CAF57",
@@ -14816,7 +14711,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "129 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-989D3F1BB412",
@@ -14843,7 +14738,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "133 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-CAAF1D78EA7F",
@@ -14870,7 +14765,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "132 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-95F963D95FB0",
@@ -14897,7 +14792,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "124 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-CFADCAE56979",
@@ -14924,7 +14819,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "126 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-265E7D618E4E",
@@ -14951,7 +14846,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "136 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-6A5629629685",
@@ -14978,7 +14873,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "138 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-91DDD4F488C1",
@@ -15005,7 +14900,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "133 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-16610C41EA03",
@@ -15032,7 +14927,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "137 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-63796CEDAA6B",
@@ -15059,7 +14954,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "124 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-AF69C7577922",
@@ -15086,7 +14981,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "128 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-E73A1F6B410E",
@@ -15113,7 +15008,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "128 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-E6E1B800A398",
@@ -15140,7 +15035,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "134 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-1CBA3A4179CB",
@@ -15167,7 +15062,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "132 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-63F945D75B0E",
@@ -15194,7 +15089,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "134 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-ED8FBBECE5E9",
@@ -15221,7 +15116,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "126 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-5BB2B5EE4F1A",
@@ -15248,7 +15143,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "132 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-2E8763685A6C",
@@ -15275,7 +15170,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "124 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-9136FAC76C21",
@@ -15302,7 +15197,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "137 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-20142CC3DD85",
@@ -15329,7 +15224,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "134 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-C89C257C4C7E",
@@ -15356,7 +15251,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "134 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-5B11F460FC85",
@@ -15383,7 +15278,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "131 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-1D3B8E384002",
@@ -15410,7 +15305,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "120 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-24B1DDD9064F",
@@ -15437,7 +15332,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "130 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-1F9675EE94D5",
@@ -15464,7 +15359,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "117 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-1020F2B2BFC0",
@@ -15491,7 +15386,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "131 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-C9241CB8F6B2",
@@ -15518,7 +15413,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "132 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-2991D41BDB28",
@@ -15545,7 +15440,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "128 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-66139AE269AE",
@@ -15572,7 +15467,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "126 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-D8B3DF03A5C2",
@@ -15599,7 +15494,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "135 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-345DD060DE4B",
@@ -15626,7 +15521,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "125 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-90255EB81E89",
@@ -15653,7 +15548,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "137 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-C0A4082A2C05",
@@ -15680,7 +15575,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "140 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-03B64506EB20",
@@ -15707,7 +15602,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "138 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-9EA419D840DB",
@@ -15734,7 +15629,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "125 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-9C5B1F7499DF",
@@ -15761,7 +15656,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "124 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-1806B9106314",
@@ -15788,7 +15683,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "124 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-097A35629708",
@@ -15815,7 +15710,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "136 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-B92E44B9FB54",
@@ -15842,7 +15737,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "134 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-CC180C9C9EF9",
@@ -15869,7 +15764,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "130 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-D8E8FDADDB8D",
@@ -15896,7 +15791,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "136 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-BF279DB82D01",
@@ -15923,7 +15818,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "134 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-AF2ED455E657",
@@ -15950,7 +15845,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "130 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-254EC6603804",
@@ -15977,7 +15872,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "136 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-03FB37BAF8FF",
@@ -16004,7 +15899,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "127 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-870D799D1BB9",
@@ -16031,7 +15926,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "138 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-078D0292390D",
@@ -16058,7 +15953,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "134 connections to port 21 in one minute; authentication outcomes unavailable",
-      "incident_id": "INC-34BB7D6057C6"
+      "incident_id": "INC-A787E11F2A22"
     },
     {
       "alert_id": "ALT-4980D1D9E4EA",
@@ -16085,7 +15980,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "689 destination ports, 2 source ports in one minute",
-      "incident_id": "INC-823D5A67632F"
+      "incident_id": "INC-F4ED19468E0C"
     },
     {
       "alert_id": "ALT-07AA831A34A7",
@@ -16112,7 +16007,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "1137 flows and 16165 packets in one minute",
-      "incident_id": "INC-78CFE1BA04B6"
+      "incident_id": "INC-AC3AA3CF2A0C"
     },
     {
       "alert_id": "ALT-4AF3D618FAA9",
@@ -16139,7 +16034,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "17752 flows and 173643 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-9941B48CD40E",
@@ -16166,7 +16061,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "16915 flows and 164089 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-5716F9F63616",
@@ -16193,7 +16088,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "13951 flows and 139728 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-C64FF27D6BC3",
@@ -16220,7 +16115,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "10894 flows and 109656 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-153D8C605865",
@@ -16247,7 +16142,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "13262 flows and 135500 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-B7B337D90D54",
@@ -16274,7 +16169,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "13836 flows and 138038 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-A1338EA4EA37",
@@ -16301,7 +16196,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "10439 flows and 105417 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-6C150237DF05",
@@ -16328,7 +16223,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "14058 flows and 139767 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-0AD500D5F174",
@@ -16355,7 +16250,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "10265 flows and 104076 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-4BCF234A07D5",
@@ -16382,7 +16277,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "13692 flows and 137013 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-D317DD55C73D",
@@ -16409,7 +16304,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "13808 flows and 139185 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-622A15CB8286",
@@ -16436,7 +16331,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "10343 flows and 102821 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-0F36B4CE6526",
@@ -16463,7 +16358,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "13800 flows and 138452 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-9DC3FDF87630",
@@ -16490,7 +16385,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "10302 flows and 103327 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-65E00C8425EB",
@@ -16517,7 +16412,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "13977 flows and 139223 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-1531E8BA8E6B",
@@ -16544,7 +16439,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "12450 flows and 122814 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-C512020215ED",
@@ -16571,7 +16466,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "11587 flows and 60387 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-59F52DEAAE01",
@@ -16598,7 +16493,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "9395 flows and 37633 packets in one minute",
-      "incident_id": "INC-303BE523B8D9"
+      "incident_id": "INC-6CD483A5911A"
     },
     {
       "alert_id": "ALT-39260A636212",
@@ -16625,7 +16520,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "1143 flows and 13038 packets in one minute",
-      "incident_id": "INC-11E58306FAA9"
+      "incident_id": "INC-F36100AAEA03"
     },
     {
       "alert_id": "ALT-44407CE8193F",
@@ -16652,7 +16547,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "1956 flows and 16921 packets in one minute",
-      "incident_id": "INC-11E58306FAA9"
+      "incident_id": "INC-F36100AAEA03"
     },
     {
       "alert_id": "ALT-5A8B67DA5FDA",
@@ -16679,7 +16574,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "2048 flows and 16540 packets in one minute",
-      "incident_id": "INC-11E58306FAA9"
+      "incident_id": "INC-F36100AAEA03"
     },
     {
       "alert_id": "ALT-824919629D5A",
@@ -16706,7 +16601,7 @@
       },
       "ddos_reference": false,
       "rule_basis": "1330 flows and 10734 packets in one minute",
-      "incident_id": "INC-11E58306FAA9"
+      "incident_id": "INC-F36100AAEA03"
     },
     {
       "alert_id": "ALT-1DD87573CCA1",
@@ -16733,40 +16628,12 @@
       },
       "ddos_reference": false,
       "rule_basis": "2017 flows and 18809 packets in one minute",
-      "incident_id": "INC-11E58306FAA9"
+      "incident_id": "INC-F36100AAEA03"
     }
   ],
   "incidents": [
     {
-      "incident_id": "INC-E60E221FB8A4",
-      "type": "NeedsReview",
-      "source_ip": "192.168.10.5",
-      "destination_ip": "162.208.20.178",
-      "window_start": "2017-07-03T09:30:59",
-      "window_end": "2017-07-03T09:30:59",
-      "alert_ids": [
-        "ALT-654FA18A686B"
-      ],
-      "evidence_sample_ids": [
-        "FLOW-0BD86DB3A5BA",
-        "FLOW-516B211176E2",
-        "FLOW-C96C7141946A",
-        "FLOW-574B9914C17D",
-        "FLOW-641F22A396AE",
-        "FLOW-4F2211CEB15B"
-      ],
-      "flow_count": 696,
-      "source_file": "Monday-WorkingHours.pcap_ISCX.csv",
-      "source_ips": [
-        "192.168.10.5"
-      ],
-      "destination_ips": [
-        "162.208.20.178"
-      ],
-      "related_incident_ids": []
-    },
-    {
-      "incident_id": "INC-FBF1B9EDAD0B",
+      "incident_id": "INC-0E02B5204014",
       "type": "BruteForce",
       "source_ip": "172.16.0.1",
       "destination_ip": "192.168.10.50",
@@ -17214,7 +17081,7 @@
       "related_incident_ids": []
     },
     {
-      "incident_id": "INC-34BB7D6057C6",
+      "incident_id": "INC-A787E11F2A22",
       "type": "BruteForce",
       "source_ip": "172.16.0.1",
       "destination_ip": "192.168.10.50",
@@ -17662,7 +17529,7 @@
       "related_incident_ids": []
     },
     {
-      "incident_id": "INC-78CFE1BA04B6",
+      "incident_id": "INC-AC3AA3CF2A0C",
       "type": "DoS",
       "source_ip": "192.168.10.25",
       "destination_ip": "173.223.152.83",
@@ -17690,7 +17557,7 @@
       "related_incident_ids": []
     },
     {
-      "incident_id": "INC-823D5A67632F",
+      "incident_id": "INC-F4ED19468E0C",
       "type": "PortScan",
       "source_ip": "173.223.152.83",
       "destination_ip": "192.168.10.25",
@@ -17718,7 +17585,7 @@
       "related_incident_ids": []
     },
     {
-      "incident_id": "INC-303BE523B8D9",
+      "incident_id": "INC-6CD483A5911A",
       "type": "DoS",
       "source_ip": "172.16.0.1",
       "destination_ip": "192.168.10.50",
@@ -17865,7 +17732,7 @@
       "related_incident_ids": []
     },
     {
-      "incident_id": "INC-11E58306FAA9",
+      "incident_id": "INC-F36100AAEA03",
       "type": "DoS",
       "source_ip": "172.16.0.1",
       "destination_ip": "192.168.10.50",
@@ -17921,7 +17788,7 @@
       "related_incident_ids": []
     },
     {
-      "incident_id": "INC-168780F44274",
+      "incident_id": "INC-169BFBAAF1BA",
       "type": "PortScan",
       "source_ip": "172.16.0.1",
       "destination_ip": "192.168.10.50",
@@ -17984,7 +17851,7 @@
       "related_incident_ids": []
     },
     {
-      "incident_id": "INC-1AF7E2A4B437",
+      "incident_id": "INC-8007F80E149A",
       "type": "PortScan",
       "source_ip": "172.16.0.1",
       "destination_ip": "192.168.10.50",
@@ -18026,7 +17893,7 @@
       "related_incident_ids": []
     },
     {
-      "incident_id": "INC-BF1C405837C5",
+      "incident_id": "INC-31A089E15B82",
       "type": "PortScan",
       "source_ip": "172.16.0.1",
       "destination_ip": "192.168.10.50",

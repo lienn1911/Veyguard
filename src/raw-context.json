@@ -1,0 +1,950 @@
+{
+  "scope": "Raw source/destination flow counts from one minute before through one minute after each incident window.",
+  "cases": {
+    "INC-0E02B5204014": {
+      "source_file": "Tuesday-WorkingHours.pcap_ISCX.csv",
+      "minutes": [
+        {
+          "minute": "2017-07-04T02:08",
+          "flows": 0,
+          "packets": 0
+        },
+        {
+          "minute": "2017-07-04T02:09",
+          "flows": 89,
+          "packets": 2916
+        },
+        {
+          "minute": "2017-07-04T02:10",
+          "flows": 84,
+          "packets": 2360
+        },
+        {
+          "minute": "2017-07-04T02:11",
+          "flows": 95,
+          "packets": 2686
+        },
+        {
+          "minute": "2017-07-04T02:12",
+          "flows": 100,
+          "packets": 2860
+        },
+        {
+          "minute": "2017-07-04T02:13",
+          "flows": 102,
+          "packets": 2796
+        },
+        {
+          "minute": "2017-07-04T02:14",
+          "flows": 98,
+          "packets": 3073
+        },
+        {
+          "minute": "2017-07-04T02:15",
+          "flows": 79,
+          "packets": 2221
+        },
+        {
+          "minute": "2017-07-04T02:16",
+          "flows": 84,
+          "packets": 2357
+        },
+        {
+          "minute": "2017-07-04T02:17",
+          "flows": 89,
+          "packets": 2422
+        },
+        {
+          "minute": "2017-07-04T02:18",
+          "flows": 93,
+          "packets": 2582
+        },
+        {
+          "minute": "2017-07-04T02:19",
+          "flows": 99,
+          "packets": 2769
+        },
+        {
+          "minute": "2017-07-04T02:20",
+          "flows": 104,
+          "packets": 2929
+        },
+        {
+          "minute": "2017-07-04T02:21",
+          "flows": 98,
+          "packets": 2698
+        },
+        {
+          "minute": "2017-07-04T02:22",
+          "flows": 94,
+          "packets": 2583
+        },
+        {
+          "minute": "2017-07-04T02:23",
+          "flows": 94,
+          "packets": 2583
+        },
+        {
+          "minute": "2017-07-04T02:24",
+          "flows": 92,
+          "packets": 2517
+        },
+        {
+          "minute": "2017-07-04T02:25",
+          "flows": 100,
+          "packets": 2739
+        },
+        {
+          "minute": "2017-07-04T02:26",
+          "flows": 110,
+          "packets": 3076
+        },
+        {
+          "minute": "2017-07-04T02:27",
+          "flows": 100,
+          "packets": 2739
+        },
+        {
+          "minute": "2017-07-04T02:28",
+          "flows": 82,
+          "packets": 2249
+        },
+        {
+          "minute": "2017-07-04T02:29",
+          "flows": 91,
+          "packets": 2527
+        },
+        {
+          "minute": "2017-07-04T02:30",
+          "flows": 90,
+          "packets": 2429
+        },
+        {
+          "minute": "2017-07-04T02:31",
+          "flows": 98,
+          "packets": 2735
+        },
+        {
+          "minute": "2017-07-04T02:32",
+          "flows": 100,
+          "packets": 2741
+        },
+        {
+          "minute": "2017-07-04T02:33",
+          "flows": 101,
+          "packets": 2744
+        },
+        {
+          "minute": "2017-07-04T02:34",
+          "flows": 101,
+          "packets": 2780
+        },
+        {
+          "minute": "2017-07-04T02:35",
+          "flows": 89,
+          "packets": 2478
+        },
+        {
+          "minute": "2017-07-04T02:36",
+          "flows": 95,
+          "packets": 2590
+        },
+        {
+          "minute": "2017-07-04T02:37",
+          "flows": 103,
+          "packets": 2864
+        },
+        {
+          "minute": "2017-07-04T02:38",
+          "flows": 102,
+          "packets": 2784
+        },
+        {
+          "minute": "2017-07-04T02:39",
+          "flows": 106,
+          "packets": 2929
+        },
+        {
+          "minute": "2017-07-04T02:40",
+          "flows": 102,
+          "packets": 2844
+        },
+        {
+          "minute": "2017-07-04T02:41",
+          "flows": 90,
+          "packets": 2478
+        },
+        {
+          "minute": "2017-07-04T02:42",
+          "flows": 88,
+          "packets": 2414
+        },
+        {
+          "minute": "2017-07-04T02:43",
+          "flows": 92,
+          "packets": 2539
+        },
+        {
+          "minute": "2017-07-04T02:44",
+          "flows": 100,
+          "packets": 2753
+        },
+        {
+          "minute": "2017-07-04T02:45",
+          "flows": 102,
+          "packets": 2821
+        },
+        {
+          "minute": "2017-07-04T02:46",
+          "flows": 101,
+          "packets": 2753
+        },
+        {
+          "minute": "2017-07-04T02:47",
+          "flows": 94,
+          "packets": 2630
+        },
+        {
+          "minute": "2017-07-04T02:48",
+          "flows": 92,
+          "packets": 2545
+        },
+        {
+          "minute": "2017-07-04T02:49",
+          "flows": 91,
+          "packets": 2475
+        },
+        {
+          "minute": "2017-07-04T02:50",
+          "flows": 103,
+          "packets": 2805
+        },
+        {
+          "minute": "2017-07-04T02:51",
+          "flows": 106,
+          "packets": 2912
+        },
+        {
+          "minute": "2017-07-04T02:52",
+          "flows": 100,
+          "packets": 2731
+        },
+        {
+          "minute": "2017-07-04T02:53",
+          "flows": 101,
+          "packets": 2740
+        },
+        {
+          "minute": "2017-07-04T02:54",
+          "flows": 97,
+          "packets": 2687
+        },
+        {
+          "minute": "2017-07-04T02:55",
+          "flows": 86,
+          "packets": 2366
+        },
+        {
+          "minute": "2017-07-04T02:56",
+          "flows": 95,
+          "packets": 2631
+        },
+        {
+          "minute": "2017-07-04T02:57",
+          "flows": 99,
+          "packets": 2733
+        },
+        {
+          "minute": "2017-07-04T02:58",
+          "flows": 99,
+          "packets": 2748
+        },
+        {
+          "minute": "2017-07-04T02:59",
+          "flows": 99,
+          "packets": 2763
+        },
+        {
+          "minute": "2017-07-04T03:00",
+          "flows": 94,
+          "packets": 2578
+        },
+        {
+          "minute": "2017-07-04T03:01",
+          "flows": 70,
+          "packets": 1986
+        },
+        {
+          "minute": "2017-07-04T03:02",
+          "flows": 95,
+          "packets": 2753
+        },
+        {
+          "minute": "2017-07-04T03:03",
+          "flows": 100,
+          "packets": 2770
+        },
+        {
+          "minute": "2017-07-04T03:04",
+          "flows": 100,
+          "packets": 2781
+        },
+        {
+          "minute": "2017-07-04T03:05",
+          "flows": 96,
+          "packets": 2743
+        },
+        {
+          "minute": "2017-07-04T03:06",
+          "flows": 99,
+          "packets": 2768
+        },
+        {
+          "minute": "2017-07-04T03:07",
+          "flows": 23,
+          "packets": 348
+        },
+        {
+          "minute": "2017-07-04T03:08",
+          "flows": 76,
+          "packets": 1747
+        },
+        {
+          "minute": "2017-07-04T03:09",
+          "flows": 110,
+          "packets": 2776
+        },
+        {
+          "minute": "2017-07-04T03:10",
+          "flows": 97,
+          "packets": 2760
+        },
+        {
+          "minute": "2017-07-04T03:11",
+          "flows": 38,
+          "packets": 961
+        }
+      ]
+    },
+    "INC-A787E11F2A22": {
+      "source_file": "Tuesday-WorkingHours.pcap_ISCX.csv",
+      "minutes": [
+        {
+          "minute": "2017-07-04T09:18",
+          "flows": 0,
+          "packets": 0
+        },
+        {
+          "minute": "2017-07-04T09:19",
+          "flows": 59,
+          "packets": 869
+        },
+        {
+          "minute": "2017-07-04T09:20",
+          "flows": 137,
+          "packets": 1833
+        },
+        {
+          "minute": "2017-07-04T09:21",
+          "flows": 126,
+          "packets": 1687
+        },
+        {
+          "minute": "2017-07-04T09:22",
+          "flows": 132,
+          "packets": 1734
+        },
+        {
+          "minute": "2017-07-04T09:23",
+          "flows": 124,
+          "packets": 1629
+        },
+        {
+          "minute": "2017-07-04T09:24",
+          "flows": 146,
+          "packets": 1716
+        },
+        {
+          "minute": "2017-07-04T09:25",
+          "flows": 133,
+          "packets": 1738
+        },
+        {
+          "minute": "2017-07-04T09:26",
+          "flows": 128,
+          "packets": 1704
+        },
+        {
+          "minute": "2017-07-04T09:27",
+          "flows": 128,
+          "packets": 1694
+        },
+        {
+          "minute": "2017-07-04T09:28",
+          "flows": 136,
+          "packets": 1821
+        },
+        {
+          "minute": "2017-07-04T09:29",
+          "flows": 123,
+          "packets": 1643
+        },
+        {
+          "minute": "2017-07-04T09:30",
+          "flows": 121,
+          "packets": 1603
+        },
+        {
+          "minute": "2017-07-04T09:31",
+          "flows": 127,
+          "packets": 1690
+        },
+        {
+          "minute": "2017-07-04T09:32",
+          "flows": 129,
+          "packets": 1739
+        },
+        {
+          "minute": "2017-07-04T09:33",
+          "flows": 129,
+          "packets": 1721
+        },
+        {
+          "minute": "2017-07-04T09:34",
+          "flows": 133,
+          "packets": 1754
+        },
+        {
+          "minute": "2017-07-04T09:35",
+          "flows": 132,
+          "packets": 1772
+        },
+        {
+          "minute": "2017-07-04T09:36",
+          "flows": 124,
+          "packets": 1641
+        },
+        {
+          "minute": "2017-07-04T09:37",
+          "flows": 126,
+          "packets": 1685
+        },
+        {
+          "minute": "2017-07-04T09:38",
+          "flows": 136,
+          "packets": 1822
+        },
+        {
+          "minute": "2017-07-04T09:39",
+          "flows": 138,
+          "packets": 1837
+        },
+        {
+          "minute": "2017-07-04T09:40",
+          "flows": 133,
+          "packets": 1747
+        },
+        {
+          "minute": "2017-07-04T09:41",
+          "flows": 137,
+          "packets": 1869
+        },
+        {
+          "minute": "2017-07-04T09:42",
+          "flows": 124,
+          "packets": 1662
+        },
+        {
+          "minute": "2017-07-04T09:43",
+          "flows": 128,
+          "packets": 1709
+        },
+        {
+          "minute": "2017-07-04T09:44",
+          "flows": 128,
+          "packets": 1707
+        },
+        {
+          "minute": "2017-07-04T09:45",
+          "flows": 134,
+          "packets": 1796
+        },
+        {
+          "minute": "2017-07-04T09:46",
+          "flows": 132,
+          "packets": 1759
+        },
+        {
+          "minute": "2017-07-04T09:47",
+          "flows": 134,
+          "packets": 1786
+        },
+        {
+          "minute": "2017-07-04T09:48",
+          "flows": 126,
+          "packets": 1687
+        },
+        {
+          "minute": "2017-07-04T09:49",
+          "flows": 132,
+          "packets": 1765
+        },
+        {
+          "minute": "2017-07-04T09:50",
+          "flows": 124,
+          "packets": 1649
+        },
+        {
+          "minute": "2017-07-04T09:51",
+          "flows": 137,
+          "packets": 1815
+        },
+        {
+          "minute": "2017-07-04T09:52",
+          "flows": 134,
+          "packets": 1791
+        },
+        {
+          "minute": "2017-07-04T09:53",
+          "flows": 134,
+          "packets": 1793
+        },
+        {
+          "minute": "2017-07-04T09:54",
+          "flows": 131,
+          "packets": 1767
+        },
+        {
+          "minute": "2017-07-04T09:55",
+          "flows": 120,
+          "packets": 1602
+        },
+        {
+          "minute": "2017-07-04T09:56",
+          "flows": 130,
+          "packets": 1736
+        },
+        {
+          "minute": "2017-07-04T09:57",
+          "flows": 117,
+          "packets": 1459
+        },
+        {
+          "minute": "2017-07-04T09:58",
+          "flows": 131,
+          "packets": 1841
+        },
+        {
+          "minute": "2017-07-04T09:59",
+          "flows": 132,
+          "packets": 1765
+        },
+        {
+          "minute": "2017-07-04T10:00",
+          "flows": 128,
+          "packets": 1704
+        },
+        {
+          "minute": "2017-07-04T10:01",
+          "flows": 126,
+          "packets": 1679
+        },
+        {
+          "minute": "2017-07-04T10:02",
+          "flows": 135,
+          "packets": 1794
+        },
+        {
+          "minute": "2017-07-04T10:03",
+          "flows": 125,
+          "packets": 1681
+        },
+        {
+          "minute": "2017-07-04T10:04",
+          "flows": 137,
+          "packets": 1820
+        },
+        {
+          "minute": "2017-07-04T10:05",
+          "flows": 140,
+          "packets": 1871
+        },
+        {
+          "minute": "2017-07-04T10:06",
+          "flows": 138,
+          "packets": 1841
+        },
+        {
+          "minute": "2017-07-04T10:07",
+          "flows": 125,
+          "packets": 1682
+        },
+        {
+          "minute": "2017-07-04T10:08",
+          "flows": 124,
+          "packets": 1653
+        },
+        {
+          "minute": "2017-07-04T10:09",
+          "flows": 124,
+          "packets": 1655
+        },
+        {
+          "minute": "2017-07-04T10:10",
+          "flows": 136,
+          "packets": 1817
+        },
+        {
+          "minute": "2017-07-04T10:11",
+          "flows": 134,
+          "packets": 1790
+        },
+        {
+          "minute": "2017-07-04T10:12",
+          "flows": 130,
+          "packets": 1730
+        },
+        {
+          "minute": "2017-07-04T10:13",
+          "flows": 136,
+          "packets": 1813
+        },
+        {
+          "minute": "2017-07-04T10:14",
+          "flows": 134,
+          "packets": 1790
+        },
+        {
+          "minute": "2017-07-04T10:15",
+          "flows": 130,
+          "packets": 1732
+        },
+        {
+          "minute": "2017-07-04T10:16",
+          "flows": 136,
+          "packets": 1818
+        },
+        {
+          "minute": "2017-07-04T10:17",
+          "flows": 127,
+          "packets": 1701
+        },
+        {
+          "minute": "2017-07-04T10:18",
+          "flows": 138,
+          "packets": 1848
+        },
+        {
+          "minute": "2017-07-04T10:19",
+          "flows": 134,
+          "packets": 1788
+        },
+        {
+          "minute": "2017-07-04T10:20",
+          "flows": 34,
+          "packets": 353
+        }
+      ]
+    },
+    "INC-AC3AA3CF2A0C": {
+      "source_file": "Tuesday-WorkingHours.pcap_ISCX.csv",
+      "minutes": [
+        {
+          "minute": "2017-07-04T11:06",
+          "flows": 55,
+          "packets": 780
+        },
+        {
+          "minute": "2017-07-04T11:07",
+          "flows": 1137,
+          "packets": 16165
+        },
+        {
+          "minute": "2017-07-04T11:08",
+          "flows": 0,
+          "packets": 0
+        }
+      ]
+    },
+    "INC-F4ED19468E0C": {
+      "source_file": "Tuesday-WorkingHours.pcap_ISCX.csv",
+      "minutes": [
+        {
+          "minute": "2017-07-04T11:06",
+          "flows": 41,
+          "packets": 103
+        },
+        {
+          "minute": "2017-07-04T11:07",
+          "flows": 958,
+          "packets": 2477
+        },
+        {
+          "minute": "2017-07-04T11:08",
+          "flows": 0,
+          "packets": 0
+        }
+      ]
+    },
+    "INC-6CD483A5911A": {
+      "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+      "minutes": [
+        {
+          "minute": "2017-07-05T10:42",
+          "flows": 0,
+          "packets": 0
+        },
+        {
+          "minute": "2017-07-05T10:43",
+          "flows": 17752,
+          "packets": 173643
+        },
+        {
+          "minute": "2017-07-05T10:44",
+          "flows": 16915,
+          "packets": 164089
+        },
+        {
+          "minute": "2017-07-05T10:45",
+          "flows": 13951,
+          "packets": 139728
+        },
+        {
+          "minute": "2017-07-05T10:46",
+          "flows": 10894,
+          "packets": 109656
+        },
+        {
+          "minute": "2017-07-05T10:47",
+          "flows": 13262,
+          "packets": 135500
+        },
+        {
+          "minute": "2017-07-05T10:48",
+          "flows": 13836,
+          "packets": 138038
+        },
+        {
+          "minute": "2017-07-05T10:49",
+          "flows": 10439,
+          "packets": 105417
+        },
+        {
+          "minute": "2017-07-05T10:50",
+          "flows": 14058,
+          "packets": 139767
+        },
+        {
+          "minute": "2017-07-05T10:51",
+          "flows": 10265,
+          "packets": 104076
+        },
+        {
+          "minute": "2017-07-05T10:52",
+          "flows": 13692,
+          "packets": 137013
+        },
+        {
+          "minute": "2017-07-05T10:53",
+          "flows": 13808,
+          "packets": 139185
+        },
+        {
+          "minute": "2017-07-05T10:54",
+          "flows": 10343,
+          "packets": 102821
+        },
+        {
+          "minute": "2017-07-05T10:55",
+          "flows": 13800,
+          "packets": 138452
+        },
+        {
+          "minute": "2017-07-05T10:56",
+          "flows": 10302,
+          "packets": 103327
+        },
+        {
+          "minute": "2017-07-05T10:57",
+          "flows": 13977,
+          "packets": 139223
+        },
+        {
+          "minute": "2017-07-05T10:58",
+          "flows": 12450,
+          "packets": 122814
+        },
+        {
+          "minute": "2017-07-05T10:59",
+          "flows": 11587,
+          "packets": 60387
+        },
+        {
+          "minute": "2017-07-05T11:00",
+          "flows": 9395,
+          "packets": 37633
+        },
+        {
+          "minute": "2017-07-05T11:01",
+          "flows": 202,
+          "packets": 748
+        }
+      ]
+    },
+    "INC-F36100AAEA03": {
+      "source_file": "Wednesday-workingHours.pcap_ISCX.csv",
+      "minutes": [
+        {
+          "minute": "2017-07-05T11:10",
+          "flows": 711,
+          "packets": 9578
+        },
+        {
+          "minute": "2017-07-05T11:11",
+          "flows": 1143,
+          "packets": 13038
+        },
+        {
+          "minute": "2017-07-05T11:12",
+          "flows": 1956,
+          "packets": 16921
+        },
+        {
+          "minute": "2017-07-05T11:13",
+          "flows": 2048,
+          "packets": 16540
+        },
+        {
+          "minute": "2017-07-05T11:14",
+          "flows": 312,
+          "packets": 3872
+        },
+        {
+          "minute": "2017-07-05T11:15",
+          "flows": 0,
+          "packets": 0
+        },
+        {
+          "minute": "2017-07-05T11:16",
+          "flows": 0,
+          "packets": 0
+        },
+        {
+          "minute": "2017-07-05T11:17",
+          "flows": 1330,
+          "packets": 10734
+        },
+        {
+          "minute": "2017-07-05T11:18",
+          "flows": 2017,
+          "packets": 18809
+        },
+        {
+          "minute": "2017-07-05T11:19",
+          "flows": 776,
+          "packets": 9511
+        }
+      ]
+    },
+    "INC-169BFBAAF1BA": {
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "minutes": [
+        {
+          "minute": "2017-07-07T14:50",
+          "flows": 0,
+          "packets": 0
+        },
+        {
+          "minute": "2017-07-07T14:51",
+          "flows": 10916,
+          "packets": 21921
+        },
+        {
+          "minute": "2017-07-07T14:52",
+          "flows": 43603,
+          "packets": 87476
+        },
+        {
+          "minute": "2017-07-07T14:53",
+          "flows": 3957,
+          "packets": 7942
+        },
+        {
+          "minute": "2017-07-07T14:54",
+          "flows": 34620,
+          "packets": 69908
+        },
+        {
+          "minute": "2017-07-07T14:55",
+          "flows": 44410,
+          "packets": 89380
+        },
+        {
+          "minute": "2017-07-07T14:56",
+          "flows": 987,
+          "packets": 1984
+        },
+        {
+          "minute": "2017-07-07T14:57",
+          "flows": 0,
+          "packets": 0
+        }
+      ]
+    },
+    "INC-8007F80E149A": {
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "minutes": [
+        {
+          "minute": "2017-07-07T15:07",
+          "flows": 0,
+          "packets": 0
+        },
+        {
+          "minute": "2017-07-07T15:08",
+          "flows": 5002,
+          "packets": 10283
+        },
+        {
+          "minute": "2017-07-07T15:09",
+          "flows": 4025,
+          "packets": 8287
+        },
+        {
+          "minute": "2017-07-07T15:10",
+          "flows": 2009,
+          "packets": 4123
+        },
+        {
+          "minute": "2017-07-07T15:11",
+          "flows": 0,
+          "packets": 0
+        }
+      ]
+    },
+    "INC-31A089E15B82": {
+      "source_file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "minutes": [
+        {
+          "minute": "2017-07-07T15:21",
+          "flows": 1,
+          "packets": 20
+        },
+        {
+          "minute": "2017-07-07T15:22",
+          "flows": 5014,
+          "packets": 10283
+        },
+        {
+          "minute": "2017-07-07T15:23",
+          "flows": 4010,
+          "packets": 8258
+        },
+        {
+          "minute": "2017-07-07T15:24",
+          "flows": 0,
+          "packets": 0
+        }
+      ]
+    }
+  }
+}

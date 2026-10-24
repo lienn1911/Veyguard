@@ -108,9 +108,10 @@ def _verdict_text(results: dict[str, dict]) -> str:
     alert = alerts[0]
     category = alert_data.get("rule_type") or alert.get("type") or "Unknown"
     group = stats.get("group_totals") or {}
-    flow_count = group.get("flows") or alert.get("flow_count") or 0
-    ports = group.get("destination_ports") or alert.get("destination_port_count") or 0
-    source_ports = group.get("source_ports") or alert.get("source_port_count") or 0
+    # These are per-minute rule observations, not totals over a long case.
+    flow_count = alert.get("flow_count") or 0
+    ports = alert.get("destination_port_count") or 0
+    source_ports = alert.get("source_port_count") or 0
 
     # Deterministic, evidence-only heuristic: this mirrors the Module 1 rule
     # thresholds, not the dataset ground-truth label (which is never provided
@@ -128,6 +129,13 @@ def _verdict_text(results: dict[str, dict]) -> str:
         observation = (
             f"{category} rule matched over {flow_count} flows against a single destination, "
             "which is far above interactive traffic volume for a one-minute window."
+        )
+    elif category == "BruteForce" and flow_count >= 50:
+        attack = True
+        observation = (
+            f"The BruteForce rule reports {flow_count} connections in one minute. "
+            "Repeated connections to a login service warrant investigation; "
+            "the flows do not establish failed logins or successful compromise."
         )
 
     cited = evidence_pool[: max(1, min(3, len(evidence_pool)))]
@@ -168,6 +176,22 @@ def _verdict_text(results: dict[str, dict]) -> str:
             "sufficient to support a confident classification."
         )
         limitations = "Sampled evidence only; analyst review required."
+    technique_id = (
+        "T1046" if category == "PortScan" and ports >= 100
+        else "T1498" if category == "DDoS" and (alert.get("source_count") or 0) >= 2
+        else "Unmapped"
+    )
+    technique_mappings = [{
+        "evidence_id": alert["alert_id"],
+        "technique_id": technique_id,
+        "reason": (
+            "The rule evidence supports a possible network service discovery pattern."
+            if technique_id == "T1046" else
+            "Multiple observed sources support a possible network denial of service pattern."
+            if technique_id == "T1498" else
+            "The available flow records do not establish a specific ATT&CK technique."
+        ),
+    }]
 
     return dumps(
         {
@@ -177,6 +201,7 @@ def _verdict_text(results: dict[str, dict]) -> str:
             "reason": reason,
             "evidence_ids": cited,
             "findings": findings,
+            "technique_mappings": technique_mappings,
             "limitations": limitations,
         }
     )

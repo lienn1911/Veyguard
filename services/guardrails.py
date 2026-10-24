@@ -15,6 +15,26 @@ ALLOWED_ACTIONS = {
 }
 
 
+def evaluate_proposal(*, incident_id, category, verdict, evidence_ids):
+    """Read-only bridge contract for the triage service's closure guardrail.
+
+    Incident membership and evidence IDs are checked by the triage validator
+    before this adapter is called. The bridge also retains its own local safety
+    rule, so this module can only strengthen the confirmation requirement.
+    """
+    allowed = (isinstance(incident_id, str) and bool(incident_id)
+               and verdict in VALID_VERDICTS
+               and isinstance(evidence_ids, list)
+               and all(isinstance(item, str) for item in evidence_ids))
+    protected = verdict == "Likely Benign" and category in PROTECTED_ALERTS
+    return {
+        "allowed": allowed,
+        "requires_confirmation": protected,
+        "reasons": (["Protected alert: explicit analyst confirmation required before a benign decision"]
+                    if protected else []),
+    }
+
+
 def validate_guardrails(result, incident_id, proposal):
     """
     Validate an AI proposal against real incident evidence.
@@ -78,7 +98,7 @@ def validate_guardrails(result, incident_id, proposal):
 
     if not incident_alerts:
         blocked.append("Incident has no alerts")
-        
+
     if any(
             alert["incident_id"] != incident_id
             for alert in incident_alerts

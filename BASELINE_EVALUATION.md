@@ -22,3 +22,8 @@ The existing rule detector found 54/123 known-attack groups and produced zero Be
 The baseline features, model size and cutoff procedure were fixed before inspecting the resulting scores. The CIC dataset's labels and time patterns remain possible sources of evaluation bias. A different network would need new normal training and calibration data. The reported candidate Case counts have no denominator of all possible benign Cases, and no human-reviewed Case-level false-positive rate is claimed.
 
 Reproduce with `python -m services.evaluate_detection PATH_TO_ZIP -o data/detection-evaluation.json`, `python -m services.evaluate_baseline PATH_TO_ZIP -o data/baseline-evaluation.json`, then `python -m services.evaluate_system --detector-report data/detection-evaluation.json --baseline-report data/baseline-evaluation.json` after installing `requirements-eval.txt`.
+
+
+## Scope revision — 2026-10-23
+
+The competition scope is now PortScan, DoS and BruteForce. Earlier DDoS comparisons in this document are archived experimental results. The baseline evaluator now compares Tuesday, Wednesday and Friday PortScan with Monday normal-only training/calibration/test blocks; SSH/FTP labels map to BruteForce, while DDoS is excluded from the three-type denominator. Benign is scoring truth only. A high anomaly score is not an attack verdict and a low score is not a safety conclusion. No revised Isolation Forest fit has been claimed in this change. Follow EVALUATION_PROTOCOL.md for external holdout requirements; chronological blocks from an archive already used for development do not validate the deployed rules independently.

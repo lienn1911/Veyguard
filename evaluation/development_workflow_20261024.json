@@ -1,0 +1,15 @@
+{
+  "kind": "development-smoke-only",
+  "created_at": "2026-10-24T05:01:13+00:00",
+  "note": "Grouped-case time-range fix. Development wiring manifest only; historical AI reports retain their original prompts and results.",
+  "alerts_sha256": "B23B77B1405952BAC69AEF61D1F799FC73000291FC4F2445D96C605B76D26F7C",
+  "timelines_sha256": "A2AD85C7C720F29BAE5DBAD7213E98D83B5DD5A8B02E94114FC98A4FE0A0562A",
+  "prompt_sha256": "DBA023D3396967A81BEDF4A7CEA67FBF556E4F60B49E9E3BEAC4E6B90E329733",
+  "case_ids": [
+    "INC-0E02B5204014",
+    "INC-AC3AA3CF2A0C",
+    "INC-F4ED19468E0C",
+    "INC-6CD483A5911A",
+    "INC-169BFBAAF1BA"
+  ]
+}

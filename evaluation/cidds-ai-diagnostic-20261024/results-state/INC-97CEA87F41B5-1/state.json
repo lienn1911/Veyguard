@@ -1,0 +1,434 @@
+{
+  "updated_at": "2026-10-23T16:44:14Z",
+  "incidents": {
+    "INC-97CEA87F41B5": {
+      "runs": [
+        {
+          "run_id": "TRG-87136EF7BF",
+          "incident_id": "INC-97CEA87F41B5",
+          "provider": "codex",
+          "model": "default",
+          "mode": "live",
+          "started_at": "2026-10-23T16:43:29Z",
+          "completed_at": "2026-10-23T16:44:14Z",
+          "duration_ms": 45313,
+          "investigation": {
+            "steps": 5,
+            "tool_calls": [
+              {
+                "step": 1,
+                "tool": "get_incident_details",
+                "arguments": {
+                  "incident_id": "INC-97CEA87F41B5"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              },
+              {
+                "step": 2,
+                "tool": "get_related_alerts",
+                "arguments": {
+                  "incident_id": "INC-97CEA87F41B5"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 1
+              },
+              {
+                "step": 3,
+                "tool": "get_network_flows",
+                "arguments": {
+                  "incident_id": "INC-97CEA87F41B5",
+                  "limit": 20
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 6
+              },
+              {
+                "step": 4,
+                "tool": "get_incident_statistics",
+                "arguments": {
+                  "incident_id": "INC-97CEA87F41B5"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              }
+            ],
+            "blocked_attempts": [],
+            "tool_errors": 0,
+            "corrections": 0
+          },
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ],
+          "status": "ok",
+          "verdict": "Needs Review",
+          "confidence": "medium",
+          "reason": "Observed: ALT-2BC583606F58 reports 18 flows across 11 destination ports from one source within one minute, with no attack rule matched. Sampled flows FLOW-A32CBD03BA01, FLOW-D8D9099B31AE and FLOW-B670D2754421 originate from source port 22 and target high destination ports. Inference: this could represent service response traffic, but the available records do not establish session direction or legitimate purpose; the lack of an attack rule match does not establish benign activity.",
+          "evidence_ids": [
+            "ALT-2BC583606F58",
+            "FLOW-A32CBD03BA01",
+            "FLOW-D8D9099B31AE",
+            "FLOW-B670D2754421"
+          ],
+          "findings": [
+            {
+              "observation": "The diagnostic alert reports 18 flow records, 176 packets, 11 destination ports and one source port in one minute; no attack rule matched.",
+              "evidence_ids": [
+                "ALT-2BC583606F58"
+              ]
+            },
+            {
+              "observation": "Sampled traffic from 192.168.200.4 to 192.168.220.16 uses source port 22 with destination ports 35777, 35778 and 35807; this does not by itself establish scanning or authentication outcomes.",
+              "evidence_ids": [
+                "FLOW-A32CBD03BA01",
+                "FLOW-D8D9099B31AE",
+                "FLOW-B670D2754421"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-2BC583606F58",
+              "technique_id": "Unmapped",
+              "reason": "The diagnostic alert and sampled flows do not establish service discovery, denial of service or credential guessing; destination-port diversity alone is insufficient."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Review reverse-direction traffic and session initiation to determine whether source-port-22 traffic represents responses to established sessions.",
+              "evidence_ids": [
+                "FLOW-A32CBD03BA01",
+                "FLOW-D8D9099B31AE",
+                "FLOW-B670D2754421"
+              ]
+            },
+            {
+              "action": "CHECK_RELATED_ALERTS",
+              "reason": "Check surrounding alerts for corroborating scanning or authentication activity because this alert is a diagnostic review candidate without an attack rule match.",
+              "evidence_ids": [
+                "ALT-2BC583606F58"
+              ]
+            }
+          ],
+          "limitations": "Only sampled individual flows are retained. Session initiation, protocol confirmation, authentication logs, host context and service impact are unavailable; legitimate purpose and hostile intent remain unresolved.",
+          "proposal": {
+            "incident_id": "INC-97CEA87F41B5",
+            "verdict": "Needs Review",
+            "confidence": "medium",
+            "reason": "Observed: ALT-2BC583606F58 reports 18 flows across 11 destination ports from one source within one minute, with no attack rule matched. Sampled flows FLOW-A32CBD03BA01, FLOW-D8D9099B31AE and FLOW-B670D2754421 originate from source port 22 and target high destination ports. Inference: this could represent service response traffic, but the available records do not establish session direction or legitimate purpose; the lack of an attack rule match does not establish benign activity.",
+            "evidence_ids": [
+              "ALT-2BC583606F58",
+              "FLOW-A32CBD03BA01",
+              "FLOW-D8D9099B31AE",
+              "FLOW-B670D2754421"
+            ],
+            "findings": [
+              {
+                "observation": "The diagnostic alert reports 18 flow records, 176 packets, 11 destination ports and one source port in one minute; no attack rule matched.",
+                "evidence_ids": [
+                  "ALT-2BC583606F58"
+                ]
+              },
+              {
+                "observation": "Sampled traffic from 192.168.200.4 to 192.168.220.16 uses source port 22 with destination ports 35777, 35778 and 35807; this does not by itself establish scanning or authentication outcomes.",
+                "evidence_ids": [
+                  "FLOW-A32CBD03BA01",
+                  "FLOW-D8D9099B31AE",
+                  "FLOW-B670D2754421"
+                ]
+              }
+            ],
+            "technique_mappings": [
+              {
+                "evidence_id": "ALT-2BC583606F58",
+                "technique_id": "Unmapped",
+                "reason": "The diagnostic alert and sampled flows do not establish service discovery, denial of service or credential guessing; destination-port diversity alone is insufficient."
+              }
+            ],
+            "next_steps": [
+              {
+                "action": "REVIEW_NETWORK_FLOWS",
+                "reason": "Review reverse-direction traffic and session initiation to determine whether source-port-22 traffic represents responses to established sessions.",
+                "evidence_ids": [
+                  "FLOW-A32CBD03BA01",
+                  "FLOW-D8D9099B31AE",
+                  "FLOW-B670D2754421"
+                ]
+              },
+              {
+                "action": "CHECK_RELATED_ALERTS",
+                "reason": "Check surrounding alerts for corroborating scanning or authentication activity because this alert is a diagnostic review candidate without an attack rule match.",
+                "evidence_ids": [
+                  "ALT-2BC583606F58"
+                ]
+              }
+            ],
+            "limitations": "Only sampled individual flows are retained. Session initiation, protocol confirmation, authentication logs, host context and service impact are unavailable; legitimate purpose and hostile intent remain unresolved."
+          },
+          "error": null,
+          "validation": {
+            "ok": true,
+            "issues": []
+          },
+          "requires_confirmation": false,
+          "guardrail": {
+            "verdict": "Needs Review",
+            "requires_confirmation": false,
+            "reasons": [
+              "Insufficient evidence: analyst review is mandatory."
+            ],
+            "source": "services.guardrails.evaluate_proposal",
+            "auto_close_permitted": false,
+            "severity_change": null,
+            "closure_sensitive": false,
+            "allowed": true,
+            "prohibited_actions": [
+              "close_incident",
+              "dismiss_incident",
+              "downgrade_severity",
+              "execute_remediation",
+              "modify_evidence",
+              "approve_recommendation",
+              "override_analyst_decision"
+            ]
+          }
+        }
+      ],
+      "decision": {
+        "status": "pending",
+        "analyst": null,
+        "note": null,
+        "at": null
+      },
+      "latest": {
+        "run_id": "TRG-87136EF7BF",
+        "incident_id": "INC-97CEA87F41B5",
+        "provider": "codex",
+        "model": "default",
+        "mode": "live",
+        "started_at": "2026-10-23T16:43:29Z",
+        "completed_at": "2026-10-23T16:44:14Z",
+        "duration_ms": 45313,
+        "investigation": {
+          "steps": 5,
+          "tool_calls": [
+            {
+              "step": 1,
+              "tool": "get_incident_details",
+              "arguments": {
+                "incident_id": "INC-97CEA87F41B5"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            },
+            {
+              "step": 2,
+              "tool": "get_related_alerts",
+              "arguments": {
+                "incident_id": "INC-97CEA87F41B5"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 1
+            },
+            {
+              "step": 3,
+              "tool": "get_network_flows",
+              "arguments": {
+                "incident_id": "INC-97CEA87F41B5",
+                "limit": 20
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 6
+            },
+            {
+              "step": 4,
+              "tool": "get_incident_statistics",
+              "arguments": {
+                "incident_id": "INC-97CEA87F41B5"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            }
+          ],
+          "blocked_attempts": [],
+          "tool_errors": 0,
+          "corrections": 0
+        },
+        "prohibited_actions": [
+          "close_incident",
+          "dismiss_incident",
+          "downgrade_severity",
+          "execute_remediation",
+          "modify_evidence",
+          "approve_recommendation",
+          "override_analyst_decision"
+        ],
+        "status": "ok",
+        "verdict": "Needs Review",
+        "confidence": "medium",
+        "reason": "Observed: ALT-2BC583606F58 reports 18 flows across 11 destination ports from one source within one minute, with no attack rule matched. Sampled flows FLOW-A32CBD03BA01, FLOW-D8D9099B31AE and FLOW-B670D2754421 originate from source port 22 and target high destination ports. Inference: this could represent service response traffic, but the available records do not establish session direction or legitimate purpose; the lack of an attack rule match does not establish benign activity.",
+        "evidence_ids": [
+          "ALT-2BC583606F58",
+          "FLOW-A32CBD03BA01",
+          "FLOW-D8D9099B31AE",
+          "FLOW-B670D2754421"
+        ],
+        "findings": [
+          {
+            "observation": "The diagnostic alert reports 18 flow records, 176 packets, 11 destination ports and one source port in one minute; no attack rule matched.",
+            "evidence_ids": [
+              "ALT-2BC583606F58"
+            ]
+          },
+          {
+            "observation": "Sampled traffic from 192.168.200.4 to 192.168.220.16 uses source port 22 with destination ports 35777, 35778 and 35807; this does not by itself establish scanning or authentication outcomes.",
+            "evidence_ids": [
+              "FLOW-A32CBD03BA01",
+              "FLOW-D8D9099B31AE",
+              "FLOW-B670D2754421"
+            ]
+          }
+        ],
+        "technique_mappings": [
+          {
+            "evidence_id": "ALT-2BC583606F58",
+            "technique_id": "Unmapped",
+            "reason": "The diagnostic alert and sampled flows do not establish service discovery, denial of service or credential guessing; destination-port diversity alone is insufficient."
+          }
+        ],
+        "next_steps": [
+          {
+            "action": "REVIEW_NETWORK_FLOWS",
+            "reason": "Review reverse-direction traffic and session initiation to determine whether source-port-22 traffic represents responses to established sessions.",
+            "evidence_ids": [
+              "FLOW-A32CBD03BA01",
+              "FLOW-D8D9099B31AE",
+              "FLOW-B670D2754421"
+            ]
+          },
+          {
+            "action": "CHECK_RELATED_ALERTS",
+            "reason": "Check surrounding alerts for corroborating scanning or authentication activity because this alert is a diagnostic review candidate without an attack rule match.",
+            "evidence_ids": [
+              "ALT-2BC583606F58"
+            ]
+          }
+        ],
+        "limitations": "Only sampled individual flows are retained. Session initiation, protocol confirmation, authentication logs, host context and service impact are unavailable; legitimate purpose and hostile intent remain unresolved.",
+        "proposal": {
+          "incident_id": "INC-97CEA87F41B5",
+          "verdict": "Needs Review",
+          "confidence": "medium",
+          "reason": "Observed: ALT-2BC583606F58 reports 18 flows across 11 destination ports from one source within one minute, with no attack rule matched. Sampled flows FLOW-A32CBD03BA01, FLOW-D8D9099B31AE and FLOW-B670D2754421 originate from source port 22 and target high destination ports. Inference: this could represent service response traffic, but the available records do not establish session direction or legitimate purpose; the lack of an attack rule match does not establish benign activity.",
+          "evidence_ids": [
+            "ALT-2BC583606F58",
+            "FLOW-A32CBD03BA01",
+            "FLOW-D8D9099B31AE",
+            "FLOW-B670D2754421"
+          ],
+          "findings": [
+            {
+              "observation": "The diagnostic alert reports 18 flow records, 176 packets, 11 destination ports and one source port in one minute; no attack rule matched.",
+              "evidence_ids": [
+                "ALT-2BC583606F58"
+              ]
+            },
+            {
+              "observation": "Sampled traffic from 192.168.200.4 to 192.168.220.16 uses source port 22 with destination ports 35777, 35778 and 35807; this does not by itself establish scanning or authentication outcomes.",
+              "evidence_ids": [
+                "FLOW-A32CBD03BA01",
+                "FLOW-D8D9099B31AE",
+                "FLOW-B670D2754421"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-2BC583606F58",
+              "technique_id": "Unmapped",
+              "reason": "The diagnostic alert and sampled flows do not establish service discovery, denial of service or credential guessing; destination-port diversity alone is insufficient."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Review reverse-direction traffic and session initiation to determine whether source-port-22 traffic represents responses to established sessions.",
+              "evidence_ids": [
+                "FLOW-A32CBD03BA01",
+                "FLOW-D8D9099B31AE",
+                "FLOW-B670D2754421"
+              ]
+            },
+            {
+              "action": "CHECK_RELATED_ALERTS",
+              "reason": "Check surrounding alerts for corroborating scanning or authentication activity because this alert is a diagnostic review candidate without an attack rule match.",
+              "evidence_ids": [
+                "ALT-2BC583606F58"
+              ]
+            }
+          ],
+          "limitations": "Only sampled individual flows are retained. Session initiation, protocol confirmation, authentication logs, host context and service impact are unavailable; legitimate purpose and hostile intent remain unresolved."
+        },
+        "error": null,
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "requires_confirmation": false,
+        "guardrail": {
+          "verdict": "Needs Review",
+          "requires_confirmation": false,
+          "reasons": [
+            "Insufficient evidence: analyst review is mandatory."
+          ],
+          "source": "services.guardrails.evaluate_proposal",
+          "auto_close_permitted": false,
+          "severity_change": null,
+          "closure_sensitive": false,
+          "allowed": true,
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ]
+        }
+      },
+      "updated_at": "2026-10-23T16:44:14Z"
+    }
+  }
+}

@@ -15,6 +15,7 @@ const EVENT_LABELS = {
   'ANALYST_NOTE_ADDED': { label: 'Analyst note added', tone: 'info' },
   'INVESTIGATION_STEP_COMPLETED': { label: 'Approved step completed', tone: 'ok' },
   'CASE_ASSIGNED': { label: 'Case assigned', tone: 'info' },
+  'CASE_REVIEW_PRIORITY_SET': { label: 'Review priority changed', tone: 'info' },
   'CASE_RECORD_SAVED': { label: 'Case summary saved', tone: 'ok' },
   'CASE_RESOLVED': {label: 'Case resolved', tone: 'ok'},
 };
@@ -22,6 +23,8 @@ const EVENT_LABELS = {
 function eventDetail(entry) {
   const payload = entry.payload || {};
   switch (entry.event) {
+    case 'CASE_REVIEW_PRIORITY_SET':
+      return `${payload.previous_level} → ${payload.level || 'Rule suggestion'} · ${payload.reason}`;
     case 'triage.started':
       return `${payload.provider} · ${payload.model} · ${payload.category || ''}`;
     case 'triage.tool_call':
@@ -233,9 +236,6 @@ export default function AuditLog({ mode, refreshToken }) {
       <header className="page-head">
         <div>
           <h1>Audit log</h1>
-          <p className="page-sub">
-            Recorded AI investigations, analyst decisions, approvals and case notes, grouped by case. Each entry is hash-chained so edits are detectable.
-          </p>
         </div>
         <div className="page-actions">
           {state.status === 'ready' ? (

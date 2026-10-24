@@ -73,6 +73,29 @@ def test_portscan_incident_is_classified_as_attack(service_factory, dataset, inc
     ]
 
 
+def test_agent_can_choose_only_the_evidence_queries_needed(service_factory, dataset, incidents_by_category):
+    incident_id = incidents_by_category["PortScan"]
+    cited_alert = alert_id(dataset, incident_id)
+    triage, _ = service_factory([
+        tool_turn(
+            ("get_incident_details", {"incident_id": incident_id}),
+            ("get_related_alerts", {"incident_id": incident_id}),
+        ),
+        answer_turn(make_proposal(
+            dataset, incident_id, "Needs Review", evidence=[cited_alert],
+            reason=f"Observed rule signal in alert {cited_alert}. Additional flow review is needed before an attack conclusion.",
+        )),
+    ])
+
+    result = triage.investigate(incident_id)
+
+    assert result["status"] == "ok"
+    assert [call["tool"] for call in result["investigation"]["tool_calls"]] == [
+        "get_incident_details", "get_related_alerts",
+    ]
+    assert result["evidence_ids"] == [cited_alert]
+
+
 def test_dos_incident_is_classified_as_attack(service_factory, dataset, incidents_by_category):
     incident_id = incidents_by_category["DoS"]
     triage, _ = service_factory(
@@ -367,7 +390,7 @@ def test_tool_call_for_another_incident_is_blocked(service_factory, dataset, inc
                 ("get_incident_details", {"incident_id": incident_id}),
                 ("get_related_alerts", {"incident_id": incident_id}),
             ),
-            answer_turn(make_proposal(dataset, incident_id, "Likely Attack")),
+            answer_turn(make_proposal(dataset, incident_id, "Likely Attack", evidence=[alert_id(dataset, incident_id)])),
         ]
     )
 
@@ -393,7 +416,7 @@ def test_unauthorized_tool_is_blocked(service_factory, dataset, incidents_by_cat
                 ("get_incident_details", {"incident_id": incident_id}),
                 ("get_related_alerts", {"incident_id": incident_id}),
             ),
-            answer_turn(make_proposal(dataset, incident_id, "Likely Attack")),
+            answer_turn(make_proposal(dataset, incident_id, "Likely Attack", evidence=[alert_id(dataset, incident_id)])),
         ]
     )
 
@@ -520,3 +543,19 @@ def test_disabled_provider_raises_instead_of_falling_back(service_factory, incid
         triage.investigate(incidents_by_category["DoS"])
 
     assert "GROQ_API_KEY" in str(excinfo.value)
+
+
+def test_safety_bridge_denial_blocks_a_valid_model_proposal(service_factory, dataset, incidents_by_category, monkeypatch):
+    from services import guardrails
+    monkeypatch.setattr(guardrails, 'evaluate_proposal', lambda **_: {
+        'allowed': False, 'requires_confirmation': True, 'reasons': ['Explicit safety denial'],
+    })
+    incident_id = incidents_by_category['DoS']
+    triage, _ = service_factory([
+        investigation_turn(incident_id), answer_turn(make_proposal(dataset, incident_id, 'Likely Attack')),
+    ])
+    result = triage.investigate(incident_id)
+    assert result['status'] == 'rejected'
+    assert result['verdict'] == 'Needs Review'
+    assert 'GUARDRAIL_BLOCKED' in {issue['code'] for issue in result['validation']['issues']}
+    assert triage.latest(incident_id)['decision']['status'] == 'pending'

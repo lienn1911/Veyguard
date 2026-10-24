@@ -1,0 +1,19 @@
+{
+  "kind": "joint-artifact-contract-check",
+  "passed": true,
+  "issues": [],
+  "display_scope": [
+    "PortScan",
+    "DoS",
+    "BruteForce"
+  ],
+  "cases": 9,
+  "alerts": 158,
+  "sample_flows": 948,
+  "traceable_timeline_events": 1106,
+  "sha256": {
+    "real-alerts.json": "b23b77b1405952bac69aef61d1f799fc73000291fc4f2445d96c605b76d26f7c",
+    "real-timelines.json": "a2ad85c7c720f29bae5dbad7213e98d83b5dd5a8b02e94114fc98a4fe0a0562a"
+  },
+  "limits": "Reconstruction and source-pointer checks, not raw packet verification or case-level recall."
+}

@@ -101,7 +101,12 @@ def assess(
         )
         return local
 
-    remote_requires = bool((accepted or {}).get("requires_confirmation"))
+    if not isinstance(accepted, dict):
+        local.allowed = False
+        local.requires_confirmation = True
+        local.reasons.append("Module 5 returned an invalid safety result.")
+        return local
+    remote_requires = bool(accepted.get("requires_confirmation"))
     remote_reasons = [str(reason) for reason in (accepted or {}).get("reasons") or []]
 
     return SafetyAssessment(
@@ -111,6 +116,7 @@ def assess(
         source=detail,
         auto_close_permitted=False,
         closure_sensitive=local.closure_sensitive,
+        allowed=accepted.get("allowed", True) is True,
     )
 
 

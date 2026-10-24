@@ -1,0 +1,432 @@
+{
+  "updated_at": "2026-10-23T15:14:32Z",
+  "incidents": {
+    "INC-F4ED19468E0C": {
+      "runs": [
+        {
+          "run_id": "TRG-77D4FFA080",
+          "incident_id": "INC-F4ED19468E0C",
+          "provider": "codex",
+          "model": "default",
+          "mode": "live",
+          "started_at": "2026-10-23T15:12:26Z",
+          "completed_at": "2026-10-23T15:14:32Z",
+          "duration_ms": 126469,
+          "investigation": {
+            "steps": 6,
+            "tool_calls": [
+              {
+                "step": 1,
+                "tool": "get_incident_details",
+                "arguments": {
+                  "incident_id": "INC-F4ED19468E0C"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              },
+              {
+                "step": 2,
+                "tool": "get_related_alerts",
+                "arguments": {
+                  "incident_id": "INC-F4ED19468E0C"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 1
+              },
+              {
+                "step": 3,
+                "tool": "get_network_flows",
+                "arguments": {
+                  "incident_id": "INC-F4ED19468E0C",
+                  "limit": 20
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 6
+              },
+              {
+                "step": 4,
+                "tool": "get_incident_statistics",
+                "arguments": {
+                  "incident_id": "INC-F4ED19468E0C"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              }
+            ],
+            "blocked_attempts": [],
+            "tool_errors": 0,
+            "corrections": 1
+          },
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ],
+          "status": "ok",
+          "verdict": "Needs Review",
+          "confidence": "medium",
+          "reason": "Observed: ALT-4980D1D9E4EA reports 958 flows across 689 destination ports from one source in one minute, triggering PortScan. Retained records show high destination ports and small packet counts (FLOW-EB76E800FC90, FLOW-732080EF82FE, FLOW-A91CE7F2D370). Inference: destination-port diversity warrants investigation, but connection initiation is unavailable, so the evidence does not confidently distinguish probing from response traffic.",
+          "evidence_ids": [
+            "ALT-4980D1D9E4EA",
+            "FLOW-EB76E800FC90",
+            "FLOW-732080EF82FE",
+            "FLOW-A91CE7F2D370"
+          ],
+          "findings": [
+            {
+              "observation": "The alert reports 689 destination ports and 958 flows within one minute.",
+              "evidence_ids": [
+                "ALT-4980D1D9E4EA"
+              ]
+            },
+            {
+              "observation": "Retained records show destination ports 51617 and 51620 with two packets each, and destination port 51834 with three packets.",
+              "evidence_ids": [
+                "FLOW-EB76E800FC90",
+                "FLOW-732080EF82FE",
+                "FLOW-A91CE7F2D370"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-4980D1D9E4EA",
+              "technique_id": "Unmapped",
+              "reason": "The PortScan alert establishes destination-port diversity, but available records do not establish connection initiation or service probing. A suggested T1046 mapping requires additional supporting evidence."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Review bidirectional traffic and TCP flags, if available, to distinguish initiated probes from response traffic.",
+              "evidence_ids": [
+                "FLOW-EB76E800FC90",
+                "FLOW-732080EF82FE",
+                "FLOW-A91CE7F2D370"
+              ]
+            },
+            {
+              "action": "ESCALATE_TO_ANALYST",
+              "reason": "Resolve the ambiguous PortScan detection; explicit analyst confirmation is required before closure.",
+              "evidence_ids": [
+                "ALT-4980D1D9E4EA"
+              ]
+            }
+          ],
+          "limitations": "Only six individual flow records are retained. TCP flags, connection initiation, bidirectional context, and application logs are unavailable. Neither hostile scanning nor a legitimate explanation is established.",
+          "proposal": {
+            "incident_id": "INC-F4ED19468E0C",
+            "verdict": "Needs Review",
+            "confidence": "medium",
+            "reason": "Observed: ALT-4980D1D9E4EA reports 958 flows across 689 destination ports from one source in one minute, triggering PortScan. Retained records show high destination ports and small packet counts (FLOW-EB76E800FC90, FLOW-732080EF82FE, FLOW-A91CE7F2D370). Inference: destination-port diversity warrants investigation, but connection initiation is unavailable, so the evidence does not confidently distinguish probing from response traffic.",
+            "evidence_ids": [
+              "ALT-4980D1D9E4EA",
+              "FLOW-EB76E800FC90",
+              "FLOW-732080EF82FE",
+              "FLOW-A91CE7F2D370"
+            ],
+            "findings": [
+              {
+                "observation": "The alert reports 689 destination ports and 958 flows within one minute.",
+                "evidence_ids": [
+                  "ALT-4980D1D9E4EA"
+                ]
+              },
+              {
+                "observation": "Retained records show destination ports 51617 and 51620 with two packets each, and destination port 51834 with three packets.",
+                "evidence_ids": [
+                  "FLOW-EB76E800FC90",
+                  "FLOW-732080EF82FE",
+                  "FLOW-A91CE7F2D370"
+                ]
+              }
+            ],
+            "technique_mappings": [
+              {
+                "evidence_id": "ALT-4980D1D9E4EA",
+                "technique_id": "Unmapped",
+                "reason": "The PortScan alert establishes destination-port diversity, but available records do not establish connection initiation or service probing. A suggested T1046 mapping requires additional supporting evidence."
+              }
+            ],
+            "next_steps": [
+              {
+                "action": "REVIEW_NETWORK_FLOWS",
+                "reason": "Review bidirectional traffic and TCP flags, if available, to distinguish initiated probes from response traffic.",
+                "evidence_ids": [
+                  "FLOW-EB76E800FC90",
+                  "FLOW-732080EF82FE",
+                  "FLOW-A91CE7F2D370"
+                ]
+              },
+              {
+                "action": "ESCALATE_TO_ANALYST",
+                "reason": "Resolve the ambiguous PortScan detection; explicit analyst confirmation is required before closure.",
+                "evidence_ids": [
+                  "ALT-4980D1D9E4EA"
+                ]
+              }
+            ],
+            "limitations": "Only six individual flow records are retained. TCP flags, connection initiation, bidirectional context, and application logs are unavailable. Neither hostile scanning nor a legitimate explanation is established."
+          },
+          "error": null,
+          "validation": {
+            "ok": true,
+            "issues": []
+          },
+          "requires_confirmation": false,
+          "guardrail": {
+            "verdict": "Needs Review",
+            "requires_confirmation": false,
+            "reasons": [
+              "Insufficient evidence: analyst review is mandatory."
+            ],
+            "source": "services.guardrails.evaluate_proposal",
+            "auto_close_permitted": false,
+            "severity_change": null,
+            "closure_sensitive": false,
+            "prohibited_actions": [
+              "close_incident",
+              "dismiss_incident",
+              "downgrade_severity",
+              "execute_remediation",
+              "modify_evidence",
+              "approve_recommendation",
+              "override_analyst_decision"
+            ]
+          }
+        }
+      ],
+      "decision": {
+        "status": "pending",
+        "analyst": null,
+        "note": null,
+        "at": null
+      },
+      "latest": {
+        "run_id": "TRG-77D4FFA080",
+        "incident_id": "INC-F4ED19468E0C",
+        "provider": "codex",
+        "model": "default",
+        "mode": "live",
+        "started_at": "2026-10-23T15:12:26Z",
+        "completed_at": "2026-10-23T15:14:32Z",
+        "duration_ms": 126469,
+        "investigation": {
+          "steps": 6,
+          "tool_calls": [
+            {
+              "step": 1,
+              "tool": "get_incident_details",
+              "arguments": {
+                "incident_id": "INC-F4ED19468E0C"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            },
+            {
+              "step": 2,
+              "tool": "get_related_alerts",
+              "arguments": {
+                "incident_id": "INC-F4ED19468E0C"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 1
+            },
+            {
+              "step": 3,
+              "tool": "get_network_flows",
+              "arguments": {
+                "incident_id": "INC-F4ED19468E0C",
+                "limit": 20
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 6
+            },
+            {
+              "step": 4,
+              "tool": "get_incident_statistics",
+              "arguments": {
+                "incident_id": "INC-F4ED19468E0C"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            }
+          ],
+          "blocked_attempts": [],
+          "tool_errors": 0,
+          "corrections": 1
+        },
+        "prohibited_actions": [
+          "close_incident",
+          "dismiss_incident",
+          "downgrade_severity",
+          "execute_remediation",
+          "modify_evidence",
+          "approve_recommendation",
+          "override_analyst_decision"
+        ],
+        "status": "ok",
+        "verdict": "Needs Review",
+        "confidence": "medium",
+        "reason": "Observed: ALT-4980D1D9E4EA reports 958 flows across 689 destination ports from one source in one minute, triggering PortScan. Retained records show high destination ports and small packet counts (FLOW-EB76E800FC90, FLOW-732080EF82FE, FLOW-A91CE7F2D370). Inference: destination-port diversity warrants investigation, but connection initiation is unavailable, so the evidence does not confidently distinguish probing from response traffic.",
+        "evidence_ids": [
+          "ALT-4980D1D9E4EA",
+          "FLOW-EB76E800FC90",
+          "FLOW-732080EF82FE",
+          "FLOW-A91CE7F2D370"
+        ],
+        "findings": [
+          {
+            "observation": "The alert reports 689 destination ports and 958 flows within one minute.",
+            "evidence_ids": [
+              "ALT-4980D1D9E4EA"
+            ]
+          },
+          {
+            "observation": "Retained records show destination ports 51617 and 51620 with two packets each, and destination port 51834 with three packets.",
+            "evidence_ids": [
+              "FLOW-EB76E800FC90",
+              "FLOW-732080EF82FE",
+              "FLOW-A91CE7F2D370"
+            ]
+          }
+        ],
+        "technique_mappings": [
+          {
+            "evidence_id": "ALT-4980D1D9E4EA",
+            "technique_id": "Unmapped",
+            "reason": "The PortScan alert establishes destination-port diversity, but available records do not establish connection initiation or service probing. A suggested T1046 mapping requires additional supporting evidence."
+          }
+        ],
+        "next_steps": [
+          {
+            "action": "REVIEW_NETWORK_FLOWS",
+            "reason": "Review bidirectional traffic and TCP flags, if available, to distinguish initiated probes from response traffic.",
+            "evidence_ids": [
+              "FLOW-EB76E800FC90",
+              "FLOW-732080EF82FE",
+              "FLOW-A91CE7F2D370"
+            ]
+          },
+          {
+            "action": "ESCALATE_TO_ANALYST",
+            "reason": "Resolve the ambiguous PortScan detection; explicit analyst confirmation is required before closure.",
+            "evidence_ids": [
+              "ALT-4980D1D9E4EA"
+            ]
+          }
+        ],
+        "limitations": "Only six individual flow records are retained. TCP flags, connection initiation, bidirectional context, and application logs are unavailable. Neither hostile scanning nor a legitimate explanation is established.",
+        "proposal": {
+          "incident_id": "INC-F4ED19468E0C",
+          "verdict": "Needs Review",
+          "confidence": "medium",
+          "reason": "Observed: ALT-4980D1D9E4EA reports 958 flows across 689 destination ports from one source in one minute, triggering PortScan. Retained records show high destination ports and small packet counts (FLOW-EB76E800FC90, FLOW-732080EF82FE, FLOW-A91CE7F2D370). Inference: destination-port diversity warrants investigation, but connection initiation is unavailable, so the evidence does not confidently distinguish probing from response traffic.",
+          "evidence_ids": [
+            "ALT-4980D1D9E4EA",
+            "FLOW-EB76E800FC90",
+            "FLOW-732080EF82FE",
+            "FLOW-A91CE7F2D370"
+          ],
+          "findings": [
+            {
+              "observation": "The alert reports 689 destination ports and 958 flows within one minute.",
+              "evidence_ids": [
+                "ALT-4980D1D9E4EA"
+              ]
+            },
+            {
+              "observation": "Retained records show destination ports 51617 and 51620 with two packets each, and destination port 51834 with three packets.",
+              "evidence_ids": [
+                "FLOW-EB76E800FC90",
+                "FLOW-732080EF82FE",
+                "FLOW-A91CE7F2D370"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-4980D1D9E4EA",
+              "technique_id": "Unmapped",
+              "reason": "The PortScan alert establishes destination-port diversity, but available records do not establish connection initiation or service probing. A suggested T1046 mapping requires additional supporting evidence."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Review bidirectional traffic and TCP flags, if available, to distinguish initiated probes from response traffic.",
+              "evidence_ids": [
+                "FLOW-EB76E800FC90",
+                "FLOW-732080EF82FE",
+                "FLOW-A91CE7F2D370"
+              ]
+            },
+            {
+              "action": "ESCALATE_TO_ANALYST",
+              "reason": "Resolve the ambiguous PortScan detection; explicit analyst confirmation is required before closure.",
+              "evidence_ids": [
+                "ALT-4980D1D9E4EA"
+              ]
+            }
+          ],
+          "limitations": "Only six individual flow records are retained. TCP flags, connection initiation, bidirectional context, and application logs are unavailable. Neither hostile scanning nor a legitimate explanation is established."
+        },
+        "error": null,
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "requires_confirmation": false,
+        "guardrail": {
+          "verdict": "Needs Review",
+          "requires_confirmation": false,
+          "reasons": [
+            "Insufficient evidence: analyst review is mandatory."
+          ],
+          "source": "services.guardrails.evaluate_proposal",
+          "auto_close_permitted": false,
+          "severity_change": null,
+          "closure_sensitive": false,
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ]
+        }
+      },
+      "updated_at": "2026-10-23T15:14:32Z"
+    }
+  }
+}

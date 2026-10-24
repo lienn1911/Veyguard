@@ -1,0 +1,45 @@
+{
+  "kind": "final-isolated-live-workflow-acceptance",
+  "incident_id": "INC-A787E11F2A22",
+  "provider": "codex",
+  "model": "default",
+  "case_window": [
+    "2017-07-04T09:19:00",
+    "2017-07-04T10:19:00"
+  ],
+  "inputs": {
+    "src\\real-alerts.json": "b23b77b1405952bac69aef61d1f799fc73000291fc4f2445d96c605b76d26f7c",
+    "src\\real-timelines.json": "a2ad85c7c720f29bae5dbad7213e98d83b5dd5a8b02e94114fc98a4fe0a0562a",
+    "services\\prompts.py": "dba023d3396967a81bedf4a7cea67fbf556e4f60b49e9e3beac4e6b90e329733"
+  },
+  "transmitted_fields_if_authorised": [
+    "case addresses and time bounds",
+    "traffic aggregates",
+    "linked alert measurements and IDs",
+    "sample flow addresses, ports, times, packet counts and IDs"
+  ],
+  "external_model_calls_started": true,
+  "passed": true,
+  "status": "ok",
+  "run_id": "TRG-B375AD6F6F",
+  "error": null,
+  "workflow": {
+    "kind": "isolated-current-case-flow",
+    "incident_id": "INC-A787E11F2A22",
+    "ai_run_id": "TRG-B375AD6F6F",
+    "read_only_tool_calls": 4,
+    "cited_evidence_ids": 4,
+    "timeline_events_checked": 427,
+    "ai_steps_available": 2,
+    "ai_step_approved_in_copy": "REC-DEC841094528",
+    "record_saved_in_copy": "AUD-0C54F183FEC7",
+    "audit_chain_valid": true,
+    "production_state_changed": false,
+    "analyst_role": "simulated acceptance tester; not a production analyst decision"
+  },
+  "production_unchanged": true,
+  "analyst_role": "Simulated approval in an isolated copy; not an actual analyst judgment.",
+  "run_artifacts": "data\\final-live-acceptance-s7mv0k6_",
+  "persisted_review_audit": "data\\final-live-acceptance-s7mv0k6_\\review\\review-audit.db",
+  "persisted_review_audit_verified": true
+}

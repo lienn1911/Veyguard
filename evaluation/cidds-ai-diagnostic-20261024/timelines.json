@@ -1,0 +1,178 @@
+{
+  "timelines": [
+    {
+      "incident_id": "INC-D9D1FB6CD534",
+      "total_flows": 2,
+      "alert_count": 1,
+      "sampled_flows": 2,
+      "events": [
+        {
+          "timestamp": "2017-03-15 00:01:00",
+          "title": "192.168.100.5 \u2192 port 48888",
+          "record_type": "flow",
+          "evidence_id": "FLOW-31EC64972177",
+          "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+          "source_row": 3,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-03-15 00:01:00",
+          "title": "192.168.100.5 \u2192 port 48888",
+          "record_type": "flow",
+          "evidence_id": "FLOW-7E30269994D2",
+          "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+          "source_row": 6,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-03-15 00:01:00",
+          "title": "NeedsReview rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-E96CB4CFF868",
+          "technique": "Unmapped"
+        }
+      ]
+    },
+    {
+      "incident_id": "INC-069E4369969F",
+      "total_flows": 1,
+      "alert_count": 1,
+      "sampled_flows": 1,
+      "events": [
+        {
+          "timestamp": "2017-03-15 00:01:00",
+          "title": "192.168.100.5 \u2192 port 58844",
+          "record_type": "flow",
+          "evidence_id": "FLOW-50D3ACF42F28",
+          "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+          "source_row": 2,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-03-15 00:01:00",
+          "title": "NeedsReview rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-70052D24BC63",
+          "technique": "Unmapped"
+        }
+      ]
+    },
+    {
+      "incident_id": "INC-A58D81981C47",
+      "total_flows": 1,
+      "alert_count": 1,
+      "sampled_flows": 1,
+      "events": [
+        {
+          "timestamp": "2017-03-15 00:01:00",
+          "title": "192.168.200.4 \u2192 port 51431",
+          "record_type": "flow",
+          "evidence_id": "FLOW-660C64FBCD87",
+          "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+          "source_row": 79,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-03-15 00:01:00",
+          "title": "NeedsReview rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-0CD681C343F3",
+          "technique": "Unmapped"
+        }
+      ]
+    },
+    {
+      "incident_id": "INC-D1C1AB486361",
+      "total_flows": 1,
+      "alert_count": 1,
+      "sampled_flows": 1,
+      "events": [
+        {
+          "timestamp": "2017-03-15 13:07:00",
+          "title": "192.168.220.16 \u2192 port 137",
+          "record_type": "flow",
+          "evidence_id": "FLOW-E476DBF5A5A5",
+          "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+          "source_row": 727521,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-03-15 13:07:00",
+          "title": "NeedsReview rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-DE89263C8F89",
+          "technique": "Unmapped"
+        }
+      ]
+    },
+    {
+      "incident_id": "INC-97CEA87F41B5",
+      "total_flows": 18,
+      "alert_count": 1,
+      "sampled_flows": 6,
+      "events": [
+        {
+          "timestamp": "2017-03-20 10:01:00",
+          "title": "192.168.200.4 \u2192 port 35777",
+          "record_type": "flow",
+          "evidence_id": "FLOW-A32CBD03BA01",
+          "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+          "source_row": 5630938,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-03-20 10:01:00",
+          "title": "192.168.200.4 \u2192 port 35777",
+          "record_type": "flow",
+          "evidence_id": "FLOW-0CF7A83691F1",
+          "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+          "source_row": 5631002,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-03-20 10:01:00",
+          "title": "192.168.200.4 \u2192 port 35778",
+          "record_type": "flow",
+          "evidence_id": "FLOW-D8D9099B31AE",
+          "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+          "source_row": 5631013,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-03-20 10:01:00",
+          "title": "192.168.200.4 \u2192 port 35807",
+          "record_type": "flow",
+          "evidence_id": "FLOW-B670D2754421",
+          "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+          "source_row": 5631156,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-03-20 10:01:00",
+          "title": "192.168.200.4 \u2192 port 35778",
+          "record_type": "flow",
+          "evidence_id": "FLOW-F8F50CC7BC82",
+          "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+          "source_row": 5631160,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-03-20 10:01:00",
+          "title": "192.168.200.4 \u2192 port 35807",
+          "record_type": "flow",
+          "evidence_id": "FLOW-919F5BE74388",
+          "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+          "source_row": 5631268,
+          "technique": "Unmapped"
+        },
+        {
+          "timestamp": "2017-03-20 10:01:00",
+          "title": "NeedsReview rule matched",
+          "record_type": "alert",
+          "evidence_id": "ALT-2BC583606F58",
+          "technique": "Unmapped"
+        }
+      ]
+    }
+  ]
+}

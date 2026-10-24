@@ -1,0 +1,13 @@
+{
+  "kind": "isolated-current-case-flow",
+  "incident_id": "INC-A787E11F2A22",
+  "ai_run_id": "TRG-751E7D7EC6",
+  "read_only_tool_calls": 4,
+  "cited_evidence_ids": 3,
+  "timeline_events_checked": 427,
+  "ai_steps_available": 2,
+  "ai_step_approved_in_copy": "REC-1F8D6B312093",
+  "record_saved_in_copy": "AUD-9C8D429368C9",
+  "audit_chain_valid": true,
+  "production_state_changed": false
+}

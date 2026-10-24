@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from services.evaluate_baseline import chronological_split, count_false_positive_cases, entropy, truth
+from services.evaluate_baseline import chronological_split, count_false_positive_cases, entropy, truth, summarize
 from services.evaluate_system import build_report
 
 
@@ -24,6 +24,14 @@ class BaselineEvaluationTests(unittest.TestCase):
         self.assertAlmostEqual(entropy({'80': 1, '443': 1}), 1)
         self.assertEqual(truth({'benign': 3}), 'Benign')
         self.assertEqual(truth({'benign': 1, 'ddos': 1}), 'Mixed')
+
+    def test_baseline_scope_excludes_ddos_and_includes_bruteforce(self):
+        summary, _, _ = summarize(np.array([1., 1., 1.]),
+                                  [{'ssh-patator': 1}, {'ddos': 1}, {'benign': 1}], 0.5)
+        self.assertEqual(summary['known_attack_groups'], 1)
+        self.assertEqual(summary['detected_attack_groups'], 1)
+        self.assertEqual(summary['excluded_mixed_or_other_groups'], 1)
+        self.assertEqual(summary['false_positive_groups'], 1)
 
     def test_false_positive_case_count_joins_nearby_minutes_by_pair(self):
         keys = [('a', 'b', '2017-07-03T09:00'), ('a', 'b', '2017-07-03T09:03'),

@@ -50,6 +50,9 @@ def bruteforce_rule(group):
                for port in ('21', '22'))
 
 
+DISPLAY_ATTACK_TYPES = ('PortScan', 'DoS', 'BruteForce')
+
+# Benign is ground truth for offline scoring, never a detector output.
 DETECTION_RULES = (('PortScan', portscan_rule), ('DoS', dos_rule), ('BruteForce', bruteforce_rule))
 
 
@@ -125,23 +128,26 @@ def mark_distributed_floods(matches):
                 item['source_count'] = source_count
 
 
-def group_alerts(alerts):
+def group_alerts(alerts, gap_minutes=INCIDENT_GAP_MINUTES):
+    if not isinstance(gap_minutes, int) or gap_minutes < 0:
+        raise ValueError('gap_minutes must be a non-negative integer')
+    gap = timedelta(minutes=gap_minutes)
     incidents = []
     current = None
     last_time = None
     def grouping_key(alert):
         kind = alert['type']
         if kind == 'BruteForce':
-            return (alert['source_file'], kind, alert['source_ip'], alert['destination_ip'], alert.get('target_port'))
-        anchor = alert['source_ip'] if kind == 'PortScan' else alert['destination_ip']
-        return (alert['source_file'], kind, anchor)
+            return (alert['source_file'], kind, alert['source_ip'], alert['destination_ip'], str(alert.get('target_port') or ''))
+        # A shared destination alone does not establish a shared attack campaign.
+        return (alert['source_file'], kind, alert['source_ip'], alert['destination_ip'])
 
     for alert in sorted(alerts, key=lambda item: (grouping_key(item), item['timestamp'], item['alert_id'])):
         key = grouping_key(alert)
         time = datetime.fromisoformat(alert['timestamp'])
-        if current is None or current['_key'] != key or time - last_time > timedelta(minutes=INCIDENT_GAP_MINUTES):
+        if current is None or current['_key'] != key or time - last_time > gap:
             current = {
-                'incident_id': stable_id('INC', alert['source_file'], alert['source_ip'], alert['destination_ip'], alert['timestamp']),
+                'incident_id': stable_id('INC', *key, alert['timestamp']),
                 'type': alert['type'],
                 'source_ip': alert['source_ip'],
                 'destination_ip': alert['destination_ip'],
@@ -176,8 +182,8 @@ def group_alerts(alerts):
         for second in incidents[index + 1:]:
             if first['type'] == second['type'] or first['source_file'] != second['source_file']:
                 continue
-            separated = (datetime.fromisoformat(first['window_start']) - datetime.fromisoformat(second['window_end']) > timedelta(minutes=INCIDENT_GAP_MINUTES)
-                         or datetime.fromisoformat(second['window_start']) - datetime.fromisoformat(first['window_end']) > timedelta(minutes=INCIDENT_GAP_MINUTES))
+            separated = (datetime.fromisoformat(first['window_start']) - datetime.fromisoformat(second['window_end']) > gap
+                         or datetime.fromisoformat(second['window_start']) - datetime.fromisoformat(first['window_end']) > gap)
             shared_address = (set(first['source_ips']) & set(second['source_ips'])
                               or set(first['destination_ips']) & set(second['destination_ips']))
             if not separated and shared_address:
@@ -199,7 +205,7 @@ def select_preview(incidents, alerts, flows, limit):
     ranked = sorted(incidents, key=lambda item: (-item['flow_count'], item['window_start'], item['incident_id']))
     for predicate in (
         lambda alert: alert['type'] == 'PortScan',
-        lambda alert: alert['type'] == 'DoS' and not alert['ddos_reference'],
+        lambda alert: alert['type'] == 'DoS',
         lambda alert: alert['type'] == 'BruteForce',
         lambda alert: alert['type'] == 'NeedsReview',
     ):
@@ -227,11 +233,22 @@ def make_preview(result, limit):
     }
 
 
+def select_archive_members(archive, required=DEFAULT_MEMBERS):
+    selected = []
+    for token in required:
+        matches = [name for name in archive.namelist()
+                   if name.lower().endswith('.csv') and token in Path(name).name]
+        if len(matches) != 1:
+            raise ValueError(f'Expected exactly one CSV for {token}; found {len(matches)}')
+        selected.append(matches[0])
+    return selected
+
+
 def analyze_archive(path, preview_cases=None, include_unclassified=False, include_monday_review=False):
     groups = {}
     members_read = []
     with zipfile.ZipFile(path) as archive:
-        members = [name for name in archive.namelist() if name.endswith('.csv') and any(part in name for part in DEFAULT_MEMBERS)]
+        members = select_archive_members(archive)
         if len(members) != len(DEFAULT_MEMBERS):
             raise ValueError('Expected Monday, Tuesday, Wednesday, and Friday PortScan flow CSVs')
         for member in members:
@@ -254,7 +271,8 @@ def analyze_archive(path, preview_cases=None, include_unclassified=False, includ
                 group['labels'][flow['dataset_label']] += 1
                 if len(group['samples']) < 5:
                     group['samples'].append(flow)
-                group['last'] = flow
+                if group['last'] is None or (flow['timestamp'], flow['source_row']) > (group['last']['timestamp'], group['last']['source_row']):
+                    group['last'] = flow
 
     matches = []
     for key, group in groups.items():
@@ -282,7 +300,7 @@ def analyze_archive(path, preview_cases=None, include_unclassified=False, includ
         alerts.append({
             'alert_id': alert_id,
             'type': item['type'],
-            'timestamp': evidence[-1]['timestamp'],
+            'timestamp': minute + ':00',
             'source_file': source_file,
             'source_ip': source,
             'destination_ip': destination,

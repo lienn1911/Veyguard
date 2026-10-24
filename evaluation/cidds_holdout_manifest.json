@@ -1,0 +1,27 @@
+{
+  "kind": "external_domain_holdout_frozen_before_scoring",
+  "frozen_at_utc": "2026-10-23T15:05:22.283350+00:00",
+  "dataset": "CIDDS-001 OpenStack internal weeks 1-4",
+  "source_url": "https://www.hs-coburg.de/forschen/cidds-coburg-intrusion-detection-data-sets/",
+  "members": [
+    "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+    "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week2.csv",
+    "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week3.csv",
+    "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week4.csv"
+  ],
+  "sha256": {
+    "archive": "5145d13b2c4ee278390743964f242759ffbf2823336dc7361b4d7255a04c54d9",
+    "detector": "dd7fc92d3d9621ccd05c4fa176db9fe4d1b83ae94bfd85a63d56ad237a41f406",
+    "adapter": "3fda87d8c9e4f6fe9af861b754f77e1bf57aa8c7edaead1e4645807bdf4cefc5"
+  },
+  "unit": "ordered source IP + destination IP + calendar minute within each source file",
+  "flow_count": "one CSV row = one record; Packets field summed",
+  "truth": "class normal -> Benign; attackType portScan/dos/bruteForce -> target; ambiguous/out-of-scope excluded; mixed benign and one target -> target",
+  "thresholds": "unchanged from frozen services/alerts.py",
+  "caveat": "External unidirectional NetFlow domain shift; labels and metrics were not inspected before this manifest.",
+  "amendment": {
+    "at_utc": "2026-10-23T15:11:52.558512+00:00",
+    "reason": "Replaced slow Python row partitioning with DuckDB SQL aggregation before inspecting any label distribution or score; data unit, truth mapping, and thresholds unchanged.",
+    "duckdb_version": "2.0.0"
+  }
+}

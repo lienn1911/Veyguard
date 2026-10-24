@@ -1,0 +1,440 @@
+{
+  "updated_at": "2026-10-23T15:15:42Z",
+  "incidents": {
+    "INC-6CD483A5911A": {
+      "runs": [
+        {
+          "run_id": "TRG-2857F07E7F",
+          "incident_id": "INC-6CD483A5911A",
+          "provider": "codex",
+          "model": "default",
+          "mode": "live",
+          "started_at": "2026-10-23T15:14:32Z",
+          "completed_at": "2026-10-23T15:15:42Z",
+          "duration_ms": 69797,
+          "investigation": {
+            "steps": 5,
+            "tool_calls": [
+              {
+                "step": 1,
+                "tool": "get_incident_details",
+                "arguments": {
+                  "incident_id": "INC-6CD483A5911A"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              },
+              {
+                "step": 2,
+                "tool": "get_related_alerts",
+                "arguments": {
+                  "incident_id": "INC-6CD483A5911A"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 18
+              },
+              {
+                "step": 3,
+                "tool": "get_network_flows",
+                "arguments": {
+                  "incident_id": "INC-6CD483A5911A",
+                  "limit": 20
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 20
+              },
+              {
+                "step": 4,
+                "tool": "get_incident_statistics",
+                "arguments": {
+                  "incident_id": "INC-6CD483A5911A"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              }
+            ],
+            "blocked_attempts": [],
+            "tool_errors": 0,
+            "corrections": 0
+          },
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ],
+          "status": "ok",
+          "verdict": "Likely Attack",
+          "confidence": "medium",
+          "reason": "Observed: ALT-4AF3D618FAA9 reports 17752 flows and 173643 packets in one minute from one source toward one destination port, with repeated high-volume alerts including ALT-9941B48CD40E and ALT-5716F9F63616. Sampled flows FLOW-745C5543C223 and FLOW-8FC7C816EF4A show traffic from 172.16.0.1 to 192.168.10.50 on port 80. Inference: the sustained concentrated traffic supports a suspected flooding attack, but service disruption and malicious intent are not established by flow evidence alone.",
+          "evidence_ids": [
+            "ALT-4AF3D618FAA9",
+            "ALT-9941B48CD40E",
+            "ALT-5716F9F63616",
+            "FLOW-745C5543C223",
+            "FLOW-8FC7C816EF4A"
+          ],
+          "findings": [
+            {
+              "observation": "The detection reports repeated high-volume one-minute groups targeting one destination port from one source.",
+              "evidence_ids": [
+                "ALT-4AF3D618FAA9",
+                "ALT-9941B48CD40E",
+                "ALT-5716F9F63616"
+              ]
+            },
+            {
+              "observation": "Sampled records show the same source and destination communicating on destination port 80 at successive alert timestamps.",
+              "evidence_ids": [
+                "FLOW-745C5543C223",
+                "FLOW-8FC7C816EF4A"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-4AF3D618FAA9",
+              "technique_id": "Unmapped",
+              "reason": "The DoS alert and flow volume do not establish denial-of-service impact; the alert reports one source, so a distributed attack mapping is unsupported."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Inspect the repeated port 80 traffic for request patterns and connection behavior that could distinguish flooding from legitimate activity.",
+              "evidence_ids": [
+                "FLOW-745C5543C223",
+                "FLOW-8FC7C816EF4A"
+              ]
+            },
+            {
+              "action": "ESCALATE_TO_ANALYST",
+              "reason": "Correlate sustained high-volume alerts with service health and authorized activity. This DoS incident requires explicit analyst confirmation before closure.",
+              "evidence_ids": [
+                "ALT-4AF3D618FAA9",
+                "ALT-9941B48CD40E"
+              ]
+            }
+          ],
+          "limitations": "Sampled flows cannot establish service availability, application behavior, or intent. Incident metadata describes a one-minute window while alerts span multiple minutes; statistics clarify that the aggregate flow count is a case sum. Analyst validation of the timeline and service impact remains necessary.",
+          "proposal": {
+            "incident_id": "INC-6CD483A5911A",
+            "verdict": "Likely Attack",
+            "confidence": "medium",
+            "reason": "Observed: ALT-4AF3D618FAA9 reports 17752 flows and 173643 packets in one minute from one source toward one destination port, with repeated high-volume alerts including ALT-9941B48CD40E and ALT-5716F9F63616. Sampled flows FLOW-745C5543C223 and FLOW-8FC7C816EF4A show traffic from 172.16.0.1 to 192.168.10.50 on port 80. Inference: the sustained concentrated traffic supports a suspected flooding attack, but service disruption and malicious intent are not established by flow evidence alone.",
+            "evidence_ids": [
+              "ALT-4AF3D618FAA9",
+              "ALT-9941B48CD40E",
+              "ALT-5716F9F63616",
+              "FLOW-745C5543C223",
+              "FLOW-8FC7C816EF4A"
+            ],
+            "findings": [
+              {
+                "observation": "The detection reports repeated high-volume one-minute groups targeting one destination port from one source.",
+                "evidence_ids": [
+                  "ALT-4AF3D618FAA9",
+                  "ALT-9941B48CD40E",
+                  "ALT-5716F9F63616"
+                ]
+              },
+              {
+                "observation": "Sampled records show the same source and destination communicating on destination port 80 at successive alert timestamps.",
+                "evidence_ids": [
+                  "FLOW-745C5543C223",
+                  "FLOW-8FC7C816EF4A"
+                ]
+              }
+            ],
+            "technique_mappings": [
+              {
+                "evidence_id": "ALT-4AF3D618FAA9",
+                "technique_id": "Unmapped",
+                "reason": "The DoS alert and flow volume do not establish denial-of-service impact; the alert reports one source, so a distributed attack mapping is unsupported."
+              }
+            ],
+            "next_steps": [
+              {
+                "action": "REVIEW_NETWORK_FLOWS",
+                "reason": "Inspect the repeated port 80 traffic for request patterns and connection behavior that could distinguish flooding from legitimate activity.",
+                "evidence_ids": [
+                  "FLOW-745C5543C223",
+                  "FLOW-8FC7C816EF4A"
+                ]
+              },
+              {
+                "action": "ESCALATE_TO_ANALYST",
+                "reason": "Correlate sustained high-volume alerts with service health and authorized activity. This DoS incident requires explicit analyst confirmation before closure.",
+                "evidence_ids": [
+                  "ALT-4AF3D618FAA9",
+                  "ALT-9941B48CD40E"
+                ]
+              }
+            ],
+            "limitations": "Sampled flows cannot establish service availability, application behavior, or intent. Incident metadata describes a one-minute window while alerts span multiple minutes; statistics clarify that the aggregate flow count is a case sum. Analyst validation of the timeline and service impact remains necessary."
+          },
+          "error": null,
+          "validation": {
+            "ok": true,
+            "issues": []
+          },
+          "requires_confirmation": false,
+          "guardrail": {
+            "verdict": "Likely Attack",
+            "requires_confirmation": false,
+            "reasons": [
+              "Attack verdicts are proposals only; an analyst decides the response."
+            ],
+            "source": "services.guardrails.evaluate_proposal",
+            "auto_close_permitted": false,
+            "severity_change": null,
+            "closure_sensitive": false,
+            "prohibited_actions": [
+              "close_incident",
+              "dismiss_incident",
+              "downgrade_severity",
+              "execute_remediation",
+              "modify_evidence",
+              "approve_recommendation",
+              "override_analyst_decision"
+            ]
+          }
+        }
+      ],
+      "decision": {
+        "status": "pending",
+        "analyst": null,
+        "note": null,
+        "at": null
+      },
+      "latest": {
+        "run_id": "TRG-2857F07E7F",
+        "incident_id": "INC-6CD483A5911A",
+        "provider": "codex",
+        "model": "default",
+        "mode": "live",
+        "started_at": "2026-10-23T15:14:32Z",
+        "completed_at": "2026-10-23T15:15:42Z",
+        "duration_ms": 69797,
+        "investigation": {
+          "steps": 5,
+          "tool_calls": [
+            {
+              "step": 1,
+              "tool": "get_incident_details",
+              "arguments": {
+                "incident_id": "INC-6CD483A5911A"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            },
+            {
+              "step": 2,
+              "tool": "get_related_alerts",
+              "arguments": {
+                "incident_id": "INC-6CD483A5911A"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 18
+            },
+            {
+              "step": 3,
+              "tool": "get_network_flows",
+              "arguments": {
+                "incident_id": "INC-6CD483A5911A",
+                "limit": 20
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 20
+            },
+            {
+              "step": 4,
+              "tool": "get_incident_statistics",
+              "arguments": {
+                "incident_id": "INC-6CD483A5911A"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            }
+          ],
+          "blocked_attempts": [],
+          "tool_errors": 0,
+          "corrections": 0
+        },
+        "prohibited_actions": [
+          "close_incident",
+          "dismiss_incident",
+          "downgrade_severity",
+          "execute_remediation",
+          "modify_evidence",
+          "approve_recommendation",
+          "override_analyst_decision"
+        ],
+        "status": "ok",
+        "verdict": "Likely Attack",
+        "confidence": "medium",
+        "reason": "Observed: ALT-4AF3D618FAA9 reports 17752 flows and 173643 packets in one minute from one source toward one destination port, with repeated high-volume alerts including ALT-9941B48CD40E and ALT-5716F9F63616. Sampled flows FLOW-745C5543C223 and FLOW-8FC7C816EF4A show traffic from 172.16.0.1 to 192.168.10.50 on port 80. Inference: the sustained concentrated traffic supports a suspected flooding attack, but service disruption and malicious intent are not established by flow evidence alone.",
+        "evidence_ids": [
+          "ALT-4AF3D618FAA9",
+          "ALT-9941B48CD40E",
+          "ALT-5716F9F63616",
+          "FLOW-745C5543C223",
+          "FLOW-8FC7C816EF4A"
+        ],
+        "findings": [
+          {
+            "observation": "The detection reports repeated high-volume one-minute groups targeting one destination port from one source.",
+            "evidence_ids": [
+              "ALT-4AF3D618FAA9",
+              "ALT-9941B48CD40E",
+              "ALT-5716F9F63616"
+            ]
+          },
+          {
+            "observation": "Sampled records show the same source and destination communicating on destination port 80 at successive alert timestamps.",
+            "evidence_ids": [
+              "FLOW-745C5543C223",
+              "FLOW-8FC7C816EF4A"
+            ]
+          }
+        ],
+        "technique_mappings": [
+          {
+            "evidence_id": "ALT-4AF3D618FAA9",
+            "technique_id": "Unmapped",
+            "reason": "The DoS alert and flow volume do not establish denial-of-service impact; the alert reports one source, so a distributed attack mapping is unsupported."
+          }
+        ],
+        "next_steps": [
+          {
+            "action": "REVIEW_NETWORK_FLOWS",
+            "reason": "Inspect the repeated port 80 traffic for request patterns and connection behavior that could distinguish flooding from legitimate activity.",
+            "evidence_ids": [
+              "FLOW-745C5543C223",
+              "FLOW-8FC7C816EF4A"
+            ]
+          },
+          {
+            "action": "ESCALATE_TO_ANALYST",
+            "reason": "Correlate sustained high-volume alerts with service health and authorized activity. This DoS incident requires explicit analyst confirmation before closure.",
+            "evidence_ids": [
+              "ALT-4AF3D618FAA9",
+              "ALT-9941B48CD40E"
+            ]
+          }
+        ],
+        "limitations": "Sampled flows cannot establish service availability, application behavior, or intent. Incident metadata describes a one-minute window while alerts span multiple minutes; statistics clarify that the aggregate flow count is a case sum. Analyst validation of the timeline and service impact remains necessary.",
+        "proposal": {
+          "incident_id": "INC-6CD483A5911A",
+          "verdict": "Likely Attack",
+          "confidence": "medium",
+          "reason": "Observed: ALT-4AF3D618FAA9 reports 17752 flows and 173643 packets in one minute from one source toward one destination port, with repeated high-volume alerts including ALT-9941B48CD40E and ALT-5716F9F63616. Sampled flows FLOW-745C5543C223 and FLOW-8FC7C816EF4A show traffic from 172.16.0.1 to 192.168.10.50 on port 80. Inference: the sustained concentrated traffic supports a suspected flooding attack, but service disruption and malicious intent are not established by flow evidence alone.",
+          "evidence_ids": [
+            "ALT-4AF3D618FAA9",
+            "ALT-9941B48CD40E",
+            "ALT-5716F9F63616",
+            "FLOW-745C5543C223",
+            "FLOW-8FC7C816EF4A"
+          ],
+          "findings": [
+            {
+              "observation": "The detection reports repeated high-volume one-minute groups targeting one destination port from one source.",
+              "evidence_ids": [
+                "ALT-4AF3D618FAA9",
+                "ALT-9941B48CD40E",
+                "ALT-5716F9F63616"
+              ]
+            },
+            {
+              "observation": "Sampled records show the same source and destination communicating on destination port 80 at successive alert timestamps.",
+              "evidence_ids": [
+                "FLOW-745C5543C223",
+                "FLOW-8FC7C816EF4A"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-4AF3D618FAA9",
+              "technique_id": "Unmapped",
+              "reason": "The DoS alert and flow volume do not establish denial-of-service impact; the alert reports one source, so a distributed attack mapping is unsupported."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Inspect the repeated port 80 traffic for request patterns and connection behavior that could distinguish flooding from legitimate activity.",
+              "evidence_ids": [
+                "FLOW-745C5543C223",
+                "FLOW-8FC7C816EF4A"
+              ]
+            },
+            {
+              "action": "ESCALATE_TO_ANALYST",
+              "reason": "Correlate sustained high-volume alerts with service health and authorized activity. This DoS incident requires explicit analyst confirmation before closure.",
+              "evidence_ids": [
+                "ALT-4AF3D618FAA9",
+                "ALT-9941B48CD40E"
+              ]
+            }
+          ],
+          "limitations": "Sampled flows cannot establish service availability, application behavior, or intent. Incident metadata describes a one-minute window while alerts span multiple minutes; statistics clarify that the aggregate flow count is a case sum. Analyst validation of the timeline and service impact remains necessary."
+        },
+        "error": null,
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "requires_confirmation": false,
+        "guardrail": {
+          "verdict": "Likely Attack",
+          "requires_confirmation": false,
+          "reasons": [
+            "Attack verdicts are proposals only; an analyst decides the response."
+          ],
+          "source": "services.guardrails.evaluate_proposal",
+          "auto_close_permitted": false,
+          "severity_change": null,
+          "closure_sensitive": false,
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ]
+        }
+      },
+      "updated_at": "2026-10-23T15:15:42Z"
+    }
+  }
+}

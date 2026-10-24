@@ -1,0 +1,410 @@
+{
+  "updated_at": "2026-10-23T16:43:29Z",
+  "incidents": {
+    "INC-D1C1AB486361": {
+      "runs": [
+        {
+          "run_id": "TRG-D4C352E159",
+          "incident_id": "INC-D1C1AB486361",
+          "provider": "codex",
+          "model": "default",
+          "mode": "live",
+          "started_at": "2026-10-23T16:42:53Z",
+          "completed_at": "2026-10-23T16:43:29Z",
+          "duration_ms": 36000,
+          "investigation": {
+            "steps": 5,
+            "tool_calls": [
+              {
+                "step": 1,
+                "tool": "get_incident_details",
+                "arguments": {
+                  "incident_id": "INC-D1C1AB486361"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              },
+              {
+                "step": 2,
+                "tool": "get_related_alerts",
+                "arguments": {
+                  "incident_id": "INC-D1C1AB486361"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 1
+              },
+              {
+                "step": 3,
+                "tool": "get_network_flows",
+                "arguments": {
+                  "incident_id": "INC-D1C1AB486361",
+                  "limit": 20
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 1
+              },
+              {
+                "step": 4,
+                "tool": "get_incident_statistics",
+                "arguments": {
+                  "incident_id": "INC-D1C1AB486361"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              }
+            ],
+            "blocked_attempts": [],
+            "tool_errors": 0,
+            "corrections": 0
+          },
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ],
+          "status": "ok",
+          "verdict": "Needs Review",
+          "confidence": "low",
+          "reason": "Observed: FLOW-E476DBF5A5A5 records one packet from 192.168.220.16:137 to 192.168.220.255:137. ALT-DE89263C8F89 reports one flow and one destination port in the detection window, with no attack rule matched. Inference: this evidence does not establish hostile activity or positively confirm a legitimate purpose, so analyst review is needed.",
+          "evidence_ids": [
+            "FLOW-E476DBF5A5A5",
+            "ALT-DE89263C8F89"
+          ],
+          "findings": [
+            {
+              "observation": "The retained flow contains one packet with source and destination port 137.",
+              "evidence_ids": [
+                "FLOW-E476DBF5A5A5"
+              ]
+            },
+            {
+              "observation": "The alert is a diagnostic review candidate with no attack rule matched; this alone does not establish benign activity.",
+              "evidence_ids": [
+                "ALT-DE89263C8F89"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-DE89263C8F89",
+              "technique_id": "Unmapped",
+              "reason": "The diagnostic alert and single retained flow do not support a specific ATT&CK technique."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Review the retained flow and available surrounding traffic to establish the purpose of the port 137 communication.",
+              "evidence_ids": [
+                "FLOW-E476DBF5A5A5"
+              ]
+            },
+            {
+              "action": "ESCALATE_TO_ANALYST",
+              "reason": "An analyst should assess host and network context because the diagnostic alert does not establish either malicious or legitimate activity.",
+              "evidence_ids": [
+                "ALT-DE89263C8F89"
+              ]
+            }
+          ],
+          "limitations": "Payload, transport protocol, host context, and application logs are unavailable; the communication's purpose cannot be determined from the supplied flow evidence.",
+          "proposal": {
+            "incident_id": "INC-D1C1AB486361",
+            "verdict": "Needs Review",
+            "confidence": "low",
+            "reason": "Observed: FLOW-E476DBF5A5A5 records one packet from 192.168.220.16:137 to 192.168.220.255:137. ALT-DE89263C8F89 reports one flow and one destination port in the detection window, with no attack rule matched. Inference: this evidence does not establish hostile activity or positively confirm a legitimate purpose, so analyst review is needed.",
+            "evidence_ids": [
+              "FLOW-E476DBF5A5A5",
+              "ALT-DE89263C8F89"
+            ],
+            "findings": [
+              {
+                "observation": "The retained flow contains one packet with source and destination port 137.",
+                "evidence_ids": [
+                  "FLOW-E476DBF5A5A5"
+                ]
+              },
+              {
+                "observation": "The alert is a diagnostic review candidate with no attack rule matched; this alone does not establish benign activity.",
+                "evidence_ids": [
+                  "ALT-DE89263C8F89"
+                ]
+              }
+            ],
+            "technique_mappings": [
+              {
+                "evidence_id": "ALT-DE89263C8F89",
+                "technique_id": "Unmapped",
+                "reason": "The diagnostic alert and single retained flow do not support a specific ATT&CK technique."
+              }
+            ],
+            "next_steps": [
+              {
+                "action": "REVIEW_NETWORK_FLOWS",
+                "reason": "Review the retained flow and available surrounding traffic to establish the purpose of the port 137 communication.",
+                "evidence_ids": [
+                  "FLOW-E476DBF5A5A5"
+                ]
+              },
+              {
+                "action": "ESCALATE_TO_ANALYST",
+                "reason": "An analyst should assess host and network context because the diagnostic alert does not establish either malicious or legitimate activity.",
+                "evidence_ids": [
+                  "ALT-DE89263C8F89"
+                ]
+              }
+            ],
+            "limitations": "Payload, transport protocol, host context, and application logs are unavailable; the communication's purpose cannot be determined from the supplied flow evidence."
+          },
+          "error": null,
+          "validation": {
+            "ok": true,
+            "issues": []
+          },
+          "requires_confirmation": false,
+          "guardrail": {
+            "verdict": "Needs Review",
+            "requires_confirmation": false,
+            "reasons": [
+              "Insufficient evidence: analyst review is mandatory."
+            ],
+            "source": "services.guardrails.evaluate_proposal",
+            "auto_close_permitted": false,
+            "severity_change": null,
+            "closure_sensitive": false,
+            "allowed": true,
+            "prohibited_actions": [
+              "close_incident",
+              "dismiss_incident",
+              "downgrade_severity",
+              "execute_remediation",
+              "modify_evidence",
+              "approve_recommendation",
+              "override_analyst_decision"
+            ]
+          }
+        }
+      ],
+      "decision": {
+        "status": "pending",
+        "analyst": null,
+        "note": null,
+        "at": null
+      },
+      "latest": {
+        "run_id": "TRG-D4C352E159",
+        "incident_id": "INC-D1C1AB486361",
+        "provider": "codex",
+        "model": "default",
+        "mode": "live",
+        "started_at": "2026-10-23T16:42:53Z",
+        "completed_at": "2026-10-23T16:43:29Z",
+        "duration_ms": 36000,
+        "investigation": {
+          "steps": 5,
+          "tool_calls": [
+            {
+              "step": 1,
+              "tool": "get_incident_details",
+              "arguments": {
+                "incident_id": "INC-D1C1AB486361"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            },
+            {
+              "step": 2,
+              "tool": "get_related_alerts",
+              "arguments": {
+                "incident_id": "INC-D1C1AB486361"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 1
+            },
+            {
+              "step": 3,
+              "tool": "get_network_flows",
+              "arguments": {
+                "incident_id": "INC-D1C1AB486361",
+                "limit": 20
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 1
+            },
+            {
+              "step": 4,
+              "tool": "get_incident_statistics",
+              "arguments": {
+                "incident_id": "INC-D1C1AB486361"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            }
+          ],
+          "blocked_attempts": [],
+          "tool_errors": 0,
+          "corrections": 0
+        },
+        "prohibited_actions": [
+          "close_incident",
+          "dismiss_incident",
+          "downgrade_severity",
+          "execute_remediation",
+          "modify_evidence",
+          "approve_recommendation",
+          "override_analyst_decision"
+        ],
+        "status": "ok",
+        "verdict": "Needs Review",
+        "confidence": "low",
+        "reason": "Observed: FLOW-E476DBF5A5A5 records one packet from 192.168.220.16:137 to 192.168.220.255:137. ALT-DE89263C8F89 reports one flow and one destination port in the detection window, with no attack rule matched. Inference: this evidence does not establish hostile activity or positively confirm a legitimate purpose, so analyst review is needed.",
+        "evidence_ids": [
+          "FLOW-E476DBF5A5A5",
+          "ALT-DE89263C8F89"
+        ],
+        "findings": [
+          {
+            "observation": "The retained flow contains one packet with source and destination port 137.",
+            "evidence_ids": [
+              "FLOW-E476DBF5A5A5"
+            ]
+          },
+          {
+            "observation": "The alert is a diagnostic review candidate with no attack rule matched; this alone does not establish benign activity.",
+            "evidence_ids": [
+              "ALT-DE89263C8F89"
+            ]
+          }
+        ],
+        "technique_mappings": [
+          {
+            "evidence_id": "ALT-DE89263C8F89",
+            "technique_id": "Unmapped",
+            "reason": "The diagnostic alert and single retained flow do not support a specific ATT&CK technique."
+          }
+        ],
+        "next_steps": [
+          {
+            "action": "REVIEW_NETWORK_FLOWS",
+            "reason": "Review the retained flow and available surrounding traffic to establish the purpose of the port 137 communication.",
+            "evidence_ids": [
+              "FLOW-E476DBF5A5A5"
+            ]
+          },
+          {
+            "action": "ESCALATE_TO_ANALYST",
+            "reason": "An analyst should assess host and network context because the diagnostic alert does not establish either malicious or legitimate activity.",
+            "evidence_ids": [
+              "ALT-DE89263C8F89"
+            ]
+          }
+        ],
+        "limitations": "Payload, transport protocol, host context, and application logs are unavailable; the communication's purpose cannot be determined from the supplied flow evidence.",
+        "proposal": {
+          "incident_id": "INC-D1C1AB486361",
+          "verdict": "Needs Review",
+          "confidence": "low",
+          "reason": "Observed: FLOW-E476DBF5A5A5 records one packet from 192.168.220.16:137 to 192.168.220.255:137. ALT-DE89263C8F89 reports one flow and one destination port in the detection window, with no attack rule matched. Inference: this evidence does not establish hostile activity or positively confirm a legitimate purpose, so analyst review is needed.",
+          "evidence_ids": [
+            "FLOW-E476DBF5A5A5",
+            "ALT-DE89263C8F89"
+          ],
+          "findings": [
+            {
+              "observation": "The retained flow contains one packet with source and destination port 137.",
+              "evidence_ids": [
+                "FLOW-E476DBF5A5A5"
+              ]
+            },
+            {
+              "observation": "The alert is a diagnostic review candidate with no attack rule matched; this alone does not establish benign activity.",
+              "evidence_ids": [
+                "ALT-DE89263C8F89"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-DE89263C8F89",
+              "technique_id": "Unmapped",
+              "reason": "The diagnostic alert and single retained flow do not support a specific ATT&CK technique."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Review the retained flow and available surrounding traffic to establish the purpose of the port 137 communication.",
+              "evidence_ids": [
+                "FLOW-E476DBF5A5A5"
+              ]
+            },
+            {
+              "action": "ESCALATE_TO_ANALYST",
+              "reason": "An analyst should assess host and network context because the diagnostic alert does not establish either malicious or legitimate activity.",
+              "evidence_ids": [
+                "ALT-DE89263C8F89"
+              ]
+            }
+          ],
+          "limitations": "Payload, transport protocol, host context, and application logs are unavailable; the communication's purpose cannot be determined from the supplied flow evidence."
+        },
+        "error": null,
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "requires_confirmation": false,
+        "guardrail": {
+          "verdict": "Needs Review",
+          "requires_confirmation": false,
+          "reasons": [
+            "Insufficient evidence: analyst review is mandatory."
+          ],
+          "source": "services.guardrails.evaluate_proposal",
+          "auto_close_permitted": false,
+          "severity_change": null,
+          "closure_sensitive": false,
+          "allowed": true,
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ]
+        }
+      },
+      "updated_at": "2026-10-23T16:43:29Z"
+    }
+  }
+}

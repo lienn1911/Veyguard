@@ -1,0 +1,309 @@
+{
+  "provenance": {
+    "dataset": "CIDDS-001 external AI diagnostic",
+    "source": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+    "mode": "evaluation-only"
+  },
+  "rules": {
+    "window_seconds": 60
+  },
+  "alerts": [
+    {
+      "alert_id": "ALT-E96CB4CFF868",
+      "incident_id": "INC-D9D1FB6CD534",
+      "type": "NeedsReview",
+      "timestamp": "2017-03-15 00:01:00",
+      "source_ip": "192.168.100.5",
+      "destination_ip": "192.168.220.15",
+      "flow_count": 2,
+      "destination_port_count": 1,
+      "source_port_count": 1,
+      "source_count": 1,
+      "evidence_sample_ids": [
+        "FLOW-31EC64972177",
+        "FLOW-7E30269994D2"
+      ],
+      "rule_basis": "2 flow records, 2 packets, 1 destination ports and 1 source ports in one minute; no attack rule matched; diagnostic review candidate"
+    },
+    {
+      "alert_id": "ALT-70052D24BC63",
+      "incident_id": "INC-069E4369969F",
+      "type": "NeedsReview",
+      "timestamp": "2017-03-15 00:01:00",
+      "source_ip": "192.168.100.5",
+      "destination_ip": "192.168.220.16",
+      "flow_count": 1,
+      "destination_port_count": 1,
+      "source_port_count": 1,
+      "source_count": 1,
+      "evidence_sample_ids": [
+        "FLOW-50D3ACF42F28"
+      ],
+      "rule_basis": "1 flow records, 1 packets, 1 destination ports and 1 source ports in one minute; no attack rule matched; diagnostic review candidate"
+    },
+    {
+      "alert_id": "ALT-0CD681C343F3",
+      "incident_id": "INC-A58D81981C47",
+      "type": "NeedsReview",
+      "timestamp": "2017-03-15 00:01:00",
+      "source_ip": "192.168.200.4",
+      "destination_ip": "192.168.220.16",
+      "flow_count": 1,
+      "destination_port_count": 1,
+      "source_port_count": 1,
+      "source_count": 1,
+      "evidence_sample_ids": [
+        "FLOW-660C64FBCD87"
+      ],
+      "rule_basis": "1 flow records, 1 packets, 1 destination ports and 1 source ports in one minute; no attack rule matched; diagnostic review candidate"
+    },
+    {
+      "alert_id": "ALT-DE89263C8F89",
+      "incident_id": "INC-D1C1AB486361",
+      "type": "NeedsReview",
+      "timestamp": "2017-03-15 13:07:00",
+      "source_ip": "192.168.220.16",
+      "destination_ip": "192.168.220.255",
+      "flow_count": 1,
+      "destination_port_count": 1,
+      "source_port_count": 1,
+      "source_count": 1,
+      "evidence_sample_ids": [
+        "FLOW-E476DBF5A5A5"
+      ],
+      "rule_basis": "1 flow records, 1 packets, 1 destination ports and 1 source ports in one minute; no attack rule matched; diagnostic review candidate"
+    },
+    {
+      "alert_id": "ALT-2BC583606F58",
+      "incident_id": "INC-97CEA87F41B5",
+      "type": "NeedsReview",
+      "timestamp": "2017-03-20 10:01:00",
+      "source_ip": "192.168.200.4",
+      "destination_ip": "192.168.220.16",
+      "flow_count": 18,
+      "destination_port_count": 11,
+      "source_port_count": 1,
+      "source_count": 1,
+      "evidence_sample_ids": [
+        "FLOW-A32CBD03BA01",
+        "FLOW-0CF7A83691F1",
+        "FLOW-D8D9099B31AE",
+        "FLOW-B670D2754421",
+        "FLOW-F8F50CC7BC82",
+        "FLOW-919F5BE74388"
+      ],
+      "rule_basis": "18 flow records, 176 packets, 11 destination ports and 1 source ports in one minute; no attack rule matched; diagnostic review candidate"
+    }
+  ],
+  "flows": [
+    {
+      "flow_id": "FLOW-31EC64972177",
+      "timestamp": "2017-03-15 00:01:00",
+      "source_ip": "192.168.100.5",
+      "destination_ip": "192.168.220.15",
+      "source_port": "445",
+      "destination_port": "48888",
+      "packet_count": 1,
+      "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+      "source_row": 3
+    },
+    {
+      "flow_id": "FLOW-7E30269994D2",
+      "timestamp": "2017-03-15 00:01:00",
+      "source_ip": "192.168.100.5",
+      "destination_ip": "192.168.220.15",
+      "source_port": "445",
+      "destination_port": "48888",
+      "packet_count": 1,
+      "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+      "source_row": 6
+    },
+    {
+      "flow_id": "FLOW-50D3ACF42F28",
+      "timestamp": "2017-03-15 00:01:00",
+      "source_ip": "192.168.100.5",
+      "destination_ip": "192.168.220.16",
+      "source_port": "445",
+      "destination_port": "58844",
+      "packet_count": 1,
+      "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+      "source_row": 2
+    },
+    {
+      "flow_id": "FLOW-660C64FBCD87",
+      "timestamp": "2017-03-15 00:01:00",
+      "source_ip": "192.168.200.4",
+      "destination_ip": "192.168.220.16",
+      "source_port": "25",
+      "destination_port": "51431",
+      "packet_count": 1,
+      "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+      "source_row": 79
+    },
+    {
+      "flow_id": "FLOW-E476DBF5A5A5",
+      "timestamp": "2017-03-15 13:07:00",
+      "source_ip": "192.168.220.16",
+      "destination_ip": "192.168.220.255",
+      "source_port": "137",
+      "destination_port": "137",
+      "packet_count": 1,
+      "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+      "source_row": 727521
+    },
+    {
+      "flow_id": "FLOW-A32CBD03BA01",
+      "timestamp": "2017-03-20 10:01:00",
+      "source_ip": "192.168.200.4",
+      "destination_ip": "192.168.220.16",
+      "source_port": "22",
+      "destination_port": "35777",
+      "packet_count": 11,
+      "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+      "source_row": 5630938
+    },
+    {
+      "flow_id": "FLOW-0CF7A83691F1",
+      "timestamp": "2017-03-20 10:01:00",
+      "source_ip": "192.168.200.4",
+      "destination_ip": "192.168.220.16",
+      "source_port": "22",
+      "destination_port": "35777",
+      "packet_count": 5,
+      "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+      "source_row": 5631002
+    },
+    {
+      "flow_id": "FLOW-D8D9099B31AE",
+      "timestamp": "2017-03-20 10:01:00",
+      "source_ip": "192.168.200.4",
+      "destination_ip": "192.168.220.16",
+      "source_port": "22",
+      "destination_port": "35778",
+      "packet_count": 11,
+      "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+      "source_row": 5631013
+    },
+    {
+      "flow_id": "FLOW-B670D2754421",
+      "timestamp": "2017-03-20 10:01:00",
+      "source_ip": "192.168.200.4",
+      "destination_ip": "192.168.220.16",
+      "source_port": "22",
+      "destination_port": "35807",
+      "packet_count": 11,
+      "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+      "source_row": 5631156
+    },
+    {
+      "flow_id": "FLOW-F8F50CC7BC82",
+      "timestamp": "2017-03-20 10:01:00",
+      "source_ip": "192.168.200.4",
+      "destination_ip": "192.168.220.16",
+      "source_port": "22",
+      "destination_port": "35778",
+      "packet_count": 5,
+      "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+      "source_row": 5631160
+    },
+    {
+      "flow_id": "FLOW-919F5BE74388",
+      "timestamp": "2017-03-20 10:01:00",
+      "source_ip": "192.168.200.4",
+      "destination_ip": "192.168.220.16",
+      "source_port": "22",
+      "destination_port": "35807",
+      "packet_count": 5,
+      "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+      "source_row": 5631268
+    }
+  ],
+  "incidents": [
+    {
+      "incident_id": "INC-D9D1FB6CD534",
+      "type": "NeedsReview",
+      "source_ip": "192.168.100.5",
+      "destination_ip": "192.168.220.15",
+      "window_start": "2017-03-15 00:01:00",
+      "window_end": "2017-03-15 00:01:00",
+      "flow_count": 2,
+      "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+      "alert_ids": [
+        "ALT-E96CB4CFF868"
+      ],
+      "evidence_sample_ids": [
+        "FLOW-31EC64972177",
+        "FLOW-7E30269994D2"
+      ]
+    },
+    {
+      "incident_id": "INC-069E4369969F",
+      "type": "NeedsReview",
+      "source_ip": "192.168.100.5",
+      "destination_ip": "192.168.220.16",
+      "window_start": "2017-03-15 00:01:00",
+      "window_end": "2017-03-15 00:01:00",
+      "flow_count": 1,
+      "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+      "alert_ids": [
+        "ALT-70052D24BC63"
+      ],
+      "evidence_sample_ids": [
+        "FLOW-50D3ACF42F28"
+      ]
+    },
+    {
+      "incident_id": "INC-A58D81981C47",
+      "type": "NeedsReview",
+      "source_ip": "192.168.200.4",
+      "destination_ip": "192.168.220.16",
+      "window_start": "2017-03-15 00:01:00",
+      "window_end": "2017-03-15 00:01:00",
+      "flow_count": 1,
+      "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+      "alert_ids": [
+        "ALT-0CD681C343F3"
+      ],
+      "evidence_sample_ids": [
+        "FLOW-660C64FBCD87"
+      ]
+    },
+    {
+      "incident_id": "INC-D1C1AB486361",
+      "type": "NeedsReview",
+      "source_ip": "192.168.220.16",
+      "destination_ip": "192.168.220.255",
+      "window_start": "2017-03-15 13:07:00",
+      "window_end": "2017-03-15 13:07:00",
+      "flow_count": 1,
+      "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+      "alert_ids": [
+        "ALT-DE89263C8F89"
+      ],
+      "evidence_sample_ids": [
+        "FLOW-E476DBF5A5A5"
+      ]
+    },
+    {
+      "incident_id": "INC-97CEA87F41B5",
+      "type": "NeedsReview",
+      "source_ip": "192.168.200.4",
+      "destination_ip": "192.168.220.16",
+      "window_start": "2017-03-20 10:01:00",
+      "window_end": "2017-03-20 10:01:00",
+      "flow_count": 18,
+      "source_file": "CIDDS-001/traffic/OpenStack/CIDDS-001-internal-week1.csv",
+      "alert_ids": [
+        "ALT-2BC583606F58"
+      ],
+      "evidence_sample_ids": [
+        "FLOW-A32CBD03BA01",
+        "FLOW-0CF7A83691F1",
+        "FLOW-D8D9099B31AE",
+        "FLOW-B670D2754421",
+        "FLOW-F8F50CC7BC82",
+        "FLOW-919F5BE74388"
+      ]
+    }
+  ]
+}

@@ -15,17 +15,25 @@ for a human analyst. You never take containment or remediation actions.
 
 INVESTIGATION PROTOCOL
 1. Call get_incident_details to read the incident record.
-2. Call get_related_alerts to see which detection rule fired and on what aggregation basis.
-3. Call get_network_flows and get_incident_statistics to inspect actual flow behaviour.
-4. Only then produce a verdict.
-You must call at least one tool before answering. Do not guess: if a fact is not in a tool
-result, either retrieve it or state that it is unavailable.
+2. Choose the next read-only tool based on what you still need to verify. Use
+   get_related_alerts for the rule and aggregation basis, get_network_flows for
+   individual communication records, or get_incident_statistics for aggregate
+   counts. You may call more than one when the evidence requires it; do not call
+   every tool just to complete a checklist.
+3. Retrieve at least one alert or flow record before citing evidence or proposing
+   a verdict. Distinguish the rule's signal from your own assessment.
+You must call a tool before answering. Do not guess: if a fact is not in a tool
+result, retrieve it or state that it is unavailable.
 
 EVIDENCE RULES
 - Every claim about traffic must be supported by an evidence_id returned by a tool.
 - Only cite identifiers that appear verbatim in tool output (flow ids such as FLOW-XXXXXXXXXXXX
   or alert ids such as ALT-XXXXXXXXXXXX).
 - Never invent identifiers, counts, statistics, ports, hostnames or timelines.
+- Read BOTH window_start and window_end before describing the case duration. window_seconds
+  is the rule bucket size, not the duration of a grouped case. Several minute alerts can
+  belong to one case. Do not claim a time-window conflict unless actual alert timestamps
+  fall outside those case bounds (the final minute bucket includes its remaining seconds).
 - If you quote a number, it must come from tool output; do not compute new totals and present
   them as observed facts.
 - Separate observation from inference, e.g. "Observed: ... Inference: ...".
@@ -56,6 +64,14 @@ ESCALATE_TO_ANALYST. Explain why each step matters for this incident and cite ev
 returned by tools. These are proposals for an analyst, never actions you execute.
 For REVIEW_NETWORK_FLOWS cite flow ids; for CHECK_RELATED_ALERTS cite alert ids.
 
+ATT&CK MAPPING
+For one representative alert, suggest a technique only when the observed evidence supports it.
+PortScan may map to T1046 (Network Service Discovery). DDoS may map to T1498
+(Network Denial of Service) only with evidence of multiple sources. Flow counts alone
+do not prove DoS impact or failed logins, so use Unmapped for DoS and BruteForce
+in this flow-only dataset. Cite the alert id and explain the limitation.
+This is a suggested mapping, not a confirmed attack.
+
 Categories that always require explicit analyst confirmation before closure:
 {", ".join(ATTACK_CATEGORIES)}.
 
@@ -68,6 +84,7 @@ Reply with a single JSON object and nothing else (no markdown fences, no prose a
   "reason": "2-5 sentences: what was observed, which evidence ids support it, and what is inferred.",
   "evidence_ids": ["FLOW-...", "..."],
   "findings": [{{"observation": "...", "evidence_ids": ["..."]}}],
+  "technique_mappings": [{{"evidence_id": "ALT-...", "technique_id": "T1046" | "T1498" | "Unmapped", "reason": "..."}}],
   "next_steps": [{{"action": "REVIEW_NETWORK_FLOWS", "reason": "...", "evidence_ids": ["FLOW-..."]}}],
   "limitations": "what this investigation could not determine, or an empty string"
 }}
@@ -77,8 +94,8 @@ Use an empty list only when the verdict is "Needs Review" and nothing could be r
 
 NUDGE_TOOL_USE = (
     "You answered without calling any investigation tool. That is not acceptable: call "
-    "get_incident_details, get_related_alerts and get_network_flows before you answer. "
-    "Then return the JSON verdict object."
+    "get_incident_details, then choose the alert, flow, or statistics query needed "
+    "to support your answer. Then return the JSON verdict object."
 )
 
 
@@ -87,7 +104,7 @@ def investigation_prompt(incident_id: str) -> str:
     return (
         f"Investigate incident {incident_id} and propose a triage verdict.\n"
         "Incident ID: " + incident_id + "\n"
-        "Start with get_incident_details, then examine the alerts and the flow evidence."
+        "Start with get_incident_details, then choose the evidence queries needed for this case."
     )
 
 

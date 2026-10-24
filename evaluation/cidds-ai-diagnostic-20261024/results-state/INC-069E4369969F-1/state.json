@@ -1,0 +1,410 @@
+{
+  "updated_at": "2026-10-23T16:42:13Z",
+  "incidents": {
+    "INC-069E4369969F": {
+      "runs": [
+        {
+          "run_id": "TRG-CA0ABD0E90",
+          "incident_id": "INC-069E4369969F",
+          "provider": "codex",
+          "model": "default",
+          "mode": "live",
+          "started_at": "2026-10-23T16:41:38Z",
+          "completed_at": "2026-10-23T16:42:13Z",
+          "duration_ms": 35281,
+          "investigation": {
+            "steps": 5,
+            "tool_calls": [
+              {
+                "step": 1,
+                "tool": "get_incident_details",
+                "arguments": {
+                  "incident_id": "INC-069E4369969F"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              },
+              {
+                "step": 2,
+                "tool": "get_related_alerts",
+                "arguments": {
+                  "incident_id": "INC-069E4369969F"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 1
+              },
+              {
+                "step": 3,
+                "tool": "get_network_flows",
+                "arguments": {
+                  "incident_id": "INC-069E4369969F",
+                  "limit": 20
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": 1
+              },
+              {
+                "step": 4,
+                "tool": "get_incident_statistics",
+                "arguments": {
+                  "incident_id": "INC-069E4369969F"
+                },
+                "ok": true,
+                "duration_ms": 0.0,
+                "error": null,
+                "blocked": false,
+                "result_count": null
+              }
+            ],
+            "blocked_attempts": [],
+            "tool_errors": 0,
+            "corrections": 0
+          },
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ],
+          "status": "ok",
+          "verdict": "Needs Review",
+          "confidence": "low",
+          "reason": "Observed: FLOW-50D3ACF42F28 records one packet from 192.168.100.5:445 to 192.168.220.16:58844. ALT-70052D24BC63 reports one flow and no attack rule match. Inference: this evidence establishes neither hostile activity nor a legitimate explanation; the absence of a rule match does not establish benign traffic.",
+          "evidence_ids": [
+            "FLOW-50D3ACF42F28",
+            "ALT-70052D24BC63"
+          ],
+          "findings": [
+            {
+              "observation": "The retained flow contains one packet from source port 445 to destination port 58844.",
+              "evidence_ids": [
+                "FLOW-50D3ACF42F28"
+              ]
+            },
+            {
+              "observation": "The diagnostic alert reports one source and one destination port within its one-minute window, with no attack rule matched.",
+              "evidence_ids": [
+                "ALT-70052D24BC63"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-70052D24BC63",
+              "technique_id": "Unmapped",
+              "reason": "The diagnostic alert and isolated flow do not support a specific ATT&CK technique."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Review surrounding connection context for the isolated packet to determine whether it belongs to an expected exchange.",
+              "evidence_ids": [
+                "FLOW-50D3ACF42F28"
+              ]
+            },
+            {
+              "action": "CHECK_RELATED_ALERTS",
+              "reason": "Check for corroborating alerts because the diagnostic candidate alone supplies no positive explanation of the traffic.",
+              "evidence_ids": [
+                "ALT-70052D24BC63"
+              ]
+            }
+          ],
+          "limitations": "The supplied evidence lacks payload, connection state, application logs and surrounding traffic context; intent and legitimacy remain undetermined. This verdict is a proposal for analyst review.",
+          "proposal": {
+            "incident_id": "INC-069E4369969F",
+            "verdict": "Needs Review",
+            "confidence": "low",
+            "reason": "Observed: FLOW-50D3ACF42F28 records one packet from 192.168.100.5:445 to 192.168.220.16:58844. ALT-70052D24BC63 reports one flow and no attack rule match. Inference: this evidence establishes neither hostile activity nor a legitimate explanation; the absence of a rule match does not establish benign traffic.",
+            "evidence_ids": [
+              "FLOW-50D3ACF42F28",
+              "ALT-70052D24BC63"
+            ],
+            "findings": [
+              {
+                "observation": "The retained flow contains one packet from source port 445 to destination port 58844.",
+                "evidence_ids": [
+                  "FLOW-50D3ACF42F28"
+                ]
+              },
+              {
+                "observation": "The diagnostic alert reports one source and one destination port within its one-minute window, with no attack rule matched.",
+                "evidence_ids": [
+                  "ALT-70052D24BC63"
+                ]
+              }
+            ],
+            "technique_mappings": [
+              {
+                "evidence_id": "ALT-70052D24BC63",
+                "technique_id": "Unmapped",
+                "reason": "The diagnostic alert and isolated flow do not support a specific ATT&CK technique."
+              }
+            ],
+            "next_steps": [
+              {
+                "action": "REVIEW_NETWORK_FLOWS",
+                "reason": "Review surrounding connection context for the isolated packet to determine whether it belongs to an expected exchange.",
+                "evidence_ids": [
+                  "FLOW-50D3ACF42F28"
+                ]
+              },
+              {
+                "action": "CHECK_RELATED_ALERTS",
+                "reason": "Check for corroborating alerts because the diagnostic candidate alone supplies no positive explanation of the traffic.",
+                "evidence_ids": [
+                  "ALT-70052D24BC63"
+                ]
+              }
+            ],
+            "limitations": "The supplied evidence lacks payload, connection state, application logs and surrounding traffic context; intent and legitimacy remain undetermined. This verdict is a proposal for analyst review."
+          },
+          "error": null,
+          "validation": {
+            "ok": true,
+            "issues": []
+          },
+          "requires_confirmation": false,
+          "guardrail": {
+            "verdict": "Needs Review",
+            "requires_confirmation": false,
+            "reasons": [
+              "Insufficient evidence: analyst review is mandatory."
+            ],
+            "source": "services.guardrails.evaluate_proposal",
+            "auto_close_permitted": false,
+            "severity_change": null,
+            "closure_sensitive": false,
+            "allowed": true,
+            "prohibited_actions": [
+              "close_incident",
+              "dismiss_incident",
+              "downgrade_severity",
+              "execute_remediation",
+              "modify_evidence",
+              "approve_recommendation",
+              "override_analyst_decision"
+            ]
+          }
+        }
+      ],
+      "decision": {
+        "status": "pending",
+        "analyst": null,
+        "note": null,
+        "at": null
+      },
+      "latest": {
+        "run_id": "TRG-CA0ABD0E90",
+        "incident_id": "INC-069E4369969F",
+        "provider": "codex",
+        "model": "default",
+        "mode": "live",
+        "started_at": "2026-10-23T16:41:38Z",
+        "completed_at": "2026-10-23T16:42:13Z",
+        "duration_ms": 35281,
+        "investigation": {
+          "steps": 5,
+          "tool_calls": [
+            {
+              "step": 1,
+              "tool": "get_incident_details",
+              "arguments": {
+                "incident_id": "INC-069E4369969F"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            },
+            {
+              "step": 2,
+              "tool": "get_related_alerts",
+              "arguments": {
+                "incident_id": "INC-069E4369969F"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 1
+            },
+            {
+              "step": 3,
+              "tool": "get_network_flows",
+              "arguments": {
+                "incident_id": "INC-069E4369969F",
+                "limit": 20
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": 1
+            },
+            {
+              "step": 4,
+              "tool": "get_incident_statistics",
+              "arguments": {
+                "incident_id": "INC-069E4369969F"
+              },
+              "ok": true,
+              "duration_ms": 0.0,
+              "error": null,
+              "blocked": false,
+              "result_count": null
+            }
+          ],
+          "blocked_attempts": [],
+          "tool_errors": 0,
+          "corrections": 0
+        },
+        "prohibited_actions": [
+          "close_incident",
+          "dismiss_incident",
+          "downgrade_severity",
+          "execute_remediation",
+          "modify_evidence",
+          "approve_recommendation",
+          "override_analyst_decision"
+        ],
+        "status": "ok",
+        "verdict": "Needs Review",
+        "confidence": "low",
+        "reason": "Observed: FLOW-50D3ACF42F28 records one packet from 192.168.100.5:445 to 192.168.220.16:58844. ALT-70052D24BC63 reports one flow and no attack rule match. Inference: this evidence establishes neither hostile activity nor a legitimate explanation; the absence of a rule match does not establish benign traffic.",
+        "evidence_ids": [
+          "FLOW-50D3ACF42F28",
+          "ALT-70052D24BC63"
+        ],
+        "findings": [
+          {
+            "observation": "The retained flow contains one packet from source port 445 to destination port 58844.",
+            "evidence_ids": [
+              "FLOW-50D3ACF42F28"
+            ]
+          },
+          {
+            "observation": "The diagnostic alert reports one source and one destination port within its one-minute window, with no attack rule matched.",
+            "evidence_ids": [
+              "ALT-70052D24BC63"
+            ]
+          }
+        ],
+        "technique_mappings": [
+          {
+            "evidence_id": "ALT-70052D24BC63",
+            "technique_id": "Unmapped",
+            "reason": "The diagnostic alert and isolated flow do not support a specific ATT&CK technique."
+          }
+        ],
+        "next_steps": [
+          {
+            "action": "REVIEW_NETWORK_FLOWS",
+            "reason": "Review surrounding connection context for the isolated packet to determine whether it belongs to an expected exchange.",
+            "evidence_ids": [
+              "FLOW-50D3ACF42F28"
+            ]
+          },
+          {
+            "action": "CHECK_RELATED_ALERTS",
+            "reason": "Check for corroborating alerts because the diagnostic candidate alone supplies no positive explanation of the traffic.",
+            "evidence_ids": [
+              "ALT-70052D24BC63"
+            ]
+          }
+        ],
+        "limitations": "The supplied evidence lacks payload, connection state, application logs and surrounding traffic context; intent and legitimacy remain undetermined. This verdict is a proposal for analyst review.",
+        "proposal": {
+          "incident_id": "INC-069E4369969F",
+          "verdict": "Needs Review",
+          "confidence": "low",
+          "reason": "Observed: FLOW-50D3ACF42F28 records one packet from 192.168.100.5:445 to 192.168.220.16:58844. ALT-70052D24BC63 reports one flow and no attack rule match. Inference: this evidence establishes neither hostile activity nor a legitimate explanation; the absence of a rule match does not establish benign traffic.",
+          "evidence_ids": [
+            "FLOW-50D3ACF42F28",
+            "ALT-70052D24BC63"
+          ],
+          "findings": [
+            {
+              "observation": "The retained flow contains one packet from source port 445 to destination port 58844.",
+              "evidence_ids": [
+                "FLOW-50D3ACF42F28"
+              ]
+            },
+            {
+              "observation": "The diagnostic alert reports one source and one destination port within its one-minute window, with no attack rule matched.",
+              "evidence_ids": [
+                "ALT-70052D24BC63"
+              ]
+            }
+          ],
+          "technique_mappings": [
+            {
+              "evidence_id": "ALT-70052D24BC63",
+              "technique_id": "Unmapped",
+              "reason": "The diagnostic alert and isolated flow do not support a specific ATT&CK technique."
+            }
+          ],
+          "next_steps": [
+            {
+              "action": "REVIEW_NETWORK_FLOWS",
+              "reason": "Review surrounding connection context for the isolated packet to determine whether it belongs to an expected exchange.",
+              "evidence_ids": [
+                "FLOW-50D3ACF42F28"
+              ]
+            },
+            {
+              "action": "CHECK_RELATED_ALERTS",
+              "reason": "Check for corroborating alerts because the diagnostic candidate alone supplies no positive explanation of the traffic.",
+              "evidence_ids": [
+                "ALT-70052D24BC63"
+              ]
+            }
+          ],
+          "limitations": "The supplied evidence lacks payload, connection state, application logs and surrounding traffic context; intent and legitimacy remain undetermined. This verdict is a proposal for analyst review."
+        },
+        "error": null,
+        "validation": {
+          "ok": true,
+          "issues": []
+        },
+        "requires_confirmation": false,
+        "guardrail": {
+          "verdict": "Needs Review",
+          "requires_confirmation": false,
+          "reasons": [
+            "Insufficient evidence: analyst review is mandatory."
+          ],
+          "source": "services.guardrails.evaluate_proposal",
+          "auto_close_permitted": false,
+          "severity_change": null,
+          "closure_sensitive": false,
+          "allowed": true,
+          "prohibited_actions": [
+            "close_incident",
+            "dismiss_incident",
+            "downgrade_severity",
+            "execute_remediation",
+            "modify_evidence",
+            "approve_recommendation",
+            "override_analyst_decision"
+          ]
+        }
+      },
+      "updated_at": "2026-10-23T16:42:13Z"
+    }
+  }
+}

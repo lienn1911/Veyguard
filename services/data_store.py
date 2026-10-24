@@ -34,7 +34,7 @@ AGENT_ALERT_FIELDS = (
 )
 
 #: Attack categories that trigger the Module 5 human-confirmation rule.
-ATTACK_CATEGORIES = ("PortScan", "DoS", "BruteForce")
+ATTACK_CATEGORIES = ("PortScan", "DoS", "DDoS", "BruteForce")
 
 
 class DatasetError(RuntimeError):
@@ -177,7 +177,9 @@ class Dataset:
         return {
             "incident_id": incident_id,
             "window_start": incident.get("window_start"),
+            "window_end": incident.get("window_end"),
             "window_seconds": (self._alerts_payload.get("rules") or {}).get("window_seconds", 60),
+            "window_scope": "window_start and window_end bound the grouped case. window_seconds is the detection bucket size, not the case duration. Alert timestamps identify minute buckets; the final bucket includes its remaining seconds.",
             "source_ip": incident.get("source_ip"),
             "destination_ip": incident.get("destination_ip"),
             "source_ips": list(incident.get('source_ips') or [incident.get('source_ip')]),

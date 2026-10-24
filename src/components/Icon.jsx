@@ -3,6 +3,7 @@ import {
   ArrowRight, BellRing, Check, Home, Layers, MenuFold, MenuUnfold,
   NetworkTree, Search, Shield, Star, Attention, HamburgerButton, Close,
   User, Lock, PreviewOpen, PreviewClose, Refresh, Save,
+  FileText, FileSearch, Analysis, Checklist, History, Printer,
 } from '@icon-park/react';
 
 const icons = {
@@ -17,6 +18,12 @@ const icons = {
   database: Layers,
   refresh: Refresh,
   save: Save,
+  file: FileText,
+  evidence: FileSearch,
+  analysis: Analysis,
+  checklist: Checklist,
+  history: History,
+  print: Printer,
   checkCircle: Check,
   search: Search,
   shield: Shield,
@@ -34,5 +41,5 @@ const icons = {
 
 export default function Icon({ name, size = 20, solid = false }) {
   const Component = icons[name];
-  return Component ? <Component theme={solid ? 'filled' : 'outline'} size={size} strokeWidth={3} fill="currentColor" aria-hidden="true" /> : null;
+  return Component ? <Component theme={solid ? 'filled' : 'outline'} size={size} strokeWidth={name === 'arrow' ? 2 : 3} fill="currentColor" aria-hidden="true" /> : null;
 }

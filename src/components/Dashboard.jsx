@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { apiFetch } from '../apiFetch.js';
 import Icon from './Icon.jsx';
 import data from '../real-alerts.json';
+import { PriorityBadge } from './ReviewPriority.jsx';
+import { priorityRank } from '../lib/reviewPriority.js';
 
 const incidents = data.incidents || [];
-const alerts = data.alerts || [];
-const alertsById = new Map(alerts.map((alert) => [alert.alert_id, alert]));
 
 function shortDateTime(value) {
   if (!value) return 'Unknown time';
@@ -33,42 +33,7 @@ function validatedVerdict(result) {
 }
 
 
-function activityPriority(incident) {
-  // A simple, transparent WORKFLOW ordering, NOT a security risk rating.
-  // Use actual incident and related alert activity; never use dataset ground-truth labels.
-  const count = Number(incident.flow_count) || 0;
-  const first = Date.parse(incident.window_start);
-  const last = Date.parse(incident.window_end);
-  const minutes = Number.isFinite(first) && Number.isFinite(last)
-    ? Math.max(1, (last - first) / 60000)
-    : null;
-  const rate = minutes === null ? null : count / minutes;
-  const relatedAlerts = (incident.alert_ids || []).map((id) => alertsById.get(id)).filter(Boolean);
-  const alertCount = relatedAlerts.length;
-  const sourceCount = Array.isArray(incident.source_ips) ? incident.source_ips.length : null;
-  const uniquePorts = relatedAlerts.length
-    ? Math.max(...relatedAlerts.map((a) => Number(a.destination_port_count) || 0))
-    : null;
-
-  let score = 0;
-  const reasons = [];
-  if (rate !== null && rate >= 10000) { score += 2; reasons.push('Dense network activity'); }
-  else if (rate !== null && rate >= 5000) { score += 1; reasons.push('Elevated network activity'); }
-  if (alertCount >= 10) { score += 2; reasons.push(`${alertCount} related alerts`); }
-  else if (alertCount >= 3) { score += 1; reasons.push(`${alertCount} related alerts`); }
-  if (sourceCount !== null && sourceCount >= 3) { score += 2; reasons.push(`${sourceCount} source IPs`); }
-  if (uniquePorts !== null && uniquePorts >= 250) { score += 2; reasons.push(`${uniquePorts} destination ports`); }
-  else if (uniquePorts !== null && uniquePorts >= 100) { score += 1; reasons.push(`${uniquePorts} destination ports`); }
-  return { score, reason: reasons.join(' · ') || 'Waiting for investigation' };
-}
-
-function getPriorityLabel(score) {
-  if (score >= 5) return "High Priority";
-  if (score >= 3) return "Moderate Priority";
-  return "Low Priority";
-}
-
-export default function Dashboard({ onReview, onAlerts, username }) {
+export default function Dashboard({ onReview, username }) {
   const [tasks, setTasks] = useState([]);
   const [taskError, setTaskError] = useState('');
   const [taskLoading, setTaskLoading] = useState(true);
@@ -168,48 +133,47 @@ export default function Dashboard({ onReview, onAlerts, username }) {
         )
         .map((incident) => ({
           incident,
-          activity: activityPriority(incident),
+          activity: caseQueue[incident.incident_id]?.review_priority,
           verdict: validatedVerdict(
             assessments[incident.incident_id]
           )
         }))
         .sort((a, b) =>
-          b.activity.score - a.activity.score ||
+          priorityRank(b.activity) - priorityRank(a.activity) ||
           (Date.parse(a.incident.window_start) || 0) -
           (Date.parse(b.incident.window_start) || 0)
         )
-        .slice(0, 5)
+
     : [];
 
   return (
-    <div className="iris-home">
+    <div className="iris-home"><header className="ui-page-heading"><h1>Home</h1></header>
       <section className="welcome-strip">
         <div className="welcome-stats">
           <button type="button" onClick={() => onReview()}>
             <strong>{approvalCount ?? '—'}</strong>
-            <span className="blue"><Icon name="layers" size={15} /> AWAITING APPROVAL</span>
+            <span className="blue"><Icon name="layers" size={15} /> Decisions needed</span>
           </button>
           <button type="button" onClick={() => onReview()}>
             <strong>{likelyAttack ?? '—'}</strong>
-            <span className="blue"><Icon name="alert" size={15} /> LIKELY ATTACK</span>
+            <span className="blue"><Icon name="alert" size={15} /> Likely attack</span>
           </button>
           <button type="button" onClick={() => onReview()}>
             <strong>{needsReview ?? '—'}</strong>
-            <span className="blue"><Icon name="alert" size={15} /> NEEDS REVIEW</span>
+            <span className="blue"><Icon name="alert" size={15} /> Needs review</span>
           </button>
         </div>
       </section>
 
-      <section className="home-card home-attention-card">
+      <div className="home-workspace">
+      <section className="home-card home-attention-card" aria-labelledby="home-cases-title">
       <header>
         <div className="priority-header-left">
           <Icon name="layers" size={20} />
 
           <div className="priority-heading">
-            <h2>Investigation Priority Queue</h2>
-            <p>
-              Ranked by observed network activity, not incident severity.
-            </p>
+            <h2 id="home-cases-title">Cases to review</h2>
+
           </div>
         </div>
 
@@ -219,10 +183,10 @@ export default function Dashboard({ onReview, onAlerts, username }) {
           </button>
         </div>
       </header>
-        <div className="home-card-body">
+        <div className="home-card-body home-scroll-panel" tabIndex={0} role="region" aria-label="Cases to review list">
           {!caseQueue && <p className="home-attention-empty">Case queue unavailable. Check the local API.</p>}
           {caseQueue && priorityCases.length === 0 && <p className="home-attention-empty">No unresolved cases in the queue.</p>}
-          {priorityCases.map(({ incident, activity, verdict }, index) => (
+          {priorityCases.map(({ incident, activity }, index) => (
             <button
               type="button"
               className="home-case priority-row"
@@ -237,7 +201,7 @@ export default function Dashboard({ onReview, onAlerts, username }) {
               {/* Left side: Incident information */}
               <span className="priority-info">
                 <strong>
-                  {incident.type || 'Incident'} · Case #{incidents.indexOf(incident) + 1}
+                  {incident.incident_id}
                 </strong>
 
                 <span className="priority-ip">
@@ -248,45 +212,35 @@ export default function Dashboard({ onReview, onAlerts, username }) {
                   {shortDateTime(incident.window_start)} · {(incident.alert_ids || []).length} alerts
                 </small>
 
-                <small className="priority-reason">
-                  {activity.reason}
-                </small>
+
               </span>
 
-              {/* Right side: Queue score and AI verdict */}
-              <span className="priority-score">
-                <strong>
-                  {getPriorityLabel(activity.score)}
-                </strong>
-                  <small className="priority-verdict">
-                  {verdict || 'Not assessed'}
-                </small>
-              </span>
+              <span className="home-review-priority"><PriorityBadge priority={activity} /></span>
             </button>
           ))}
           </div>
         </section>
 
-      {(tasks.length > 0 || taskError) && (
-        <section className="home-card tasks-card">
-          <header><h2><span className="green"><Icon name="check" size={20} /></span>Pending investigation steps</h2></header>
+      <section className="home-card tasks-card" aria-labelledby="home-tasks-title">
+        <header><h2 id="home-tasks-title"><Icon name="check" size={18} />Approved steps to complete</h2></header>
+        <div className="home-card-body home-scroll-panel" tabIndex={0} role="region" aria-label="Pending investigation steps list">
+          <p className="home-task-purpose">Steps approved by an analyst. Carry out each investigation, then mark it done.</p>
           {taskError && <p className="task-error" role="alert">{taskError}</p>}
-          {tasks.length > 0 && (
-            <div className="home-card-body">
-              {tasks.map((task) => (
-                <div className="home-task" key={task.id}>
-                  <button type="button" onClick={() => onReview(task.incident_id)}>
-                    <strong>{task.text}</strong><small>Open case →</small>
-                  </button>
-                  <button type="button" className="task-done" disabled={completing === task.id} onClick={() => finishTask(task)}>
-                    {completing === task.id ? 'Saving…' : 'Mark done'}
-                  </button>
-                </div>
-              ))}
+          {taskLoading && <p className="home-panel-empty" role="status">Loading investigation steps…</p>}
+          {!taskLoading && !taskError && tasks.length === 0 && <p className="home-panel-empty">No pending steps. You're up to date.</p>}
+          {tasks.map((task) => (
+            <div className="home-task" key={task.id}>
+              <button type="button" onClick={() => onReview(task.incident_id)}>
+                <strong>{task.text}</strong>
+              </button>
+              <button type="button" className="task-done" disabled={completing === task.id} onClick={() => finishTask(task)}>
+                {completing === task.id ? 'Saving…' : 'Mark done'}
+              </button>
             </div>
-          )}
-        </section>
-      )}
+          ))}
+        </div>
+      </section>
+      </div>
       </div>
   );
 }

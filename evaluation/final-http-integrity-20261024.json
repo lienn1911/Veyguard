@@ -1,0 +1,12 @@
+{
+  "kind": "isolated-local-http-integrity-acceptance",
+  "case": "INC-A787E11F2A22",
+  "invalid_ai_hidden": true,
+  "ai_suggestions_withheld": true,
+  "assessment_confirmation_blocked": true,
+  "recommendation_approval_blocked": true,
+  "saved_record_excludes_invalid_conclusion": true,
+  "audit_verified": true,
+  "production_unchanged": true,
+  "external_model_calls": 0
+}

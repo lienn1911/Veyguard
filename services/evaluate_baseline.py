@@ -14,13 +14,13 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 import numpy as np
-from sklearn.ensemble import IsolationForest
 
-from services.alerts import finite_number, parse_time
+from services.alerts import finite_number, parse_time, DISPLAY_ATTACK_TYPES, select_archive_members
+from services.evaluate_detection import expected_type, sha256_file
 
 
 MONDAY = 'Monday-WorkingHours'
-SHIFTED_DAYS = ('Wednesday-workingHours', 'Friday-WorkingHours-Afternoon-DDos',
+SHIFTED_DAYS = ('Tuesday-WorkingHours', 'Wednesday-workingHours',
                 'Friday-WorkingHours-Afternoon-PortScan')
 RATES = (0.0001, 0.001, 0.01)
 FEATURES = ('flows', 'packets', 'bytes', 'destination_ports', 'source_ports',
@@ -89,25 +89,13 @@ def chronological_split(keys, embargo_minutes=5):
 
 
 def truth(labels):
-    kinds = {label for label in labels if label != 'benign'}
-    if not kinds:
-        return 'Benign'
-    if len(kinds) != 1 or 'benign' in labels:
-        return 'Mixed'
-    label = kinds.pop()
-    if label == 'portscan':
-        return 'PortScan'
-    if label == 'ddos':
-        return 'DDoS'
-    if label.startswith('dos'):
-        return 'DoS'
-    return 'Other attack'
+    return expected_type(labels)
 
 
 def summarize(scores, labels, cutoff):
     predicted = scores > cutoff
     benign = np.asarray([truth(label) == 'Benign' for label in labels])
-    attacks = np.asarray([truth(label) in ('PortScan', 'DoS', 'DDoS') for label in labels])
+    attacks = np.asarray([truth(label) in DISPLAY_ATTACK_TYPES for label in labels])
     result = {'benign_groups': int(benign.sum()), 'false_positive_groups': int((predicted & benign).sum()),
               'group_false_positive_rate': round(float((predicted & benign).sum() / benign.sum()), 6) if benign.any() else None,
               'known_attack_groups': int(attacks.sum()), 'detected_attack_groups': int((predicted & attacks).sum()),
@@ -131,12 +119,10 @@ def count_false_positive_cases(keys, predicted, benign, gap_minutes=5):
 
 
 def evaluate(path, max_train_groups=50000):
+    from sklearn.ensemble import IsolationForest
+
     with zipfile.ZipFile(path) as archive:
-        members = archive.namelist()
-        selected = {name: next((member for member in members if name in member and member.endswith('.csv')), None)
-                    for name in (MONDAY, *SHIFTED_DAYS)}
-        if any(value is None for value in selected.values()):
-            raise ValueError('Archive is missing Monday or one of the three comparison files')
+        selected = dict(zip((MONDAY, *SHIFTED_DAYS), select_archive_members(archive, (MONDAY, *SHIFTED_DAYS))))
         monday = load_groups(archive, selected[MONDAY])
         if any(truth(label) != 'Benign' for label in monday['labels']):
             raise ValueError('Monday contains non-Benign groups; do not train this baseline')
@@ -148,7 +134,10 @@ def evaluate(path, max_train_groups=50000):
         model.fit(monday['features'][training])
         calibration_scores = -model.score_samples(monday['features'][split['calibration']])
         monday_test_scores = -model.score_samples(monday['features'][split['test']])
-        result = {'method': 'Isolation Forest on normal-only training groups; labels used only for evaluation',
+        result = {'scope': list(DISPLAY_ATTACK_TYPES),
+                  'evaluation_status': 'historical_baseline_experiment_not_independent_rule_validation',
+                  'archive_sha256': sha256_file(path), 'evaluator_sha256': sha256_file(__file__),
+                  'method': 'Isolation Forest on normal-only training groups; labels used only for evaluation',
                   'unit': 'source IP / destination IP / minute group', 'features': FEATURES,
                   'split': {'method': 'chronological 60/20/20 distinct-minute blocks with a five-minute gap at each boundary',
                             'boundaries': split['boundaries'], 'training_groups_fitted': len(training),
