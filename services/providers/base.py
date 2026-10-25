@@ -52,7 +52,9 @@ class ProviderTimeout(ProviderError):
 class ProviderRateLimited(ProviderError):
     code = "PROVIDER_RATE_LIMITED"
 
-    def __init__(self, message: str, *, retry_after: float | None = None, detail: str | None = None):
+    def __init__(
+        self, message: str, *, retry_after: float | None = None, detail: str | None = None
+    ):
         super().__init__(message, detail=detail)
         self.retry_after = retry_after
 

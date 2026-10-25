@@ -72,7 +72,11 @@ def test_bridge_uses_module5_when_present(monkeypatch):
 def test_module5_cannot_weaken_the_local_rule(monkeypatch):
     """A permissive teammate implementation must not unlock auto-closure."""
     fake = types.ModuleType("services.guardrails")
-    fake.evaluate_proposal = lambda **_: {"allowed": True, "requires_confirmation": False, "reasons": []}
+    fake.evaluate_proposal = lambda **_: {
+        "allowed": True,
+        "requires_confirmation": False,
+        "reasons": [],
+    }
     monkeypatch.setitem(sys.modules, "services.guardrails", fake)
     monkeypatch.setattr(services_pkg, "guardrails", fake, raising=False)
 
@@ -119,18 +123,26 @@ def test_bridge_accepts_positional_signature(monkeypatch):
 
 
 def test_explicit_remote_denial_is_preserved(monkeypatch):
-    monkeypatch.setattr(services_pkg.guardrails, 'evaluate_proposal', lambda **_: {
-        'allowed': False, 'requires_confirmation': False, 'reasons': ['Denied'],
-    })
-    assessment = guardrail_bridge.assess(incident_id='INC-TEST', category='DoS',
-                                        verdict='Likely Attack', evidence_ids=['ALT-TEST'])
+    monkeypatch.setattr(
+        services_pkg.guardrails,
+        "evaluate_proposal",
+        lambda **_: {
+            "allowed": False,
+            "requires_confirmation": False,
+            "reasons": ["Denied"],
+        },
+    )
+    assessment = guardrail_bridge.assess(
+        incident_id="INC-TEST", category="DoS", verdict="Likely Attack", evidence_ids=["ALT-TEST"]
+    )
     assert assessment.allowed is False
     assert assessment.auto_close_permitted is False
 
 
 def test_malformed_remote_result_fails_closed(monkeypatch):
-    monkeypatch.setattr(services_pkg.guardrails, 'evaluate_proposal', lambda **_: ['invalid'])
-    assessment = guardrail_bridge.assess(incident_id='INC-TEST', category='DoS',
-                                        verdict='Likely Benign', evidence_ids=['ALT-TEST'])
+    monkeypatch.setattr(services_pkg.guardrails, "evaluate_proposal", lambda **_: ["invalid"])
+    assessment = guardrail_bridge.assess(
+        incident_id="INC-TEST", category="DoS", verdict="Likely Benign", evidence_ids=["ALT-TEST"]
+    )
     assert assessment.allowed is False
     assert assessment.requires_confirmation is True

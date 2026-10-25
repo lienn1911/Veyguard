@@ -81,7 +81,11 @@ def assess(
         return local
 
     function = next(
-        (getattr(module, name) for name in _CANDIDATE_FUNCTIONS if callable(getattr(module, name, None))),
+        (
+            getattr(module, name)
+            for name in _CANDIDATE_FUNCTIONS
+            if callable(getattr(module, name, None))
+        ),
         None,
     )
     if function is None:  # pragma: no cover - guarded by _load_module5

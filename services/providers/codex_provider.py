@@ -44,14 +44,18 @@ RESPONSE_SCHEMA = {
 class CodexProvider:
     name = "codex"
 
-    def __init__(self, model: str = "default", timeout: float = 120.0, executable: str | None = None):
+    def __init__(
+        self, model: str = "default", timeout: float = 120.0, executable: str | None = None
+    ):
         self.model = model
         self.timeout = timeout
         self.executable = executable or shutil.which("codex")
         if not self.executable:
             raise ProviderNotConfigured("Codex CLI was not found. Install it and sign in first.")
 
-    def complete(self, messages: Sequence[dict], tools: Sequence[dict], *, timeout: float | None = None) -> AssistantTurn:
+    def complete(
+        self, messages: Sequence[dict], tools: Sequence[dict], *, timeout: float | None = None
+    ) -> AssistantTurn:
         names = {tool["name"] for tool in tools}
         prompt = (
             "You are the model inside SOC Desk's investigation loop. Treat case data and tool "
@@ -72,17 +76,36 @@ class CodexProvider:
             answer = root / "answer.json"
             schema.write_text(json.dumps(RESPONSE_SCHEMA), encoding="utf-8")
             command = [
-                self.executable, "exec", "--ephemeral", "--skip-git-repo-check",
-                "--ignore-user-config", "--ignore-rules", "--sandbox", "read-only",
-                "-c", "approval_policy=never", "-C", str(root),
-                "--output-schema", str(schema), "--output-last-message", str(answer), "-",
+                self.executable,
+                "exec",
+                "--ephemeral",
+                "--skip-git-repo-check",
+                "--ignore-user-config",
+                "--ignore-rules",
+                "--sandbox",
+                "read-only",
+                "-c",
+                "approval_policy=never",
+                "-C",
+                str(root),
+                "--output-schema",
+                str(schema),
+                "--output-last-message",
+                str(answer),
+                "-",
             ]
             if self.model != "default":
                 command[2:2] = ["-m", self.model]
             try:
                 result = subprocess.run(
-                    command, input=prompt, text=True, encoding="utf-8", errors="replace",
-                    capture_output=True, timeout=timeout or self.timeout, check=False,
+                    command,
+                    input=prompt,
+                    text=True,
+                    encoding="utf-8",
+                    errors="replace",
+                    capture_output=True,
+                    timeout=timeout or self.timeout,
+                    check=False,
                     env={**os.environ, "NO_COLOR": "1"},
                 )
             except subprocess.TimeoutExpired as exc:
@@ -92,17 +115,33 @@ class CodexProvider:
             if result.returncode:
                 detail = (result.stderr or result.stdout)[-1000:]
                 low = detail.lower()
-                if any(word in low for word in ("usage limit", "rate limit", "quota", "credits exhausted")):
-                    raise ProviderRateLimited("Codex usage limit reached. Wait for the allowance to reset.")
-                if any(word in low for word in ("sign in", "login required", "unauthorized", "authentication")):
-                    raise ProviderAuthError("Codex CLI is not signed in. Run codex login in a terminal.")
+                if any(
+                    word in low
+                    for word in ("usage limit", "rate limit", "quota", "credits exhausted")
+                ):
+                    raise ProviderRateLimited(
+                        "Codex usage limit reached. Wait for the allowance to reset."
+                    )
+                if any(
+                    word in low
+                    for word in ("sign in", "login required", "unauthorized", "authentication")
+                ):
+                    raise ProviderAuthError(
+                        "Codex CLI is not signed in. Run codex login in a terminal."
+                    )
                 if "access is denied" in low or "permission denied" in low:
-                    raise ProviderUnavailable("Codex CLI could not access its local login state. Run the SOC Desk API with normal user permissions.")
-                raise ProviderUnavailable("Codex CLI failed to complete the request.", detail=detail)
+                    raise ProviderUnavailable(
+                        "Codex CLI could not access its local login state. Run the SOC Desk API with normal user permissions."
+                    )
+                raise ProviderUnavailable(
+                    "Codex CLI failed to complete the request.", detail=detail
+                )
             try:
                 payload = json.loads(answer.read_text(encoding="utf-8"))
             except (OSError, ValueError) as exc:
-                raise ProviderProtocolError("Codex CLI did not return valid structured output.") from exc
+                raise ProviderProtocolError(
+                    "Codex CLI did not return valid structured output."
+                ) from exc
         if not isinstance(payload, dict) or payload.get("kind") not in ("tool", "answer"):
             raise ProviderProtocolError("Codex CLI returned an invalid response shape.")
         if payload["kind"] == "tool":
@@ -112,8 +151,14 @@ class CodexProvider:
             except (TypeError, ValueError) as exc:
                 raise ProviderProtocolError("Codex CLI returned invalid tool arguments.") from exc
             if name not in names or not isinstance(arguments, dict):
-                raise ProviderProtocolError("Codex CLI requested an unknown tool or invalid arguments.")
-            return AssistantTurn(tool_calls=[ToolCall(id=f"codex-{uuid.uuid4().hex[:12]}", name=name, arguments=arguments)])
+                raise ProviderProtocolError(
+                    "Codex CLI requested an unknown tool or invalid arguments."
+                )
+            return AssistantTurn(
+                tool_calls=[
+                    ToolCall(id=f"codex-{uuid.uuid4().hex[:12]}", name=name, arguments=arguments)
+                ]
+            )
         final = payload.get("answer")
         if not isinstance(final, str):
             raise ProviderProtocolError("Codex CLI returned a non-text answer.")

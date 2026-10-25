@@ -35,10 +35,26 @@ class MockProvider:
             return AssistantTurn(
                 text="Starting a read-only investigation of the incident.",
                 tool_calls=[
-                    ToolCall(id="mock_call_details", name="get_incident_details", arguments={"incident_id": _incident_id(messages)}),
-                    ToolCall(id="mock_call_alerts", name="get_related_alerts", arguments={"incident_id": _incident_id(messages)}),
-                    ToolCall(id="mock_call_flows", name="get_network_flows", arguments={"incident_id": _incident_id(messages), "limit": 6}),
-                    ToolCall(id="mock_call_stats", name="get_incident_statistics", arguments={"incident_id": _incident_id(messages)}),
+                    ToolCall(
+                        id="mock_call_details",
+                        name="get_incident_details",
+                        arguments={"incident_id": _incident_id(messages)},
+                    ),
+                    ToolCall(
+                        id="mock_call_alerts",
+                        name="get_related_alerts",
+                        arguments={"incident_id": _incident_id(messages)},
+                    ),
+                    ToolCall(
+                        id="mock_call_flows",
+                        name="get_network_flows",
+                        arguments={"incident_id": _incident_id(messages), "limit": 6},
+                    ),
+                    ToolCall(
+                        id="mock_call_stats",
+                        name="get_incident_statistics",
+                        arguments={"incident_id": _incident_id(messages)},
+                    ),
                 ],
                 finish_reason="tool_calls",
             )
@@ -141,7 +157,8 @@ def _verdict_text(results: dict[str, dict]) -> str:
     cited = evidence_pool[: max(1, min(3, len(evidence_pool)))]
     findings = [
         {
-            "observation": observation or "The sampled flows do not show behaviour above the rule thresholds.",
+            "observation": observation
+            or "The sampled flows do not show behaviour above the rule thresholds.",
             "evidence_ids": cited[:2],
         }
     ]
@@ -177,21 +194,25 @@ def _verdict_text(results: dict[str, dict]) -> str:
         )
         limitations = "Sampled evidence only; analyst review required."
     technique_id = (
-        "T1046" if category == "PortScan" and ports >= 100
-        else "T1498" if category == "DDoS" and (alert.get("source_count") or 0) >= 2
+        "T1046"
+        if category == "PortScan" and ports >= 100
+        else "T1498"
+        if category == "DDoS" and (alert.get("source_count") or 0) >= 2
         else "Unmapped"
     )
-    technique_mappings = [{
-        "evidence_id": alert["alert_id"],
-        "technique_id": technique_id,
-        "reason": (
-            "The rule evidence supports a possible network service discovery pattern."
-            if technique_id == "T1046" else
-            "Multiple observed sources support a possible network denial of service pattern."
-            if technique_id == "T1498" else
-            "The available flow records do not establish a specific ATT&CK technique."
-        ),
-    }]
+    technique_mappings = [
+        {
+            "evidence_id": alert["alert_id"],
+            "technique_id": technique_id,
+            "reason": (
+                "The rule evidence supports a possible network service discovery pattern."
+                if technique_id == "T1046"
+                else "Multiple observed sources support a possible network denial of service pattern."
+                if technique_id == "T1498"
+                else "The available flow records do not establish a specific ATT&CK technique."
+            ),
+        }
+    ]
 
     return dumps(
         {

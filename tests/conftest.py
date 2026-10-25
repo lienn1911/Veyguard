@@ -152,7 +152,11 @@ def benign_dataset() -> Dataset:
         "source_file": "synthetic-benign.csv",
     }
     payload = {
-        "provenance": {"dataset": "synthetic fixture", "archive": None, "files": ["synthetic-benign.csv"]},
+        "provenance": {
+            "dataset": "synthetic fixture",
+            "archive": None,
+            "files": ["synthetic-benign.csv"],
+        },
         "rules": {"window_seconds": 60},
         "evaluation": {"groups_scanned": 1, "rule_matches": 0, "preview_cases": 1},
         "flows": flows,

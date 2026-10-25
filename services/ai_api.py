@@ -55,7 +55,12 @@ def recommendations_status() -> dict:
     for name in ("get_recommendations", "recommend_next_steps", "build_recommendations"):
         function = getattr(module4, name, None)
         if callable(function):
-            return {"available": True, "items": [], "detail": f"services.recommendations.{name}", "owner": "Module 4"}
+            return {
+                "available": True,
+                "items": [],
+                "detail": f"services.recommendations.{name}",
+                "owner": "Module 4",
+            }
     return {
         "available": False,
         "items": [],
@@ -94,7 +99,9 @@ class Services:
 
     def require_triage(self) -> TriageService:
         if self.triage is None:
-            raise ApiError(503, "SERVICE_UNAVAILABLE", self.error or "Triage service failed to start.")
+            raise ApiError(
+                503, "SERVICE_UNAVAILABLE", self.error or "Triage service failed to start."
+            )
         return self.triage
 
 
@@ -275,14 +282,20 @@ def create_app() -> FastAPI:
         analyst = str(body.get("analyst") or "").strip()
         note = body.get("note")
         if not analyst:
-            raise ApiError(400, "MISSING_ANALYST", "An analyst name is required to record a decision.")
+            raise ApiError(
+                400, "MISSING_ANALYST", "An analyst name is required to record a decision."
+            )
         try:
             updated = triage.decide(incident_id, decision=decision, analyst=analyst, note=note)
         except LookupError as exc:
             raise ApiError(409, "NO_PROPOSAL", str(exc)) from exc
         except ValueError as exc:
             raise ApiError(400, "INVALID_DECISION", str(exc)) from exc
-        return {"incident_id": incident_id, "decision": updated.get("decision"), "triage": updated.get("latest")}
+        return {
+            "incident_id": incident_id,
+            "decision": updated.get("decision"),
+            "triage": updated.get("latest"),
+        }
 
     # ------------------------------------------------- Module 4 (not ready)
     @app.get("/api/incidents/{incident_id}/recommendations")
@@ -330,7 +343,9 @@ def create_app() -> FastAPI:
     @app.get("/api/settings")
     def get_settings() -> dict:
         if services.settings is None:
-            raise ApiError(503, "SERVICE_UNAVAILABLE", services.error or "Configuration failed to load.")
+            raise ApiError(
+                503, "SERVICE_UNAVAILABLE", services.error or "Configuration failed to load."
+            )
         return {
             "ai": services.triage.status() if services.triage else services.settings.describe(),
             "providers": describe_providers(services.settings),

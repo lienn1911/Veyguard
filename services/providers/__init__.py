@@ -51,9 +51,7 @@ __all__ = [
 ]
 
 
-def build_provider(
-    settings: Settings, *, transport: httpx.BaseTransport | None = None
-) -> Any:
+def build_provider(settings: Settings, *, transport: httpx.BaseTransport | None = None) -> Any:
     """Instantiate the configured provider.
 
     Raises :class:`ProviderNotConfigured` when the selection is unusable; callers
@@ -71,9 +69,7 @@ def build_provider(
         return MockProvider()
 
     if not settings.key_configured:
-        raise ProviderNotConfigured(
-            settings.blocking_reason() or f"{provider} is not configured"
-        )
+        raise ProviderNotConfigured(settings.blocking_reason() or f"{provider} is not configured")
 
     if provider == "groq":
         return GroqProvider(

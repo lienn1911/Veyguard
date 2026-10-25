@@ -7,14 +7,19 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "api": "python -m services.api",
-    "test": "pytest"
+    "test": "pytest",
+    "format:web": "prettier --no-error-on-unmatched-pattern --write \"src/**/*.{js,jsx,css}\" \"scripts/**/*.{js,mjs,cjs}\" \"pitchdeck/**/*.html\" index.html vite.config.js package.json .prettierrc.json",
+    "format:python": "python -m ruff format services tests evaluation",
+    "format": "prettier --no-error-on-unmatched-pattern --write \"src/**/*.{js,jsx,css}\" \"scripts/**/*.{js,mjs,cjs}\" \"pitchdeck/**/*.html\" index.html vite.config.js package.json .prettierrc.json && python -m ruff format services tests evaluation",
+    "format:check": "prettier --no-error-on-unmatched-pattern --check \"src/**/*.{js,jsx,css}\" \"scripts/**/*.{js,mjs,cjs}\" \"pitchdeck/**/*.html\" index.html vite.config.js package.json .prettierrc.json && python -m ruff format --check services tests evaluation"
   },
   "dependencies": {
-    "@icon-park/react": "^1.4.2",
+    "motion": "^12.43.0",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "devDependencies": {
+    "prettier": "^3.9.10",
     "vite": "6.0.5"
   }
 }

@@ -12,7 +12,9 @@ from services.unified_audit import GENESIS as GENESIS_HASH
 def test_chain_links_and_verifies(tmp_path):
     log = AuditLog(tmp_path / "audit.db")
     first = log.append("triage.started", incident_id="INC-1", payload={"run_id": "R1"})
-    second = log.append("triage.completed", incident_id="INC-1", payload={"verdict": "Likely Attack"})
+    second = log.append(
+        "triage.completed", incident_id="INC-1", payload={"verdict": "Likely Attack"}
+    )
 
     assert first["seq"] == 1
     assert first["prev_hash"] == GENESIS_HASH
@@ -47,9 +49,11 @@ def test_tampering_breaks_verification(tmp_path):
     log.append("triage.completed", incident_id="INC-1", payload={"verdict": "Needs Review"})
 
     with sqlite3.connect(path) as db:
-        db.execute('DROP TRIGGER audit_events_no_update')
-        db.execute('UPDATE audit_events SET payload = ? WHERE seq = 1',
-                   (json.dumps({'verdict': 'Likely Benign'}),))
+        db.execute("DROP TRIGGER audit_events_no_update")
+        db.execute(
+            "UPDATE audit_events SET payload = ? WHERE seq = 1",
+            (json.dumps({"verdict": "Likely Benign"}),),
+        )
 
     result = log.verify()
     assert result["ok"] is False

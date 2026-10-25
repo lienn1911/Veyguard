@@ -6,7 +6,13 @@ import unittest
 from dataclasses import replace
 from pathlib import Path
 
-from evaluation.run_live import DEFAULT_ALERTS, DEFAULT_MANIFEST, DEFAULT_TIMELINES, check_manifest, run
+from evaluation.run_live import (
+    DEFAULT_ALERTS,
+    DEFAULT_MANIFEST,
+    DEFAULT_TIMELINES,
+    check_manifest,
+    run,
+)
 from services.config import load_settings
 
 
@@ -25,13 +31,20 @@ class LiveEvaluationTests(unittest.TestCase):
 
     def test_holdout_requires_separate_source_and_review(self):
         case_id = self.manifest["case_ids"][0]
-        holdout = {**self.manifest, "kind": "independent-ai-holdout", "case_ids": [case_id],
-                   "reference_labels": {case_id: "Attack"}}
+        holdout = {
+            **self.manifest,
+            "kind": "independent-ai-holdout",
+            "case_ids": [case_id],
+            "reference_labels": {case_id: "Attack"},
+        }
         with self.assertRaisesRegex(ValueError, "source archive hash"):
             check_manifest(holdout, DEFAULT_ALERTS, DEFAULT_TIMELINES)
-        holdout.update(source_archive_sha256="A" * 64,
-                       development_archive_sha256=["A" * 64], reviewed_by="Reviewer",
-                       frozen_at="2026-10-23T00:00:00Z")
+        holdout.update(
+            source_archive_sha256="A" * 64,
+            development_archive_sha256=["A" * 64],
+            reviewed_by="Reviewer",
+            frozen_at="2026-10-23T00:00:00Z",
+        )
         with self.assertRaisesRegex(ValueError, "distinct"):
             check_manifest(holdout, DEFAULT_ALERTS, DEFAULT_TIMELINES)
 
@@ -45,8 +58,11 @@ class LiveEvaluationTests(unittest.TestCase):
             report = run(smoke, dataset, settings, 1, Path(folder) / "report.json")
             self.assertEqual(report["summary"]["runs"], 1)
             self.assertTrue(report["runs"][0]["audit_verified"])
-            holdout = {**smoke, "kind": "independent-ai-holdout",
-                       "reference_labels": {smoke["case_ids"][0]: "Attack"}}
+            holdout = {
+                **smoke,
+                "kind": "independent-ai-holdout",
+                "reference_labels": {smoke["case_ids"][0]: "Attack"},
+            }
             with self.assertRaisesRegex(ValueError, "mock provider"):
                 run(holdout, dataset, settings, 1, Path(folder) / "holdout.json")
 

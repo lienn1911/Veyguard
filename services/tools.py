@@ -51,8 +51,11 @@ TOOL_DEFINITIONS: tuple[dict, ...] = (
             "type": "object",
             "properties": {
                 "incident_id": INCIDENT_ID_SCHEMA,
-                "offset": {"type": "integer", "minimum": 0,
-                           "description": "Start at this alert index. Follow next_offset when a result is truncated."},
+                "offset": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Start at this alert index. Follow next_offset when a result is truncated.",
+                },
             },
             "required": ["incident_id"],
             "additionalProperties": False,
@@ -136,24 +139,36 @@ def bound_outcome(outcome: ToolOutcome, max_chars: int) -> ToolOutcome:
     if len(outcome.as_text()) <= max_chars:
         return outcome
     data = dict(outcome.data or {})
-    key = 'alerts' if outcome.tool == 'get_related_alerts' else 'flows'
+    key = "alerts" if outcome.tool == "get_related_alerts" else "flows"
     if isinstance(data.get(key), list):
         rows = list(data[key])
-        total = data.get('total', len(rows))
-        offset = outcome.arguments.get('offset', 0)
+        total = data.get("total", len(rows))
+        offset = outcome.arguments.get("offset", 0)
         while rows:
             rows.pop()
-            data.update({key: rows, 'returned': len(rows), 'total': total,
-                         'truncated': True, 'note': 'Result size limited; omitted records were not returned.'})
-            if key == 'alerts':
-                data['next_offset'] = offset + len(rows)
+            data.update(
+                {
+                    key: rows,
+                    "returned": len(rows),
+                    "total": total,
+                    "truncated": True,
+                    "note": "Result size limited; omitted records were not returned.",
+                }
+            )
+            if key == "alerts":
+                data["next_offset"] = offset + len(rows)
             bounded = replace(outcome, data=data)
             if rows and len(bounded.as_text()) <= max_chars:
                 return bounded
-    return replace(outcome, ok=False, data=None, error={
-        'code': 'TOOL_RESULT_TOO_LARGE',
-        'message': 'Result exceeds the disclosure budget; request a smaller evidence selection.',
-    })
+    return replace(
+        outcome,
+        ok=False,
+        data=None,
+        error={
+            "code": "TOOL_RESULT_TOO_LARGE",
+            "message": "Result exceeds the disclosure budget; request a smaller evidence selection.",
+        },
+    )
 
 
 # --------------------------------------------------------------------------- #
@@ -187,21 +202,15 @@ def validate_arguments(schema: dict, arguments: Any) -> dict:
         spec = properties.get(name) or {}
         expected = spec.get("type")
         if expected in _PY_TYPES and not isinstance(value, _PY_TYPES[expected]):
-            raise ToolError(
-                "INVALID_ARGUMENTS", f"Argument {name!r} must be of type {expected}."
-            )
+            raise ToolError("INVALID_ARGUMENTS", f"Argument {name!r} must be of type {expected}.")
         if expected == "integer" and isinstance(value, bool):
             raise ToolError("INVALID_ARGUMENTS", f"Argument {name!r} must be an integer.")
         if expected == "string" and isinstance(value, bool):
             raise ToolError("INVALID_ARGUMENTS", f"Argument {name!r} must be a string.")
         if "minimum" in spec and isinstance(value, (int, float)) and value < spec["minimum"]:
-            raise ToolError(
-                "INVALID_ARGUMENTS", f"Argument {name!r} must be >= {spec['minimum']}."
-            )
+            raise ToolError("INVALID_ARGUMENTS", f"Argument {name!r} must be >= {spec['minimum']}.")
         if "maximum" in spec and isinstance(value, (int, float)) and value > spec["maximum"]:
-            raise ToolError(
-                "INVALID_ARGUMENTS", f"Argument {name!r} must be <= {spec['maximum']}."
-            )
+            raise ToolError("INVALID_ARGUMENTS", f"Argument {name!r} must be <= {spec['maximum']}.")
         cleaned[name] = value
     return cleaned
 
@@ -215,7 +224,9 @@ class ToolRegistry:
     def __init__(self, dataset: Dataset, active_incident_id: str):
         self.dataset = dataset
         self.active_incident_id = active_incident_id
-        self._schemas = {definition["name"]: definition["parameters"] for definition in TOOL_DEFINITIONS}
+        self._schemas = {
+            definition["name"]: definition["parameters"] for definition in TOOL_DEFINITIONS
+        }
         self._handlers: dict[str, Callable[[str, dict], dict]] = {
             "get_incident_details": self._incident_details,
             "get_related_alerts": self._related_alerts,
@@ -291,10 +302,19 @@ class ToolRegistry:
         destinations = {item.get("destination_ip") for item in alerts}
         compact = []
         for item in alerts:
-            row = {key: item[key] for key in (
-                "alert_id", "timestamp", "flow_count", "destination_port_count",
-                "source_port_count", "source_count", "rule_basis",
-            ) if key in item}
+            row = {
+                key: item[key]
+                for key in (
+                    "alert_id",
+                    "timestamp",
+                    "flow_count",
+                    "destination_port_count",
+                    "source_port_count",
+                    "source_count",
+                    "rule_basis",
+                )
+                if key in item
+            }
             if len(sources) > 1:
                 row["source_ip"] = item.get("source_ip")
             if len(destinations) > 1:
@@ -304,8 +324,10 @@ class ToolRegistry:
             "incident_id": incident_id,
             "rule_type": alerts[0].get("type") if alerts else None,
             "source_ip": next(iter(sources)) if len(sources) == 1 else "Multiple sources",
-            "destination_ip": next(iter(destinations)) if len(destinations) == 1 else "Multiple destinations",
-            "alerts": compact[arguments.get('offset', 0):],
+            "destination_ip": next(iter(destinations))
+            if len(destinations) == 1
+            else "Multiple destinations",
+            "alerts": compact[arguments.get("offset", 0) :],
             "total": len(compact),
         }
 

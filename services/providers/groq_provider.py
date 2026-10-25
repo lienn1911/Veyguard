@@ -139,7 +139,9 @@ class GroqProvider:
             except ValueError:
                 retry_seconds = None
             raise ProviderRateLimited(
-                "Groq free-tier rate limit reached", retry_after=retry_seconds, detail=_snippet(response)
+                "Groq free-tier rate limit reached",
+                retry_after=retry_seconds,
+                detail=_snippet(response),
             )
         if response.status_code in (401, 403):
             raise ProviderAuthError(
@@ -157,7 +159,9 @@ class GroqProvider:
         try:
             body = response.json()
         except ValueError as exc:
-            raise ProviderProtocolError("Groq returned a non-JSON body", detail=_snippet(response)) from exc
+            raise ProviderProtocolError(
+                "Groq returned a non-JSON body", detail=_snippet(response)
+            ) from exc
         return _parse_body(body)
 
 
@@ -173,7 +177,9 @@ def _parse_body(body: Any) -> AssistantTurn:
         raise ProviderProtocolError("Groq response was not a JSON object")
     choices = body.get("choices")
     if not isinstance(choices, list) or not choices:
-        raise ProviderProtocolError("Groq response contained no choices", detail=_snippet_body(body))
+        raise ProviderProtocolError(
+            "Groq response contained no choices", detail=_snippet_body(body)
+        )
     choice = choices[0] or {}
     message = choice.get("message") or {}
     if not isinstance(message, dict):

@@ -103,7 +103,11 @@ def proposed_ai_settings(provider: str, model: str, api_key: str = "") -> tuple[
         model = PROVIDER_DEFAULT_MODELS["mock"]
     if not isinstance(model, str) or not re.fullmatch(r"[A-Za-z0-9._:/-]{1,120}", model):
         raise ConfigError("Model ID contains invalid characters")
-    if not isinstance(api_key, str) or len(api_key) > 512 or any(ord(char) < 33 or ord(char) > 126 for char in api_key):
+    if (
+        not isinstance(api_key, str)
+        or len(api_key) > 512
+        or any(ord(char) < 33 or ord(char) > 126 for char in api_key)
+    ):
         raise ConfigError("API key must contain printable characters without spaces")
     saved = _ui_settings()
     keys = dict(saved.get("api_keys") or {})
@@ -168,7 +172,9 @@ class Settings:
 
     @property
     def key_configured(self) -> bool:
-        return self.is_mock or (bool(shutil.which("codex")) if self.provider == "codex" else bool(self.api_key))
+        return self.is_mock or (
+            bool(shutil.which("codex")) if self.provider == "codex" else bool(self.api_key)
+        )
 
     @property
     def ready(self) -> bool:
@@ -223,7 +229,13 @@ def load_settings(*, override: dict | None = None) -> Settings:
         "mock": "",
         "codex": "",
     }
-    api_keys.update({key: value for key, value in (ui.get("api_keys") or {}).items() if key in api_keys and isinstance(value, str)})
+    api_keys.update(
+        {
+            key: value
+            for key, value in (ui.get("api_keys") or {}).items()
+            if key in api_keys and isinstance(value, str)
+        }
+    )
     models = {
         "groq": _str("GROQ_MODEL", PROVIDER_DEFAULT_MODELS["groq"]),
         "gemini": _str("GEMINI_MODEL", PROVIDER_DEFAULT_MODELS["gemini"]),
@@ -231,7 +243,13 @@ def load_settings(*, override: dict | None = None) -> Settings:
         "mock": PROVIDER_DEFAULT_MODELS["mock"],
         "codex": _str("CODEX_MODEL", PROVIDER_DEFAULT_MODELS["codex"]),
     }
-    models.update({key: value for key, value in (ui.get("models") or {}).items() if key in models and isinstance(value, str)})
+    models.update(
+        {
+            key: value
+            for key, value in (ui.get("models") or {}).items()
+            if key in models and isinstance(value, str)
+        }
+    )
 
     max_steps = _int("AI_MAX_STEPS", 6)
     if not 1 <= max_steps <= 12:
@@ -243,9 +261,7 @@ def load_settings(*, override: dict | None = None) -> Settings:
 
     origins = tuple(
         origin.strip()
-        for origin in _str(
-            "CORS_ORIGINS", "http://127.0.0.1:5173,http://localhost:5173"
-        ).split(",")
+        for origin in _str("CORS_ORIGINS", "http://127.0.0.1:5173,http://localhost:5173").split(",")
         if origin.strip()
     )
 

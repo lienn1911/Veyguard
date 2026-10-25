@@ -41,7 +41,10 @@ def make_proposal(dataset, incident_id, verdict, evidence=None, reason=None, **e
         ),
         "evidence_ids": list(evidence),
         "findings": [
-            {"observation": f"Rule basis: {record.alert['rule_basis']}", "evidence_ids": list(evidence)[:1]}
+            {
+                "observation": f"Rule basis: {record.alert['rule_basis']}",
+                "evidence_ids": list(evidence)[:1],
+            }
         ],
         "limitations": "Only sampled flow records were available.",
     }
@@ -55,7 +58,10 @@ def make_proposal(dataset, incident_id, verdict, evidence=None, reason=None, **e
 def test_portscan_incident_is_classified_as_attack(service_factory, dataset, incidents_by_category):
     incident_id = incidents_by_category["PortScan"]
     triage, _ = service_factory(
-        [investigation_turn(incident_id), answer_turn(make_proposal(dataset, incident_id, "Likely Attack"))]
+        [
+            investigation_turn(incident_id),
+            answer_turn(make_proposal(dataset, incident_id, "Likely Attack")),
+        ]
     )
 
     result = triage.investigate(incident_id)
@@ -73,25 +79,35 @@ def test_portscan_incident_is_classified_as_attack(service_factory, dataset, inc
     ]
 
 
-def test_agent_can_choose_only_the_evidence_queries_needed(service_factory, dataset, incidents_by_category):
+def test_agent_can_choose_only_the_evidence_queries_needed(
+    service_factory, dataset, incidents_by_category
+):
     incident_id = incidents_by_category["PortScan"]
     cited_alert = alert_id(dataset, incident_id)
-    triage, _ = service_factory([
-        tool_turn(
-            ("get_incident_details", {"incident_id": incident_id}),
-            ("get_related_alerts", {"incident_id": incident_id}),
-        ),
-        answer_turn(make_proposal(
-            dataset, incident_id, "Needs Review", evidence=[cited_alert],
-            reason=f"Observed rule signal in alert {cited_alert}. Additional flow review is needed before an attack conclusion.",
-        )),
-    ])
+    triage, _ = service_factory(
+        [
+            tool_turn(
+                ("get_incident_details", {"incident_id": incident_id}),
+                ("get_related_alerts", {"incident_id": incident_id}),
+            ),
+            answer_turn(
+                make_proposal(
+                    dataset,
+                    incident_id,
+                    "Needs Review",
+                    evidence=[cited_alert],
+                    reason=f"Observed rule signal in alert {cited_alert}. Additional flow review is needed before an attack conclusion.",
+                )
+            ),
+        ]
+    )
 
     result = triage.investigate(incident_id)
 
     assert result["status"] == "ok"
     assert [call["tool"] for call in result["investigation"]["tool_calls"]] == [
-        "get_incident_details", "get_related_alerts",
+        "get_incident_details",
+        "get_related_alerts",
     ]
     assert result["evidence_ids"] == [cited_alert]
 
@@ -99,7 +115,10 @@ def test_agent_can_choose_only_the_evidence_queries_needed(service_factory, data
 def test_dos_incident_is_classified_as_attack(service_factory, dataset, incidents_by_category):
     incident_id = incidents_by_category["DoS"]
     triage, _ = service_factory(
-        [investigation_turn(incident_id), answer_turn(make_proposal(dataset, incident_id, "Likely Attack"))]
+        [
+            investigation_turn(incident_id),
+            answer_turn(make_proposal(dataset, incident_id, "Likely Attack")),
+        ]
     )
 
     result = triage.investigate(incident_id)
@@ -178,7 +197,9 @@ def test_insufficient_evidence_yields_needs_review(service_factory, dataset, inc
 def test_missing_evidence_for_attack_is_rejected(service_factory, dataset, incidents_by_category):
     incident_id = incidents_by_category["PortScan"]
     bad = make_proposal(dataset, incident_id, "Likely Attack", evidence=[])
-    triage, _ = service_factory([investigation_turn(incident_id), answer_turn(bad), answer_turn(bad)])
+    triage, _ = service_factory(
+        [investigation_turn(incident_id), answer_turn(bad), answer_turn(bad)]
+    )
 
     result = triage.investigate(incident_id)
 
@@ -197,7 +218,9 @@ def test_fabricated_evidence_id_is_rejected(service_factory, dataset, incidents_
     bad = make_proposal(
         dataset, incident_id, "Likely Attack", evidence=["FLOW-DEADBEEF0000", "ALT-FFFFFFFFFFFF"]
     )
-    triage, _ = service_factory([investigation_turn(incident_id), answer_turn(bad), answer_turn(bad)])
+    triage, _ = service_factory(
+        [investigation_turn(incident_id), answer_turn(bad), answer_turn(bad)]
+    )
 
     result = triage.investigate(incident_id)
 
@@ -207,12 +230,16 @@ def test_fabricated_evidence_id_is_rejected(service_factory, dataset, incidents_
     assert "UNKNOWN_EVIDENCE" in codes
 
 
-def test_evidence_from_another_incident_is_rejected(service_factory, dataset, incidents_by_category):
+def test_evidence_from_another_incident_is_rejected(
+    service_factory, dataset, incidents_by_category
+):
     incident_id = incidents_by_category["PortScan"]
     other = incidents_by_category["DoS"]
     foreign = flow_ids(dataset, other, count=1)
     bad = make_proposal(dataset, incident_id, "Likely Attack", evidence=foreign)
-    triage, _ = service_factory([investigation_turn(incident_id), answer_turn(bad), answer_turn(bad)])
+    triage, _ = service_factory(
+        [investigation_turn(incident_id), answer_turn(bad), answer_turn(bad)]
+    )
 
     result = triage.investigate(incident_id)
 
@@ -224,7 +251,9 @@ def test_evidence_from_another_incident_is_rejected(service_factory, dataset, in
 def test_invalid_verdict_is_rejected(service_factory, dataset, incidents_by_category):
     incident_id = incidents_by_category["DoS"]
     bad = make_proposal(dataset, incident_id, "Suspicious")
-    triage, _ = service_factory([investigation_turn(incident_id), answer_turn(bad), answer_turn(bad)])
+    triage, _ = service_factory(
+        [investigation_turn(incident_id), answer_turn(bad), answer_turn(bad)]
+    )
 
     result = triage.investigate(incident_id)
 
@@ -239,7 +268,9 @@ def test_verdict_for_wrong_incident_is_rejected(service_factory, dataset, incide
     other = incidents_by_category["PortScan"]
     bad = make_proposal(dataset, incident_id, "Likely Attack")
     bad["incident_id"] = other
-    triage, _ = service_factory([investigation_turn(incident_id), answer_turn(bad), answer_turn(bad)])
+    triage, _ = service_factory(
+        [investigation_turn(incident_id), answer_turn(bad), answer_turn(bad)]
+    )
 
     result = triage.investigate(incident_id)
 
@@ -259,7 +290,9 @@ def test_unsupported_statistic_is_rejected(service_factory, dataset, incidents_b
             "a flood. Evidence FLOW-745C5543C223 supports this."
         ),
     )
-    triage, _ = service_factory([investigation_turn(incident_id), answer_turn(bad), answer_turn(bad)])
+    triage, _ = service_factory(
+        [investigation_turn(incident_id), answer_turn(bad), answer_turn(bad)]
+    )
 
     result = triage.investigate(incident_id)
 
@@ -284,7 +317,9 @@ def test_malformed_json_response_fails_safely(service_factory, incidents_by_cate
     assert result["error"]["code"] == "MALFORMED_RESPONSE"
 
 
-def test_json_wrapped_in_markdown_fence_is_accepted(service_factory, dataset, incidents_by_category):
+def test_json_wrapped_in_markdown_fence_is_accepted(
+    service_factory, dataset, incidents_by_category
+):
     incident_id = incidents_by_category["DoS"]
     payload = make_proposal(dataset, incident_id, "Likely Attack")
     fenced = "Here is my answer:\n```json\n" + json.dumps(payload) + "\n```\n"
@@ -314,9 +349,7 @@ def test_provider_timeout_is_an_operational_error(service_factory, incidents_by_
 
 def test_provider_rate_limit_is_an_operational_error(service_factory, incidents_by_category):
     incident_id = incidents_by_category["DoS"]
-    triage, _ = service_factory(
-        [ProviderRateLimited("free tier exhausted", retry_after=12.0)]
-    )
+    triage, _ = service_factory([ProviderRateLimited("free tier exhausted", retry_after=12.0)])
 
     result = triage.investigate(incident_id)
 
@@ -329,7 +362,9 @@ def test_provider_rate_limit_is_an_operational_error(service_factory, incidents_
 # --------------------------------------------------------------------------- #
 # 11-12: tool failures and bad arguments
 # --------------------------------------------------------------------------- #
-def test_failed_tool_call_is_reported_and_recoverable(service_factory, dataset, incidents_by_category):
+def test_failed_tool_call_is_reported_and_recoverable(
+    service_factory, dataset, incidents_by_category
+):
     incident_id = incidents_by_category["DoS"]
     triage, _ = service_factory(
         [
@@ -354,7 +389,9 @@ def test_failed_tool_call_is_reported_and_recoverable(service_factory, dataset, 
     assert failed[0]["error"]["code"] == "INVALID_ARGUMENTS"
 
 
-def test_invalid_tool_argument_type_is_rejected_before_execution(service_factory, dataset, incidents_by_category):
+def test_invalid_tool_argument_type_is_rejected_before_execution(
+    service_factory, dataset, incidents_by_category
+):
     incident_id = incidents_by_category["DoS"]
     triage, _ = service_factory(
         [
@@ -374,7 +411,11 @@ def test_invalid_tool_argument_type_is_rejected_before_execution(service_factory
     result = triage.investigate(incident_id)
 
     assert result["status"] == "ok"
-    call = [item for item in result["investigation"]["tool_calls"] if item["tool"] == "get_network_flows"][0]
+    call = [
+        item
+        for item in result["investigation"]["tool_calls"]
+        if item["tool"] == "get_network_flows"
+    ][0]
     assert call["ok"] is False
     assert call["error"]["code"] == "INVALID_ARGUMENTS"
     assert "integer" in call["error"]["message"]
@@ -390,7 +431,11 @@ def test_tool_call_for_another_incident_is_blocked(service_factory, dataset, inc
                 ("get_incident_details", {"incident_id": incident_id}),
                 ("get_related_alerts", {"incident_id": incident_id}),
             ),
-            answer_turn(make_proposal(dataset, incident_id, "Likely Attack", evidence=[alert_id(dataset, incident_id)])),
+            answer_turn(
+                make_proposal(
+                    dataset, incident_id, "Likely Attack", evidence=[alert_id(dataset, incident_id)]
+                )
+            ),
         ]
     )
 
@@ -416,7 +461,11 @@ def test_unauthorized_tool_is_blocked(service_factory, dataset, incidents_by_cat
                 ("get_incident_details", {"incident_id": incident_id}),
                 ("get_related_alerts", {"incident_id": incident_id}),
             ),
-            answer_turn(make_proposal(dataset, incident_id, "Likely Attack", evidence=[alert_id(dataset, incident_id)])),
+            answer_turn(
+                make_proposal(
+                    dataset, incident_id, "Likely Attack", evidence=[alert_id(dataset, incident_id)]
+                )
+            ),
         ]
     )
 
@@ -495,7 +544,10 @@ def test_answer_without_tools_is_nudged_once(service_factory, dataset, incidents
 
     assert result["status"] == "ok"
     second_history = provider.histories[1]
-    assert any("without calling any investigation tool" in (message.get("content") or "") for message in second_history)
+    assert any(
+        "without calling any investigation tool" in (message.get("content") or "")
+        for message in second_history
+    )
 
 
 def test_persistently_untooled_answer_is_rejected(service_factory, dataset, incidents_by_category):
@@ -516,7 +568,9 @@ def test_invalid_proposal_gets_one_repair_attempt(service_factory, dataset, inci
     incident_id = incidents_by_category["DoS"]
     bad = make_proposal(dataset, incident_id, "Likely Attack", evidence=["FLOW-NOTREAL0000"])
     good = make_proposal(dataset, incident_id, "Likely Attack")
-    triage, provider = service_factory([investigation_turn(incident_id), answer_turn(bad), answer_turn(good)])
+    triage, provider = service_factory(
+        [investigation_turn(incident_id), answer_turn(bad), answer_turn(good)]
+    )
 
     result = triage.investigate(incident_id)
 
@@ -524,7 +578,10 @@ def test_invalid_proposal_gets_one_repair_attempt(service_factory, dataset, inci
     assert result["investigation"]["corrections"] == 1
     assert provider.calls == 3
     correction_history = provider.histories[2]
-    assert any("failed deterministic backend validation" in (m.get("content") or "") for m in correction_history)
+    assert any(
+        "failed deterministic backend validation" in (m.get("content") or "")
+        for m in correction_history
+    )
 
 
 def test_unknown_incident_raises(service_factory):
@@ -537,7 +594,9 @@ def test_unknown_incident_raises(service_factory):
 
 
 def test_disabled_provider_raises_instead_of_falling_back(service_factory, incidents_by_category):
-    triage, _ = service_factory([], provider="groq", api_keys={"groq": "", "gemini": "", "openrouter": "", "mock": ""})
+    triage, _ = service_factory(
+        [], provider="groq", api_keys={"groq": "", "gemini": "", "openrouter": "", "mock": ""}
+    )
 
     with pytest.raises(Exception) as excinfo:
         triage.investigate(incidents_by_category["DoS"])
@@ -545,17 +604,29 @@ def test_disabled_provider_raises_instead_of_falling_back(service_factory, incid
     assert "GROQ_API_KEY" in str(excinfo.value)
 
 
-def test_safety_bridge_denial_blocks_a_valid_model_proposal(service_factory, dataset, incidents_by_category, monkeypatch):
+def test_safety_bridge_denial_blocks_a_valid_model_proposal(
+    service_factory, dataset, incidents_by_category, monkeypatch
+):
     from services import guardrails
-    monkeypatch.setattr(guardrails, 'evaluate_proposal', lambda **_: {
-        'allowed': False, 'requires_confirmation': True, 'reasons': ['Explicit safety denial'],
-    })
-    incident_id = incidents_by_category['DoS']
-    triage, _ = service_factory([
-        investigation_turn(incident_id), answer_turn(make_proposal(dataset, incident_id, 'Likely Attack')),
-    ])
+
+    monkeypatch.setattr(
+        guardrails,
+        "evaluate_proposal",
+        lambda **_: {
+            "allowed": False,
+            "requires_confirmation": True,
+            "reasons": ["Explicit safety denial"],
+        },
+    )
+    incident_id = incidents_by_category["DoS"]
+    triage, _ = service_factory(
+        [
+            investigation_turn(incident_id),
+            answer_turn(make_proposal(dataset, incident_id, "Likely Attack")),
+        ]
+    )
     result = triage.investigate(incident_id)
-    assert result['status'] == 'rejected'
-    assert result['verdict'] == 'Needs Review'
-    assert 'GUARDRAIL_BLOCKED' in {issue['code'] for issue in result['validation']['issues']}
-    assert triage.latest(incident_id)['decision']['status'] == 'pending'
+    assert result["status"] == "rejected"
+    assert result["verdict"] == "Needs Review"
+    assert "GUARDRAIL_BLOCKED" in {issue["code"] for issue in result["validation"]["issues"]}
+    assert triage.latest(incident_id)["decision"]["status"] == "pending"

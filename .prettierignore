@@ -1,0 +1,11 @@
+node_modules/
+dist/
+data/
+reports/
+.git/
+.pytest_cache/
+.test-temp/
+src/components/animated-icons/
+src/*.json
+public/
+pnpm-lock.yaml

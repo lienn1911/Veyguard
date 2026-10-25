@@ -10,6 +10,6 @@ export default defineConfig({
     dedupe: ['react', 'react-dom'],
   },
   optimizeDeps: {
-    include: ['react', 'react-dom/client', '@icon-park/react'],
+    include: ['react', 'react-dom/client'],
   },
 });

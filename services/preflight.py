@@ -46,7 +46,10 @@ PING_TOOL = [
 
 def _list_models(provider: str, api_key: str, timeout: float = 20.0) -> list[str]:
     if provider == "groq":
-        url, headers = "https://api.groq.com/openai/v1/models", {"Authorization": f"Bearer {api_key}"}
+        url, headers = (
+            "https://api.groq.com/openai/v1/models",
+            {"Authorization": f"Bearer {api_key}"},
+        )
     elif provider == "gemini":
         url, headers = (
             "https://generativelanguage.googleapis.com/v1beta/models",
@@ -91,7 +94,11 @@ def run() -> int:
         return 2
 
     try:
-        models = [] if settings.provider == "codex" else _list_models(settings.provider, settings.api_key or "")
+        models = (
+            []
+            if settings.provider == "codex"
+            else _list_models(settings.provider, settings.api_key or "")
+        )
     except httpx.HTTPError as exc:
         print(f"[FAIL] could not reach the {settings.provider} API: {exc}")
         return 3

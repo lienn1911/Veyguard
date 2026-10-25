@@ -20,12 +20,25 @@ class CodexProviderTests(unittest.TestCase):
             self.assertNotIn("-m", command)
             self.assertIn("get_incident_details", kwargs["input"])
             output = Path(command[command.index("--output-last-message") + 1])
-            output.write_text(json.dumps({"kind": "tool", "tool": "get_incident_details", "arguments": '{"incident_id":"INC-ABCDEF"}', "answer": ""}), encoding="utf-8")
+            output.write_text(
+                json.dumps(
+                    {
+                        "kind": "tool",
+                        "tool": "get_incident_details",
+                        "arguments": '{"incident_id":"INC-ABCDEF"}',
+                        "answer": "",
+                    }
+                ),
+                encoding="utf-8",
+            )
             return subprocess.CompletedProcess(command, 0, "", "")
 
         provider = CodexProvider(executable="codex", model="default")
         with patch("services.providers.codex_provider.subprocess.run", side_effect=fake_run):
-            turn = provider.complete([{"role": "user", "content": "Investigate"}], [{"name": "get_incident_details", "description": "Read", "parameters": {}}])
+            turn = provider.complete(
+                [{"role": "user", "content": "Investigate"}],
+                [{"name": "get_incident_details", "description": "Read", "parameters": {}}],
+            )
         self.assertEqual(turn.tool_calls[0].arguments, {"incident_id": "INC-ABCDEF"})
 
     def test_codex_usage_limit_is_not_silently_retried(self):

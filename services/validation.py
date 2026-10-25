@@ -147,7 +147,9 @@ def collect_numbers(value: Any, into: set[float] | None = None) -> set[float]:
     return numbers
 
 
-def check_numeric_claims(text: str, evidence_numbers: set[float], canonical_numbers: set[float] | None = None) -> list[Issue]:
+def check_numeric_claims(
+    text: str, evidence_numbers: set[float], canonical_numbers: set[float] | None = None
+) -> list[Issue]:
     """Flag figures that are presented as observed but never appeared in evidence."""
     issues: list[Issue] = []
     seen: set[str] = set()
@@ -163,7 +165,11 @@ def check_numeric_claims(text: str, evidence_numbers: set[float], canonical_numb
             continue
         # Tolerate rounding to whole numbers for fractional aggregates.
         visible = value in evidence_numbers or float(round(value)) in evidence_numbers
-        stored = canonical_numbers is None or value in canonical_numbers or float(round(value)) in canonical_numbers
+        stored = (
+            canonical_numbers is None
+            or value in canonical_numbers
+            or float(round(value)) in canonical_numbers
+        )
         if visible and stored:
             continue
         level = "error" if value >= _FABRICATION_THRESHOLD else "warning"
@@ -201,9 +207,17 @@ def check_case_time_claims(text: str, incident: dict, alerts: list[dict]) -> lis
     """
     scope = r"(?:incident|case|metadata).{0,85}(?:window|range|timeline)|(?:window|range).{0,85}(?:incident|case|alert)"
     conflict = r"conflict|inconsisten|contradic|outside|beyond|broader|single.minute|one.minute"
-    claims = [part for part in re.split(r"[.!?;]\s+", text or "")
-              if re.search(scope, part, re.I) and re.search(conflict, part, re.I)
-              and not re.search(r"\b(?:no|not|without)\s+(?:a\s+|any\s+)?(?:\w+\s+){0,3}(?:conflict|inconsisten|contradic|outside|beyond)", part, re.I)]
+    claims = [
+        part
+        for part in re.split(r"[.!?;]\s+", text or "")
+        if re.search(scope, part, re.I)
+        and re.search(conflict, part, re.I)
+        and not re.search(
+            r"\b(?:no|not|without)\s+(?:a\s+|any\s+)?(?:\w+\s+){0,3}(?:conflict|inconsisten|contradic|outside|beyond)",
+            part,
+            re.I,
+        )
+    ]
     if not claims:
         return []
     try:
@@ -211,11 +225,25 @@ def check_case_time_claims(text: str, incident: dict, alerts: list[dict]) -> lis
         start, end = parse(incident["window_start"]), parse(incident["window_end"])
         times = [parse(item["timestamp"]) for item in alerts]
         # Bounds represent minute starts, including the final complete bucket.
-        inside = bool(times) and end >= start and all(start <= value < end + timedelta(minutes=1) for value in times)
+        inside = (
+            bool(times)
+            and end >= start
+            and all(start <= value < end + timedelta(minutes=1) for value in times)
+        )
     except (KeyError, ValueError, TypeError):
-        return [Issue("UNVERIFIABLE_TIME_CLAIM", "The claimed case-window conflict cannot be checked against valid case and alert timestamps.")]
+        return [
+            Issue(
+                "UNVERIFIABLE_TIME_CLAIM",
+                "The claimed case-window conflict cannot be checked against valid case and alert timestamps.",
+            )
+        ]
     if inside:
-        return [Issue("CONTRADICTED_TIME_CLAIM", "The AI claims a case-window conflict, but all related alert timestamps fall within the recorded grouped case. Rerun with the complete case time range.")]
+        return [
+            Issue(
+                "CONTRADICTED_TIME_CLAIM",
+                "The AI claims a case-window conflict, but all related alert timestamps fall within the recorded grouped case. Rerun with the complete case time range.",
+            )
+        ]
     return []
 
 
@@ -283,7 +311,13 @@ def validate_proposal(
         candidate = raw.strip()
         if candidate in evidence_ids:
             if seen_evidence_ids is not None and candidate not in seen_evidence_ids:
-                issues.append(Issue("UNSEEN_EVIDENCE", "The response cites a case record that no investigation tool returned: " + candidate))
+                issues.append(
+                    Issue(
+                        "UNSEEN_EVIDENCE",
+                        "The response cites a case record that no investigation tool returned: "
+                        + candidate,
+                    )
+                )
             if candidate not in cited:
                 cited.append(candidate)
         else:
@@ -347,68 +381,144 @@ def validate_proposal(
                     )
                 )
                 continue
-            if seen_evidence_ids is not None and any(value not in seen_evidence_ids for value in valid_ids):
-                issues.append(Issue("UNSEEN_EVIDENCE", "A finding cites a case record that no investigation tool returned."))
+            if seen_evidence_ids is not None and any(
+                value not in seen_evidence_ids for value in valid_ids
+            ):
+                issues.append(
+                    Issue(
+                        "UNSEEN_EVIDENCE",
+                        "A finding cites a case record that no investigation tool returned.",
+                    )
+                )
             findings.append(
-                {"observation": re.sub(r"\s+", " ", observation).strip()[:600], "evidence_ids": valid_ids}
+                {
+                    "observation": re.sub(r"\s+", " ", observation).strip()[:600],
+                    "evidence_ids": valid_ids,
+                }
             )
 
     # --- suggested ATT&CK mapping -----------------------------------------
     technique_mappings: list[dict] = []
     raw_mappings = payload.get("technique_mappings", [])
     if not isinstance(raw_mappings, list) or len(raw_mappings) > 5:
-        issues.append(Issue("INVALID_TECHNIQUE_MAPPING", "technique_mappings must contain at most five entries."))
+        issues.append(
+            Issue(
+                "INVALID_TECHNIQUE_MAPPING", "technique_mappings must contain at most five entries."
+            )
+        )
         raw_mappings = []
     mapped_alerts: set[str] = set()
     for item in raw_mappings:
         if not isinstance(item, dict):
-            issues.append(Issue("INVALID_TECHNIQUE_MAPPING", "Each technique mapping must be an object."))
+            issues.append(
+                Issue("INVALID_TECHNIQUE_MAPPING", "Each technique mapping must be an object.")
+            )
             continue
         alert_id = item.get("evidence_id")
         technique_id = item.get("technique_id")
         mapping_reason = item.get("reason")
         alert_type = (alert_types_by_id or {}).get(alert_id)
-        if (not isinstance(alert_id, str) or evidence_ids.get(alert_id) != "alert"
-                or (seen_evidence_ids is not None and alert_id not in seen_evidence_ids)
-                or (alert_types_by_id is not None and alert_type is None)
-                or alert_id in mapped_alerts):
-            issues.append(Issue("INVALID_TECHNIQUE_MAPPING", "A technique mapping must cite one retrieved alert from this case."))
+        if (
+            not isinstance(alert_id, str)
+            or evidence_ids.get(alert_id) != "alert"
+            or (seen_evidence_ids is not None and alert_id not in seen_evidence_ids)
+            or (alert_types_by_id is not None and alert_type is None)
+            or alert_id in mapped_alerts
+        ):
+            issues.append(
+                Issue(
+                    "INVALID_TECHNIQUE_MAPPING",
+                    "A technique mapping must cite one retrieved alert from this case.",
+                )
+            )
             continue
         if technique_id != "Unmapped" and technique_id != SUPPORTED_TECHNIQUES.get(alert_type):
-            issues.append(Issue("UNSUPPORTED_TECHNIQUE", "The proposed ATT&CK technique is not supported by this alert type."))
+            issues.append(
+                Issue(
+                    "UNSUPPORTED_TECHNIQUE",
+                    "The proposed ATT&CK technique is not supported by this alert type.",
+                )
+            )
             continue
-        if not isinstance(mapping_reason, str) or len(mapping_reason.strip()) < 12 or len(mapping_reason) > 600:
-            issues.append(Issue("INVALID_TECHNIQUE_MAPPING", "A technique mapping needs a concise explanation."))
+        if (
+            not isinstance(mapping_reason, str)
+            or len(mapping_reason.strip()) < 12
+            or len(mapping_reason) > 600
+        ):
+            issues.append(
+                Issue(
+                    "INVALID_TECHNIQUE_MAPPING", "A technique mapping needs a concise explanation."
+                )
+            )
             continue
         mapped_alerts.add(alert_id)
-        technique_mappings.append({"evidence_id": alert_id, "technique_id": technique_id,
-                                   "reason": re.sub(r"\s+", " ", mapping_reason).strip()})
+        technique_mappings.append(
+            {
+                "evidence_id": alert_id,
+                "technique_id": technique_id,
+                "reason": re.sub(r"\s+", " ", mapping_reason).strip(),
+            }
+        )
 
     # --- statistics and investigation depth -------------------------------
     next_steps: list[dict] = []
     raw_steps = payload.get("next_steps", [])
     if not isinstance(raw_steps, list) or len(raw_steps) > 2:
-        issues.append(Issue("INVALID_NEXT_STEPS", "next_steps must contain at most two proposed investigation steps."))
+        issues.append(
+            Issue(
+                "INVALID_NEXT_STEPS",
+                "next_steps must contain at most two proposed investigation steps.",
+            )
+        )
         raw_steps = []
     seen_actions: set[str] = set()
     for item in raw_steps:
         if not isinstance(item, dict):
-            issues.append(Issue("INVALID_NEXT_STEP", "A proposed investigation step must be an object."))
+            issues.append(
+                Issue("INVALID_NEXT_STEP", "A proposed investigation step must be an object.")
+            )
             continue
         action = item.get("action")
         rationale = item.get("reason")
         step_ids = item.get("evidence_ids")
         if not isinstance(action, str) or action not in ALLOWED_ACTIONS or action in seen_actions:
-            issues.append(Issue("UNSAFE_NEXT_STEP", "A proposed investigation step is not allowed or is duplicated."))
+            issues.append(
+                Issue(
+                    "UNSAFE_NEXT_STEP",
+                    "A proposed investigation step is not allowed or is duplicated.",
+                )
+            )
             continue
         if not isinstance(rationale, str) or len(rationale.strip()) < 12 or len(rationale) > 600:
-            issues.append(Issue("INVALID_NEXT_STEP", "A proposed investigation step needs a concise reason."))
+            issues.append(
+                Issue("INVALID_NEXT_STEP", "A proposed investigation step needs a concise reason.")
+            )
             continue
-        if not isinstance(step_ids, list) or not step_ids or any(not isinstance(value, str) or value not in evidence_ids or (seen_evidence_ids is not None and value not in seen_evidence_ids) for value in step_ids):
-            issues.append(Issue("UNKNOWN_EVIDENCE", "A proposed investigation step must cite evidence returned by a tool for this incident."))
+        if (
+            not isinstance(step_ids, list)
+            or not step_ids
+            or any(
+                not isinstance(value, str)
+                or value not in evidence_ids
+                or (seen_evidence_ids is not None and value not in seen_evidence_ids)
+                for value in step_ids
+            )
+        ):
+            issues.append(
+                Issue(
+                    "UNKNOWN_EVIDENCE",
+                    "A proposed investigation step must cite evidence returned by a tool for this incident.",
+                )
+            )
             continue
         seen_actions.add(action)
-        next_steps.append({"action": action, "reason": re.sub(r"\s+", " ", rationale).strip(), "evidence_ids": list(dict.fromkeys(step_ids))[:MAX_EVIDENCE_IDS]})
+        next_steps.append(
+            {
+                "action": action,
+                "reason": re.sub(r"\s+", " ", rationale).strip(),
+                "evidence_ids": list(dict.fromkeys(step_ids))[:MAX_EVIDENCE_IDS],
+            }
+        )
 
     claim_text = " ".join(
         [reason, payload.get("limitations") or ""]
@@ -429,7 +539,11 @@ def validate_proposal(
         )
 
     confidence = payload.get("confidence")
-    if not isinstance(confidence, str) or confidence.strip().lower() not in ("high", "medium", "low"):
+    if not isinstance(confidence, str) or confidence.strip().lower() not in (
+        "high",
+        "medium",
+        "low",
+    ):
         confidence = "low"
     else:
         confidence = confidence.strip().lower()

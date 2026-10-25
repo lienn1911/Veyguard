@@ -54,7 +54,9 @@ def groq_tool_response(name="get_incident_details", arguments=None):
                             "type": "function",
                             "function": {
                                 "name": name,
-                                "arguments": json.dumps(arguments or {"incident_id": "INC-CADF3563BF02"}),
+                                "arguments": json.dumps(
+                                    arguments or {"incident_id": "INC-CADF3563BF02"}
+                                ),
                             },
                         }
                     ],
@@ -67,7 +69,9 @@ def groq_tool_response(name="get_incident_details", arguments=None):
 
 
 def groq_text_response(text):
-    return {"choices": [{"message": {"role": "assistant", "content": text}, "finish_reason": "stop"}]}
+    return {
+        "choices": [{"message": {"role": "assistant", "content": text}, "finish_reason": "stop"}]
+    }
 
 
 def gemini_tool_response(name="get_incident_details", arguments=None):
@@ -76,7 +80,14 @@ def gemini_tool_response(name="get_incident_details", arguments=None):
             {
                 "content": {
                     "role": "model",
-                    "parts": [{"functionCall": {"name": name, "args": arguments or {"incident_id": "INC-CADF3563BF02"}}}],
+                    "parts": [
+                        {
+                            "functionCall": {
+                                "name": name,
+                                "args": arguments or {"incident_id": "INC-CADF3563BF02"},
+                            }
+                        }
+                    ],
                 },
                 "finishReason": "STOP",
             }
@@ -86,7 +97,11 @@ def gemini_tool_response(name="get_incident_details", arguments=None):
 
 
 def gemini_text_response(text):
-    return {"candidates": [{"content": {"role": "model", "parts": [{"text": text}]}, "finishReason": "STOP"}]}
+    return {
+        "candidates": [
+            {"content": {"role": "model", "parts": [{"text": text}]}, "finishReason": "STOP"}
+        ]
+    }
 
 
 # --------------------------------------------------------------------------- #
@@ -100,7 +115,11 @@ def test_groq_request_shape_and_no_key_leak():
         [
             {"role": "system", "content": "sys"},
             {"role": "user", "content": "hi"},
-            {"role": "assistant", "content": None, "tool_calls": [{"id": "c0", "name": "t", "arguments": {"a": 1}}]},
+            {
+                "role": "assistant",
+                "content": None,
+                "tool_calls": [{"id": "c0", "name": "t", "arguments": {"a": 1}}],
+            },
             {"role": "tool", "tool_call_id": "c0", "name": "t", "content": "{}"},
         ],
         list(TOOL_DEFINITIONS),
@@ -138,7 +157,9 @@ def test_groq_malformed_arguments_are_flagged_not_crashed():
     body["choices"][0]["message"]["tool_calls"][0]["function"]["arguments"] = "{not json"
     transport = SequenceTransport([(200, body)])
 
-    turn = GroqProvider("k", "m", transport=transport).complete([{"role": "user", "content": "go"}], [])
+    turn = GroqProvider("k", "m", transport=transport).complete(
+        [{"role": "user", "content": "go"}], []
+    )
 
     assert turn.tool_calls[0].parse_error is not None
     assert "JSON" in turn.tool_calls[0].parse_error
@@ -183,7 +204,9 @@ def test_groq_timeout_is_mapped():
 def test_groq_empty_choices_is_a_protocol_error():
     transport = SequenceTransport([(200, {"choices": []})])
     with pytest.raises(ProviderProtocolError):
-        GroqProvider("k", "m", transport=transport).complete([{"role": "user", "content": "go"}], [])
+        GroqProvider("k", "m", transport=transport).complete(
+            [{"role": "user", "content": "go"}], []
+        )
 
 
 # --------------------------------------------------------------------------- #
@@ -197,8 +220,23 @@ def test_gemini_request_shape_and_schema_sanitisation():
         [
             {"role": "system", "content": "sys"},
             {"role": "user", "content": "hi"},
-            {"role": "assistant", "content": None, "tool_calls": [{"id": "c0", "name": "get_incident_details", "arguments": {"incident_id": "INC-X"}}]},
-            {"role": "tool", "tool_call_id": "c0", "name": "get_incident_details", "content": '{"ok": true}'},
+            {
+                "role": "assistant",
+                "content": None,
+                "tool_calls": [
+                    {
+                        "id": "c0",
+                        "name": "get_incident_details",
+                        "arguments": {"incident_id": "INC-X"},
+                    }
+                ],
+            },
+            {
+                "role": "tool",
+                "tool_call_id": "c0",
+                "name": "get_incident_details",
+                "content": '{"ok": true}',
+            },
         ],
         list(TOOL_DEFINITIONS),
     )
@@ -220,7 +258,9 @@ def test_gemini_request_shape_and_schema_sanitisation():
 
 def test_gemini_parses_function_call_and_text():
     transport = SequenceTransport([(200, gemini_tool_response())])
-    turn = GeminiProvider("k", "m", transport=transport).complete([{"role": "user", "content": "go"}], list(TOOL_DEFINITIONS))
+    turn = GeminiProvider("k", "m", transport=transport).complete(
+        [{"role": "user", "content": "go"}], list(TOOL_DEFINITIONS)
+    )
 
     assert turn.tool_calls[0].name == "get_incident_details"
     assert turn.tool_calls[0].arguments == {"incident_id": "INC-CADF3563BF02"}
@@ -231,7 +271,9 @@ def test_gemini_rate_limit_and_timeout():
     with pytest.raises(ProviderRateLimited):
         GeminiProvider("k", "m", transport=SequenceTransport([(429, {})])).complete([], [])
     with pytest.raises(ProviderTimeout):
-        GeminiProvider("k", "m", transport=SequenceTransport([httpx.ReadTimeout("slow")])).complete([], [])
+        GeminiProvider("k", "m", transport=SequenceTransport([httpx.ReadTimeout("slow")])).complete(
+            [], []
+        )
 
 
 def test_gemini_blocked_prompt_is_a_protocol_error():
@@ -259,16 +301,16 @@ def test_factory_requires_explicit_configuration(settings):
     with pytest.raises(ProviderNotConfigured):
         build_provider(replace(settings, provider="openrouter"))
     with pytest.raises(ProviderNotConfigured):
-        build_provider(replace(settings, provider="groq", api_keys={**settings.api_keys, "groq": ""}))
+        build_provider(
+            replace(settings, provider="groq", api_keys={**settings.api_keys, "groq": ""})
+        )
     assert build_provider(replace(settings, provider="mock")).name == "mock"
 
 
 def test_switching_provider_preserves_result_schema(settings, dataset, incidents_by_category):
     """Same semantics in, same validated output shape out - whichever adapter runs."""
     incident_id = incidents_by_category["DoS"]
-    flow_id = next(
-        key for key, kind in dataset.evidence_ids(incident_id).items() if kind == "flow"
-    )
+    flow_id = next(key for key, kind in dataset.evidence_ids(incident_id).items() if kind == "flow")
     answer = json.dumps(
         {
             "incident_id": incident_id,
@@ -282,10 +324,16 @@ def test_switching_provider_preserves_result_schema(settings, dataset, incidents
     )
 
     groq_transport = SequenceTransport(
-        [(200, groq_tool_response("get_network_flows", {"incident_id": incident_id})), (200, groq_text_response(answer))]
+        [
+            (200, groq_tool_response("get_network_flows", {"incident_id": incident_id})),
+            (200, groq_text_response(answer)),
+        ]
     )
     gemini_transport = SequenceTransport(
-        [(200, gemini_tool_response("get_network_flows", {"incident_id": incident_id})), (200, gemini_text_response(answer))]
+        [
+            (200, gemini_tool_response("get_network_flows", {"incident_id": incident_id})),
+            (200, gemini_text_response(answer)),
+        ]
     )
 
     results = []

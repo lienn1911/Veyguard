@@ -151,7 +151,9 @@ def test_unconfigured_live_provider_returns_503(client, settings, dataset):
         settings, provider="gemini", api_keys={**settings.api_keys, "gemini": ""}
     )
     api_module.services.settings = unconfigured
-    api_module.services.triage = TriageService(unconfigured, dataset, audit=api_module.services.audit)
+    api_module.services.triage = TriageService(
+        unconfigured, dataset, audit=api_module.services.audit
+    )
     incident_id = first_incident(client)
 
     response = client.post(f"/api/incidents/{incident_id}/triage")

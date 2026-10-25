@@ -1,13 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import SelectField from './SelectField.jsx';
+import Icon from './Icon.jsx';
 import { apiFetch } from '../apiFetch.js';
 
-export function PriorityBadge({ priority }) {
+export function PriorityBadge({ priority, showIcon = true }) {
   const level = priority?.level || 'Not assessed';
-  const explanation = priority?.source === 'analyst'
-    ? `Set by ${priority.analyst}: ${priority.reason}`
-    : `Rule suggestion: ${(priority?.reasons || ['Activity measurements unavailable']).join(' · ')}`;
-  return <span className={`review-priority-badge ${level.toLowerCase().replaceAll(' ', '-')}`} title={explanation}>{level}</span>;
+  const explanation =
+    priority?.source === 'analyst'
+      ? `Set by ${priority.analyst}: ${priority.reason}`
+      : `Rule suggestion: ${(priority?.reasons || ['Activity measurements unavailable']).join(' · ')}`;
+  const icon = { High: 'priorityHigh', Low: 'priorityLow' }[level];
+  return (
+    <span
+      className={`review-priority-badge ${level.toLowerCase().replaceAll(' ', '-')}`}
+      title={explanation}
+    >
+      {showIcon &&
+        (level === 'Medium' ? (
+          <span className="priority-equals" aria-hidden="true">
+            =
+          </span>
+        ) : (
+          icon && <Icon name={icon} size={17} />
+        ))}
+      <span>{level}</span>
+    </span>
+  );
 }
 
 export default function ReviewPriority({ incidentId, priority, analystName, onSaved }) {
@@ -15,12 +33,18 @@ export default function ReviewPriority({ incidentId, priority, analystName, onSa
   const [reason, setReason] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  useEffect(() => { setLevel(priority?.source === 'analyst' ? priority.level : 'automatic'); setReason(''); setError(''); }, [incidentId, priority?.source, priority?.level]);
+  useEffect(() => {
+    setLevel(priority?.source === 'analyst' ? priority.level : 'automatic');
+    setReason('');
+    setError('');
+  }, [incidentId, priority?.source, priority?.level]);
   async function save() {
-    setSaving(true); setError('');
+    setSaving(true);
+    setError('');
     try {
       const response = await apiFetch(`/api/cases/${encodeURIComponent(incidentId)}/priority`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ level, reason, analyst: analystName, confirmed: true }),
       });
       const result = await response.json();
@@ -28,24 +52,72 @@ export default function ReviewPriority({ incidentId, priority, analystName, onSa
       await onSaved();
       setReason('');
       window.dispatchEvent(new CustomEvent('case-activity-updated', { detail: incidentId }));
-    } catch (failure) { setError(failure.message); }
-    finally { setSaving(false); }
+    } catch (failure) {
+      setError(failure.message);
+    } finally {
+      setSaving(false);
+    }
   }
-  return <details className="review-priority-editor" key={incidentId}>
-    <summary><span>Review priority</span><PriorityBadge priority={priority} /><span className="review-priority-more">Details and adjust</span></summary>
-    <div className="review-priority-body">
-      <p className="review-priority-context">Investigation order based on activity, not a security risk rating. AI results do not automatically lower it.</p>
-      {priority?.source === 'analyst' && <p>Set by {priority.analyst}: {priority.reason}</p>}
-      <p>Rule suggestion: {priority?.suggested?.level || priority?.level || 'Not assessed'}</p>
-      <ul>{(priority?.reasons || ['Activity measurements unavailable']).map((text) => <li key={text}>{text}</li>)}</ul>
-      <div className="review-priority-fields">
-        <SelectField label="Set priority" value={level} onChange={setLevel} disabled={saving} options={[
-          { value: 'automatic', label: 'Use rule suggestion' }, ...['High', 'Medium', 'Low'].map((value) => ({ value, label: value })),
-        ]} />
-        <label className="review-priority-reason">Reason for change<textarea value={reason} onChange={(event) => setReason(event.target.value)} maxLength={1000} rows={2} placeholder="Explain the urgency using case evidence" disabled={saving} /></label>
+  return (
+    <details className="review-priority-editor" key={incidentId}>
+      <summary>
+        <span>Review priority</span>
+        <PriorityBadge priority={priority} />
+        <span className="review-priority-more">Details and adjust</span>
+      </summary>
+      <div className="review-priority-body">
+        <p className="review-priority-context">
+          Investigation order based on activity, not a security risk rating. AI results do not
+          automatically lower it.
+        </p>
+        {priority?.source === 'analyst' && (
+          <p>
+            Set by {priority.analyst}: {priority.reason}
+          </p>
+        )}
+        <p>Rule suggestion: {priority?.suggested?.level || priority?.level || 'Not assessed'}</p>
+        <ul>
+          {(priority?.reasons || ['Activity measurements unavailable']).map((text) => (
+            <li key={text}>{text}</li>
+          ))}
+        </ul>
+        <div className="review-priority-fields">
+          <SelectField
+            label="Set priority"
+            value={level}
+            onChange={setLevel}
+            disabled={saving}
+            options={[
+              { value: 'automatic', label: 'Use rule suggestion' },
+              ...['High', 'Medium', 'Low'].map((value) => ({ value, label: value })),
+            ]}
+          />
+          <label className="review-priority-reason">
+            Reason for change
+            <textarea
+              value={reason}
+              onChange={(event) => setReason(event.target.value)}
+              maxLength={1000}
+              rows={2}
+              placeholder="Explain the urgency using case evidence"
+              disabled={saving}
+            />
+          </label>
+        </div>
+        {error && (
+          <p role="alert" className="review-error">
+            {error}
+          </p>
+        )}
+        <button
+          type="button"
+          className="review-priority-save"
+          disabled={saving || reason.trim().length < 10 || !priority}
+          onClick={save}
+        >
+          {saving ? 'Saving…' : 'Save priority'}
+        </button>
       </div>
-      {error && <p role="alert" className="review-error">{error}</p>}
-      <button type="button" className="review-priority-save" disabled={saving || reason.trim().length < 10 || !priority} onClick={save}>{saving ? 'Saving…' : 'Save priority'}</button>
-    </div>
-  </details>;
+    </details>
+  );
 }

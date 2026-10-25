@@ -94,7 +94,7 @@ API keys stay in backend configuration and are not returned to the browser. Loca
 
 Open **Investigations**. Search or filter the case list, check its AI and review status, then open a case.
 
-Opening a case requests AI analysis when a live provider is configured and no reusable valid result exists. The separate **Auto AI analysis** switch processes pending cases sequentially in the background. Human review is still required.
+Opening a case requests AI analysis when a live provider is configured and no reusable valid result exists. Human review is still required.
 
 Review priority helps order the queue. **High, Medium and Low are activity-based review priorities, not confirmed attack severity.**
 
@@ -120,7 +120,7 @@ The bundled samples provide traceable examples. Browsing all original records re
 
 Read each proposed step and expand **Reason and evidence** when needed. Choose **Approve** or **Reject**, add a remark where useful, then select **Save decisions**.
 
-Approval places a step on the investigation work list. Carry out the investigation separately and mark approved work complete from **Home → Pending investigation steps**. Veyguard does not block traffic, isolate a device or perform the recommended investigation for you.
+Approval records an agreed next step. Find these under **Home → Approved next steps** and open a linked case to review its evidence and approval remarks. Actual investigation takes place outside Veyguard. Veyguard does not block traffic, isolate a device or perform the recommended investigation for you.
 
 ### 5. Record findings and review the AI conclusion
 
@@ -145,7 +145,7 @@ To revisit a saved report, use the **Report saved** filter in Investigations, op
 | Save report | Preserves the findings and decisions as a snapshot. |
 | Download PDF | Exports the report without approving steps or saving a new snapshot. |
 
-**Saving a report does not mark the review complete or resolve the case.** Review completion also does not mean approved investigation work has been carried out.
+**Saving a report does not mark the review complete or resolve the case.** Review completion does not verify that follow-up investigation has been carried out.
 
 The current prototype retains one saved snapshot per case. Later notes and decisions do not update that snapshot, and saving again does not create a new report version. Finish the review and save the notes you want included before saving the report.
 
@@ -224,6 +224,8 @@ Veyguard/
 - GitHub Pages alone cannot run the Python API, AI analysis or persistent review workflow. This repository is not itself a hosted live demo.
 
 ## Development and evaluation
+
+For the source layout, code style and formatting commands, see the [development guide](docs/DEVELOPMENT.md).
 
 Build the frontend:
 

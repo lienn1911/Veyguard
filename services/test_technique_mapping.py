@@ -17,25 +17,35 @@ def check(technique_id: str, evidence_id: str = ALERT, alert_type: str = "PortSc
         "reason": "The retrieved alert needs analyst review before a conclusion.",
         "evidence_ids": [ALERT],
         "findings": [],
-        "technique_mappings": [{
-            "evidence_id": evidence_id,
-            "technique_id": technique_id,
-            "reason": "The cited alert supports this tentative mapping only.",
-        }],
+        "technique_mappings": [
+            {
+                "evidence_id": evidence_id,
+                "technique_id": technique_id,
+                "reason": "The cited alert supports this tentative mapping only.",
+            }
+        ],
         "next_steps": [],
         "limitations": "",
     }
     return validate_proposal(
-        payload, incident_id=CASE, evidence_ids={ALERT: "alert"},
-        evidence_numbers=set(), tool_call_count=1,
-        seen_evidence_ids={ALERT}, alert_types_by_id={ALERT: alert_type},
+        payload,
+        incident_id=CASE,
+        evidence_ids={ALERT: "alert"},
+        evidence_numbers=set(),
+        tool_call_count=1,
+        seen_evidence_ids={ALERT},
+        alert_types_by_id={ALERT: alert_type},
     )
 
 
 class TechniqueMappingTests(unittest.TestCase):
     def test_port_identifier_is_not_mistaken_for_a_count(self):
-        self.assertEqual(check_numeric_claims("Traffic reached 443 destination port.", set(), set()), [])
-        self.assertTrue(check_numeric_claims("Traffic reached 443 destination ports.", set(), set()))
+        self.assertEqual(
+            check_numeric_claims("Traffic reached 443 destination port.", set(), set()), []
+        )
+        self.assertTrue(
+            check_numeric_claims("Traffic reached 443 destination ports.", set(), set())
+        )
 
     def test_matching_alert_and_technique_are_accepted(self):
         report = check("T1046")

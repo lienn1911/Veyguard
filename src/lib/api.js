@@ -57,7 +57,9 @@ export const getAudit = (limit = 100) => request(`/api/audit?limit=${limit}`);
 
 export async function runTriage(incidentId) {
   try {
-    return await request(`/api/incidents/${encodeURIComponent(incidentId)}/triage`, { method: 'POST' });
+    return await request(`/api/incidents/${encodeURIComponent(incidentId)}/triage`, {
+      method: 'POST',
+    });
   } catch (error) {
     // A failed investigation still returns a recorded run (status "error").
     // That is a result to display, not a transport failure to swallow.

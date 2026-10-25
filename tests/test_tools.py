@@ -118,7 +118,11 @@ def test_arguments_must_be_an_object():
 
 def test_statistics_separate_group_totals_from_samples(dataset, incidents_by_category):
     incident_id = incidents_by_category["DoS"]
-    stats = ToolRegistry(dataset, incident_id).execute("get_incident_statistics", {"incident_id": incident_id}).data
+    stats = (
+        ToolRegistry(dataset, incident_id)
+        .execute("get_incident_statistics", {"incident_id": incident_id})
+        .data
+    )
     record = dataset.record(incident_id)
 
     assert stats["group_totals"]["flows"] == record.alert["flow_count"]
@@ -128,7 +132,11 @@ def test_statistics_separate_group_totals_from_samples(dataset, incidents_by_cat
 
 def test_incident_detail_count_is_not_the_sample_count(dataset, incidents_by_category):
     incident_id = incidents_by_category["PortScan"]
-    details = ToolRegistry(dataset, incident_id).execute("get_incident_details", {"incident_id": incident_id}).data
+    details = (
+        ToolRegistry(dataset, incident_id)
+        .execute("get_incident_details", {"incident_id": incident_id})
+        .data
+    )
     assert details["aggregated_flow_count"] > details["evidence_sample_size"]
 
 

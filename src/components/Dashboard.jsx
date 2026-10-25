@@ -1,250 +1,245 @@
 import React, { useEffect, useState } from 'react';
-import { apiFetch } from '../apiFetch.js';
 import Icon from './Icon.jsx';
 import data from '../real-alerts.json';
-import { PriorityBadge } from './ReviewPriority.jsx';
-import { priorityRank } from '../lib/reviewPriority.js';
 
 const incidents = data.incidents || [];
-
-function shortDateTime(value) {
-  if (!value) return 'Unknown time';
-  const [date, time = ''] = value.split('T');
-  const [year, month, day] = date.split('-');
-  return year && month && day ? `${day}/${month}/${year} · ${time.slice(0, 5)}` : value;
-}
-
+const reviewStates = [
+  { key: 'pending', label: 'Awaiting review' },
+  { key: 'partial', label: 'Partially reviewed' },
+  { key: 'complete', label: 'Review complete' },
+];
 
 function validatedVerdict(result) {
-  // Only display verdicts from completed AI assessments.
-  if (result?.status !== 'ready') {
-    return null;
-  }
-
+  if (result?.status !== 'ready') return null;
   const verdict = result.assessment?.verdict;
-
-  const allowed = [
-    'Likely Attack',
-    'Likely Benign',
-    'Needs Review'
-  ];
-
-  return allowed.includes(verdict) ? verdict : null;
+  return ['Likely Attack', 'Likely Benign', 'Needs Review'].includes(verdict) ? verdict : null;
 }
 
+function activityLabel(event) {
+  const decision = event.payload?.decision;
+  if (event.event === 'analyst.decision')
+    return decision === 'confirmed'
+      ? 'Agreed with AI conclusion'
+      : decision === 'rejected'
+        ? 'Disagreed with AI conclusion'
+        : 'Reviewed AI conclusion';
+  if (event.event === 'ANALYST_DECISION')
+    return String(decision).toLowerCase() === 'approved'
+      ? 'Approved a next step'
+      : 'Rejected a next step';
+  return (
+    {
+      CASE_RECORD_SAVED: 'Saved triage report',
+      ANALYST_NOTE_ADDED: 'Added investigation note',
+      CASE_REVIEW_PRIORITY_SET: 'Changed review priority',
+    }[event.event] || 'Case updated'
+  );
+}
 
-export default function Dashboard({ onReview, username }) {
-  const [tasks, setTasks] = useState([]);
-  const [taskError, setTaskError] = useState('');
-  const [taskLoading, setTaskLoading] = useState(true);
-  const [completing, setCompleting] = useState(null);
+function activityTime(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? value
+    : `${date.toISOString().slice(0, 16).replace('T', ' ')} UTC`;
+}
+
+export default function Dashboard({ onReview }) {
   const [caseQueue, setCaseQueue] = useState(null);
   const [assessments, setAssessments] = useState({});
   const [assessmentLoaded, setAssessmentLoaded] = useState(false);
+  const [activity, setActivity] = useState(null);
+  const [activityError, setActivityError] = useState(false);
 
   useEffect(() => {
     let active = true;
-    fetch('/api/tasks')
-      .then((response) => {
-        if (!response.ok) throw new Error('Tasks unavailable');
-        return response.json();
-      })
-      .then((result) => { if (active) setTasks(result.tasks || []); })
-      .catch(() => { if (active) setTaskError('Task service unavailable'); })
-      .finally(() => { if (active) setTaskLoading(false); });
-    return () => { active = false; };
-  }, []);
-
-  useEffect(() => {
-    let active = true;
-    fetch('/api/cases/queue')
-      .then((response) => {
-        if (!response.ok) throw new Error('Case queue unavailable');
-        return response.json();
-      })
-      .then((result) => { if (active) setCaseQueue(result.cases || {}); })
-      .catch(() => { if (active) setCaseQueue(null); });
-
-    Promise.all(incidents.map(async (incident) => {
-      try {
-        const response = await fetch(`/api/cases/${encodeURIComponent(incident.incident_id)}/ai-assessment`);
-        return response.ok ? await response.json() : null;
-      } catch {
-        return null;
-      }
-    })).then((results) => {
-      if (!active) return;
-      const byId = {};
-      incidents.forEach((incident, index) => { byId[incident.incident_id] = results[index]; });
-      setAssessments(byId);
-      setAssessmentLoaded(true);
-    });
-    return () => { active = false; };
-  }, []);
-
-  async function finishTask(task) {
-    setCompleting(task.id);
-    setTaskError('');
-    try {
-      const response = await apiFetch(`/api/tasks/${encodeURIComponent(task.id)}/complete`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ analyst: username }),
-      });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'Could not complete task');
-      setTasks(result.tasks || []);
-    } catch (error) {
-      setTaskError(error.message);
-    } finally {
-      setCompleting(null);
+    async function load() {
+      await Promise.allSettled([
+        fetch('/api/cases/queue')
+          .then(async (response) => {
+            if (!response.ok) throw new Error('Case queue unavailable');
+            const result = await response.json();
+            if (active) setCaseQueue(result.cases || {});
+          })
+          .catch(() => {
+            if (active) setCaseQueue(null);
+          }),
+        fetch('/api/activity/recent')
+          .then(async (response) => {
+            if (!response.ok) throw new Error('Recent activity unavailable');
+            const result = await response.json();
+            if (active) {
+              setActivity(result.events || []);
+              setActivityError(false);
+            }
+          })
+          .catch(() => {
+            if (active) setActivityError(true);
+          }),
+        Promise.all(
+          incidents.map(async (incident) => {
+            try {
+              const response = await fetch(
+                `/api/cases/${encodeURIComponent(incident.incident_id)}/ai-assessment`,
+              );
+              return [incident.incident_id, response.ok ? await response.json() : null];
+            } catch {
+              return [incident.incident_id, null];
+            }
+          }),
+        ).then((results) => {
+          if (active) {
+            setAssessments(Object.fromEntries(results));
+            setAssessmentLoaded(true);
+          }
+        }),
+      ]);
     }
-  }
+    load();
+    const timer = window.setInterval(load, 15000);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
+  }, []);
 
-  // Queue status != pending approval. Don't mislabel all unreviewed cases as approvals.
-  const approvalRecords = caseQueue ? Object.values(caseQueue) : [];
-  const approvalsKnown = caseQueue && approvalRecords.every((record) =>
-    record && Object.prototype.hasOwnProperty.call(record, 'pending_approval'));
-  const approvalCount = approvalsKnown
-    ? approvalRecords.filter((record) => record.pending_approval === true).length
-    : null;
-
-  const activeIncidents = caseQueue
-    ? incidents.filter(
-        (incident) =>
-          caseQueue[incident.incident_id]?.case_status === 'Open'
-      )
-    : [];
-
-  const activeVerdicts = activeIncidents.map((incident) =>
-    validatedVerdict(assessments[incident.incident_id])
+  const states = incidents.map(
+    (incident) => caseQueue?.[incident.incident_id]?.review_progress?.state,
   );
-
-  const countsReady = caseQueue !== null && assessmentLoaded;
-
-  const likelyAttack = countsReady
-    ? activeVerdicts.filter((v) => v === 'Likely Attack').length
-    : null;
-
-  const needsReview = countsReady
-    ? activeVerdicts.filter((v) => v === 'Needs Review').length
-    : null;
-
-  const priorityCases = caseQueue
-    ? incidents
-        .filter((incident) =>
-          caseQueue[incident.incident_id]?.case_status !== 'Resolved'
-        )
-        .map((incident) => ({
-          incident,
-          activity: caseQueue[incident.incident_id]?.review_priority,
-          verdict: validatedVerdict(
-            assessments[incident.incident_id]
-          )
-        }))
-        .sort((a, b) =>
-          priorityRank(b.activity) - priorityRank(a.activity) ||
-          (Date.parse(a.incident.window_start) || 0) -
-          (Date.parse(b.incident.window_start) || 0)
-        )
-
+  const progressKnown =
+    caseQueue !== null && states.every((state) => reviewStates.some((item) => item.key === state));
+  const counts = Object.fromEntries(
+    reviewStates.map((item) => [item.key, states.filter((state) => state === item.key).length]),
+  );
+  const total = incidents.length;
+  const pending = progressKnown ? counts.pending + counts.partial : null;
+  const openCases = caseQueue
+    ? incidents.filter((incident) => caseQueue[incident.incident_id]?.case_status === 'Open')
     : [];
+  const verdicts = openCases.map((incident) => validatedVerdict(assessments[incident.incident_id]));
+  const aiCountsKnown = caseQueue !== null && assessmentLoaded;
 
   return (
-    <div className="iris-home"><header className="ui-page-heading"><h1>Home</h1></header>
+    <div className="iris-home">
+      <header className="ui-page-heading">
+        <h1>Home</h1>
+      </header>
       <section className="welcome-strip">
-        <div className="welcome-stats">
-          <button type="button" onClick={() => onReview()}>
-            <strong>{approvalCount ?? '—'}</strong>
-            <span className="blue"><Icon name="layers" size={15} /> Decisions needed</span>
+        <div className="home-review-summary">
+          <button type="button" className="home-pending-review" onClick={() => onReview()}>
+            <strong>{pending ?? '—'}</strong>
+            <span>Pending review</span>
           </button>
-          <button type="button" onClick={() => onReview()}>
-            <strong>{likelyAttack ?? '—'}</strong>
-            <span className="blue"><Icon name="alert" size={15} /> Likely attack</span>
-          </button>
-          <button type="button" onClick={() => onReview()}>
-            <strong>{needsReview ?? '—'}</strong>
-            <span className="blue"><Icon name="alert" size={15} /> Needs review</span>
-          </button>
-        </div>
-      </section>
-
-      <div className="home-workspace">
-      <section className="home-card home-attention-card" aria-labelledby="home-cases-title">
-      <header>
-        <div className="priority-header-left">
-          <Icon name="layers" size={20} />
-
-          <div className="priority-heading">
-            <h2 id="home-cases-title">Cases to review</h2>
-
+          <div className="home-summary-card home-likely-attack">
+            <strong>
+              {aiCountsKnown ? verdicts.filter((value) => value === 'Likely Attack').length : '—'}
+            </strong>
+            <span>Likely attack</span>
+          </div>
+          <div className="home-summary-card home-needs-review">
+            <strong>
+              {aiCountsKnown ? verdicts.filter((value) => value === 'Needs Review').length : '—'}
+            </strong>
+            <span>Needs review</span>
           </div>
         </div>
-
-        <div className="home-attention-links">
-          <button type="button" onClick={() => onReview()}>
-            All cases <Icon name="arrow" size={15} />
-          </button>
-        </div>
-      </header>
-        <div className="home-card-body home-scroll-panel" tabIndex={0} role="region" aria-label="Cases to review list">
-          {!caseQueue && <p className="home-attention-empty">Case queue unavailable. Check the local API.</p>}
-          {caseQueue && priorityCases.length === 0 && <p className="home-attention-empty">No unresolved cases in the queue.</p>}
-          {priorityCases.map(({ incident, activity }, index) => (
-            <button
-              type="button"
-              className="home-case priority-row"
-              key={incident.incident_id}
-              onClick={() => onReview(incident.incident_id)}
-            >
-              {/* Case number */}
-              <span className="priority-index">
-                {index + 1}
-              </span>
-
-              {/* Left side: Incident information */}
-              <span className="priority-info">
-                <strong>
-                  {incident.incident_id}
-                </strong>
-
-                <span className="priority-ip">
-                  {incident.source_ip} → {incident.destination_ip}
-                </span>
-
-                <small>
-                  {shortDateTime(incident.window_start)} · {(incident.alert_ids || []).length} alerts
-                </small>
-
-
-              </span>
-
-              <span className="home-review-priority"><PriorityBadge priority={activity} /></span>
-            </button>
-          ))}
+      </section>
+      <div className="home-workspace home-overview-workspace">
+        <section className="home-card" aria-labelledby="home-progress-title">
+          <header>
+            <h2 id="home-progress-title">
+              <Icon name="checklist" size={19} />
+              Review progress
+            </h2>
+          </header>
+          <div className="home-progress-body">
+            {!progressKnown ? (
+              <p className="home-panel-empty">Review status unavailable.</p>
+            ) : (
+              <>
+                <p className="home-progress-total">
+                  <strong>{counts.complete}</strong>
+                  <span>/ {total} reviewed</span>
+                </p>
+                <div
+                  className="home-progress-track"
+                  role="img"
+                  aria-label={reviewStates
+                    .map((item) => `${item.label}: ${counts[item.key]}`)
+                    .join(', ')}
+                >
+                  {total
+                    ? reviewStates
+                        .filter((item) => counts[item.key])
+                        .map((item) => (
+                          <span
+                            key={item.key}
+                            className={`home-progress-segment state-${item.key}`}
+                            style={{ width: `${(counts[item.key] / total) * 100}%` }}
+                          />
+                        ))
+                    : null}
+                </div>
+                <dl className="home-progress-legend">
+                  {reviewStates.map((item) => (
+                    <div key={item.key}>
+                      <dt>
+                        <span
+                          className={`home-progress-dot state-${item.key}`}
+                          aria-hidden="true"
+                        />
+                        {item.label}
+                      </dt>
+                      <dd>{counts[item.key]}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </>
+            )}
           </div>
         </section>
-
-      <section className="home-card tasks-card" aria-labelledby="home-tasks-title">
-        <header><h2 id="home-tasks-title"><Icon name="check" size={18} />Approved steps to complete</h2></header>
-        <div className="home-card-body home-scroll-panel" tabIndex={0} role="region" aria-label="Pending investigation steps list">
-          <p className="home-task-purpose">Steps approved by an analyst. Carry out each investigation, then mark it done.</p>
-          {taskError && <p className="task-error" role="alert">{taskError}</p>}
-          {taskLoading && <p className="home-panel-empty" role="status">Loading investigation steps…</p>}
-          {!taskLoading && !taskError && tasks.length === 0 && <p className="home-panel-empty">No pending steps. You're up to date.</p>}
-          {tasks.map((task) => (
-            <div className="home-task" key={task.id}>
-              <button type="button" onClick={() => onReview(task.incident_id)}>
-                <strong>{task.text}</strong>
-              </button>
-              <button type="button" className="task-done" disabled={completing === task.id} onClick={() => finishTask(task)}>
-                {completing === task.id ? 'Saving…' : 'Mark done'}
-              </button>
-            </div>
-          ))}
-        </div>
-      </section>
+        <section className="home-card" aria-labelledby="home-activity-title">
+          <header>
+            <h2 id="home-activity-title">
+              <Icon name="audit" size={19} />
+              Recent activity
+            </h2>
+          </header>
+          <div
+            className="home-card-body home-scroll-panel"
+            role="region"
+            aria-label="Recent activity"
+            tabIndex={0}
+          >
+            {activityError ? (
+              <p className="home-panel-empty" role="status">
+                Recent activity unavailable.
+              </p>
+            ) : activity === null ? (
+              <p className="home-panel-empty" role="status">
+                Loading activity…
+              </p>
+            ) : activity.length === 0 ? (
+              <p className="home-panel-empty">No review activity yet.</p>
+            ) : (
+              <ol className="home-recent-activity">
+                {activity.map((event) => (
+                  <li key={event.event_id}>
+                    <button type="button" onClick={() => onReview(event.incident_id)}>
+                      <strong>{activityLabel(event)}</strong>
+                      <span className="home-activity-case">{event.incident_id}</span>
+                      <small>
+                        {(event.actor || 'System').replace(/^analyst:/, '')}
+                        <time dateTime={event.ts}>{activityTime(event.ts)}</time>
+                      </small>
+                    </button>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+        </section>
       </div>
-      </div>
+    </div>
   );
 }

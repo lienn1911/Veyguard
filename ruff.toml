@@ -1,0 +1,17 @@
+target-version = "py310"
+line-length = 100
+extend-exclude = [
+    "node_modules",
+    "dist",
+    "data",
+    "reports",
+    ".git",
+    ".pytest_cache",
+    ".test-temp",
+    "services/prompts.py", # Frozen evaluation manifests hash this file byte-for-byte.
+]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"

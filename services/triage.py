@@ -66,7 +66,13 @@ class Trace:
 
     def add(self, step: int, outcome: ToolOutcome, duration_ms: float) -> None:
         data = outcome.data if isinstance(outcome.data, dict) else {}
-        items = data.get("alerts") if outcome.tool == "get_related_alerts" else data.get("flows") if outcome.tool == "get_network_flows" else None
+        items = (
+            data.get("alerts")
+            if outcome.tool == "get_related_alerts"
+            else data.get("flows")
+            if outcome.tool == "get_network_flows"
+            else None
+        )
         entry = {
             "step": step,
             "tool": outcome.tool,
@@ -122,35 +128,72 @@ class TriageService:
             return stored
         numbers = self.dataset.canonical_statistic_numbers(incident_id)
         report = validate_proposal(
-            latest.get("proposal") or latest, incident_id=incident_id,
+            latest.get("proposal") or latest,
+            incident_id=incident_id,
             evidence_ids=self.dataset.evidence_ids(incident_id),
-            evidence_numbers=numbers, canonical_numbers=numbers,
+            evidence_numbers=numbers,
+            canonical_numbers=numbers,
             tool_call_count=len((latest.get("investigation") or {}).get("tool_calls") or []),
-            alert_types_by_id={item["alert_id"]: item["type"] for item in self.dataset.agent_alerts(incident_id)},
+            alert_types_by_id={
+                item["alert_id"]: item["type"] for item in self.dataset.agent_alerts(incident_id)
+            },
             incident=self.dataset.require(incident_id).incident,
             case_alerts=self.dataset.agent_alerts(incident_id),
         )
         fingerprint = latest.get("evidence_fingerprint")
         if fingerprint and fingerprint != self._evidence_fingerprint(incident_id):
-            report.issues.append(Issue("EVIDENCE_CHANGED", "Case evidence has changed since this AI investigation."))
+            report.issues.append(
+                Issue("EVIDENCE_CHANGED", "Case evidence has changed since this AI investigation.")
+            )
             report.ok = False
         if not report.ok:
             # Read-time projection only: preserve the historical run and analyst audit.
-            stored["latest"] = {**latest, "status": "rejected", "proposal": None,
-                "verdict": "Needs Review", "confidence": None, "reason": "AI result withheld after evidence revalidation.",
-                "findings": [], "evidence_ids": [], "next_steps": [], "technique_mappings": [], "limitations": "",
+            stored["latest"] = {
+                **latest,
+                "status": "rejected",
+                "proposal": None,
+                "verdict": "Needs Review",
+                "confidence": None,
+                "reason": "AI result withheld after evidence revalidation.",
+                "findings": [],
+                "evidence_ids": [],
+                "next_steps": [],
+                "technique_mappings": [],
+                "limitations": "",
                 "validation": report.as_dict(),
-                "error": {"code": "EVIDENCE_INTEGRITY_FAILED", "message": "Saved AI result conflicts with current case evidence. Rerun investigation before reviewing it.", "detail": report.issue_messages()}}
+                "error": {
+                    "code": "EVIDENCE_INTEGRITY_FAILED",
+                    "message": "Saved AI result conflicts with current case evidence. Rerun investigation before reviewing it.",
+                    "detail": report.issue_messages(),
+                },
+            }
             stored["decision"] = {"status": "pending"}
         return stored
 
     def _evidence_fingerprint(self, incident_id: str) -> str:
-        evidence = {"case": self.dataset.agent_incident_details(incident_id),
-                    "alerts": self.dataset.agent_alerts(incident_id),
-                    "flows": [{key: flow.get(key) for key in ("flow_id", "timestamp", "source_ip", "source_port", "destination_ip", "destination_port", "packet_count")}
-                              for flow in self.dataset.evidence_flows(incident_id)],
-                    "statistics": self.dataset.agent_statistics(incident_id)}
-        return hashlib.sha256(json.dumps(evidence, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+        evidence = {
+            "case": self.dataset.agent_incident_details(incident_id),
+            "alerts": self.dataset.agent_alerts(incident_id),
+            "flows": [
+                {
+                    key: flow.get(key)
+                    for key in (
+                        "flow_id",
+                        "timestamp",
+                        "source_ip",
+                        "source_port",
+                        "destination_ip",
+                        "destination_port",
+                        "packet_count",
+                    )
+                }
+                for flow in self.dataset.evidence_flows(incident_id)
+            ],
+            "statistics": self.dataset.agent_statistics(incident_id),
+        }
+        return hashlib.sha256(
+            json.dumps(evidence, sort_keys=True, ensure_ascii=False).encode()
+        ).hexdigest()
 
     def status(self) -> dict:
         return {
@@ -169,24 +212,48 @@ class TriageService:
         with self._progress_lock:
             previous = self._progress.get(incident_id, {})
             self._progress[incident_id] = {
-                'stage': stage, 'percent': max(previous.get('percent', 0), percent),
-                'description': description, 'running': running,
+                "stage": stage,
+                "percent": max(previous.get("percent", 0), percent),
+                "description": description,
+                "running": running,
             }
 
     def investigate(self, incident_id: str) -> dict:
         self.dataset.require(incident_id)
         with self._progress_lock:
-            self._progress[incident_id] = {'stage': 'prepare', 'percent': 10,
-                'description': 'Preparing this case for read-only evidence checks.', 'running': True}
+            self._progress[incident_id] = {
+                "stage": "prepare",
+                "percent": 10,
+                "description": "Preparing this case for read-only evidence checks.",
+                "running": True,
+            }
         try:
             result = self._investigate(incident_id)
-            if result['status'] == 'ok':
-                self._set_progress(incident_id, 'complete', 100, 'Assessment checked and ready for your review.', running=False)
+            if result["status"] == "ok":
+                self._set_progress(
+                    incident_id,
+                    "complete",
+                    100,
+                    "Assessment checked and ready for your review.",
+                    running=False,
+                )
             else:
-                self._set_progress(incident_id, 'failed', 0, 'The check did not finish. Review the error before retrying.', running=False)
+                self._set_progress(
+                    incident_id,
+                    "failed",
+                    0,
+                    "The check did not finish. Review the error before retrying.",
+                    running=False,
+                )
             return result
         except Exception:
-            self._set_progress(incident_id, 'failed', 0, 'The check did not finish. Review the error before retrying.', running=False)
+            self._set_progress(
+                incident_id,
+                "failed",
+                0,
+                "The check did not finish. Review the error before retrying.",
+                running=False,
+            )
             raise
 
     def _investigate(self, incident_id: str) -> dict:
@@ -241,7 +308,8 @@ class TriageService:
                 run_id=run_id,
                 provider_name=provider_name,
                 provider_model=provider_model,
-                failure=failure or {"code": "PROVIDER_UNAVAILABLE", "message": "Provider unavailable."},
+                failure=failure
+                or {"code": "PROVIDER_UNAVAILABLE", "message": "Provider unavailable."},
                 trace=trace,
                 started_at=started_at,
                 started=started,
@@ -262,7 +330,10 @@ class TriageService:
                     ),
                 }
                 break
-            if sum(1 for call in trace.tool_calls if not call["blocked"]) >= settings.max_tool_calls:
+            if (
+                sum(1 for call in trace.tool_calls if not call["blocked"])
+                >= settings.max_tool_calls
+            ):
                 failure = {
                     "code": "TOOL_BUDGET_EXCEEDED",
                     "message": (
@@ -272,8 +343,14 @@ class TriageService:
                 }
                 break
 
-            self._set_progress(incident_id, 'analyse' if trace.executed else 'evidence', 65 if trace.executed else 30,
-                'Comparing the retrieved evidence and drafting findings.' if trace.executed else 'AI is selecting and reading case evidence.')
+            self._set_progress(
+                incident_id,
+                "analyse" if trace.executed else "evidence",
+                65 if trace.executed else 30,
+                "Comparing the retrieved evidence and drafting findings."
+                if trace.executed
+                else "AI is selecting and reading case evidence.",
+            )
             trace.steps += 1
             try:
                 turn = provider.complete(messages, ToolRegistry.definitions())
@@ -299,9 +376,17 @@ class TriageService:
                     }
                 )
                 for call in turn.tool_calls[:MAX_TOOL_CALLS_PER_TURN]:
-                    if sum(1 for c in trace.tool_calls if not c["blocked"]) >= settings.max_tool_calls:
+                    if (
+                        sum(1 for c in trace.tool_calls if not c["blocked"])
+                        >= settings.max_tool_calls
+                    ):
                         break
-                    self._set_progress(incident_id, 'evidence', 35, "Reading evidence: " + call.name.replace("_", " ") + ".")
+                    self._set_progress(
+                        incident_id,
+                        "evidence",
+                        35,
+                        "Reading evidence: " + call.name.replace("_", " ") + ".",
+                    )
                     call_started = time.monotonic()
                     if call.parse_error:
                         outcome = ToolOutcome(
@@ -317,7 +402,9 @@ class TriageService:
                             outcome = ToolOutcome(
                                 tool=call.name,
                                 ok=False,
-                                arguments=call.arguments if isinstance(call.arguments, dict) else {},
+                                arguments=call.arguments
+                                if isinstance(call.arguments, dict)
+                                else {},
                                 error={
                                     "code": "TOOL_EXECUTION_FAILED",
                                     "message": f"{type(exc).__name__}: {exc}",
@@ -369,10 +456,20 @@ class TriageService:
                 failure = {"code": exc.code, "message": exc.message}
                 break
 
-            self._set_progress(incident_id, 'validate', 85, 'Checking evidence references, numeric claims and case boundaries.')
+            self._set_progress(
+                incident_id,
+                "validate",
+                85,
+                "Checking evidence references, numeric claims and case boundaries.",
+            )
             report = self._validate(payload, incident_id, trace)
             if report.ok and report.proposal:
-                self._set_progress(incident_id, 'save', 95, 'Preparing the assessment and recording its audit trail.')
+                self._set_progress(
+                    incident_id,
+                    "save",
+                    95,
+                    "Preparing the assessment and recording its audit trail.",
+                )
                 return self._complete(
                     incident_id=incident_id,
                     record=record,
@@ -421,6 +518,7 @@ class TriageService:
         evidence_numbers = collect_numbers(trace.payloads)
         known_ids = set(self.dataset.evidence_ids(incident_id))
         seen_ids: set[str] = set()
+
         def collect_seen(value):
             if isinstance(value, dict):
                 for nested in value.values():
@@ -430,6 +528,7 @@ class TriageService:
                     collect_seen(nested)
             elif isinstance(value, str) and value in known_ids:
                 seen_ids.add(value)
+
         collect_seen(trace.payloads)
         return validate_proposal(
             payload,
@@ -439,7 +538,9 @@ class TriageService:
             canonical_numbers=self.dataset.canonical_statistic_numbers(incident_id),
             tool_call_count=trace.executed,
             seen_evidence_ids=seen_ids,
-            alert_types_by_id={alert["alert_id"]: alert["type"] for alert in self.dataset.agent_alerts(incident_id)},
+            alert_types_by_id={
+                alert["alert_id"]: alert["type"] for alert in self.dataset.agent_alerts(incident_id)
+            },
             incident=self.dataset.require(incident_id).incident,
             case_alerts=self.dataset.agent_alerts(incident_id),
         )
@@ -483,11 +584,20 @@ class TriageService:
         )
         if not guardrail.allowed:
             return self._rejected(
-                incident_id=incident_id, run_id=run_id,
-                provider_name=provider_name, provider_model=provider_model,
-                report=ValidationReport(ok=False, proposal=None, issues=[
-                    Issue("GUARDRAIL_BLOCKED", "The safety guardrail rejected this proposal.")]),
-                trace=trace, started_at=started_at, started=started,
+                incident_id=incident_id,
+                run_id=run_id,
+                provider_name=provider_name,
+                provider_model=provider_model,
+                report=ValidationReport(
+                    ok=False,
+                    proposal=None,
+                    issues=[
+                        Issue("GUARDRAIL_BLOCKED", "The safety guardrail rejected this proposal.")
+                    ],
+                ),
+                trace=trace,
+                started_at=started_at,
+                started=started,
             )
         result = {
             **self._base_record(
@@ -534,7 +644,16 @@ class TriageService:
         return result
 
     def _rejected(
-        self, *, incident_id, run_id, provider_name, provider_model, report, trace, started_at, started
+        self,
+        *,
+        incident_id,
+        run_id,
+        provider_name,
+        provider_model,
+        report,
+        trace,
+        started_at,
+        started,
     ) -> dict:
         issues = report.issue_messages()
         result = {
@@ -582,7 +701,16 @@ class TriageService:
         return result
 
     def _error(
-        self, *, incident_id, run_id, provider_name, provider_model, failure, trace, started_at, started
+        self,
+        *,
+        incident_id,
+        run_id,
+        provider_name,
+        provider_model,
+        failure,
+        trace,
+        started_at,
+        started,
     ) -> dict:
         result = {
             **self._base_record(
@@ -644,11 +772,20 @@ class TriageService:
 
         if decision == "rejected" and not (note or "").strip():
             raise ValueError("A rejection requires a note explaining the analyst's reasoning.")
-        if decision == "confirmed" and proposal.get("verdict") == "Likely Benign" and latest.get("requires_confirmation") and not (note or "").strip():
-            raise ValueError("Confirming a Likely Benign verdict for an attack alert requires a written reason.")
+        if (
+            decision == "confirmed"
+            and proposal.get("verdict") == "Likely Benign"
+            and latest.get("requires_confirmation")
+            and not (note or "").strip()
+        ):
+            raise ValueError(
+                "Confirming a Likely Benign verdict for an attack alert requires a written reason."
+            )
         previous = (stored.get("decision") or {}).get("status")
         if previous in ("confirmed", "rejected"):
-            raise ValueError("This AI proposal already has an analyst decision. Run a new AI check to review again.")
+            raise ValueError(
+                "This AI proposal already has an analyst decision. Run a new AI check to review again."
+            )
 
         payload = {
             "status": decision,

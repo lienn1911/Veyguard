@@ -23,7 +23,9 @@ def proposal(**overrides):
         "confidence": "medium",
         "reason": "Observed 17752 flows against one destination; inference is a flood.",
         "evidence_ids": ["FLOW-AAAAAAAAAAAA"],
-        "findings": [{"observation": "17752 flows in one minute", "evidence_ids": ["FLOW-AAAAAAAAAAAA"]}],
+        "findings": [
+            {"observation": "17752 flows in one minute", "evidence_ids": ["FLOW-AAAAAAAAAAAA"]}
+        ],
         "limitations": "",
     }
     payload.update(overrides)

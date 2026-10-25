@@ -7,9 +7,15 @@ from pathlib import Path
 from contextlib import closing
 
 from services.guardrails import validate_guardrails
-from services.unified_audit import append as append_audit, append_in_transaction, initialize as initialize_audit
+from services.unified_audit import (
+    append as append_audit,
+    append_in_transaction,
+    initialize as initialize_audit,
+)
 
-DB_PATH = Path(os.environ.get("SOC_TRIAGE_DB_PATH", Path(__file__).resolve().parents[1] / "data" / "audit.db"))
+DB_PATH = Path(
+    os.environ.get("SOC_TRIAGE_DB_PATH", Path(__file__).resolve().parents[1] / "data" / "audit.db")
+)
 
 SAFE_ACTIONS = {
     "REVIEW_NETWORK_FLOWS": "Review related network flows",
@@ -47,7 +53,7 @@ def init_db(db_path=DB_PATH):
                 analyst_id TEXT
             )
         """)
-        if 'remark' not in {row[1] for row in db.execute('PRAGMA table_info(decisions)')}:
+        if "remark" not in {row[1] for row in db.execute("PRAGMA table_info(decisions)")}:
             db.execute("ALTER TABLE decisions ADD COLUMN remark TEXT NOT NULL DEFAULT ''")
 
         db.execute("""
@@ -79,16 +85,21 @@ def init_db(db_path=DB_PATH):
 # 2. Save audit event
 def log_event(incident_id, event, details, db_path=DB_PATH):
     init_db(db_path)
-    append_audit(db_path, event, incident_id=incident_id,
-                 actor=f"analyst:{details.get('analyst_id', 'unknown')}" if isinstance(details, dict) else 'system:recommendations',
-                 payload=details if isinstance(details, dict) else {'items': details})
+    append_audit(
+        db_path,
+        event,
+        incident_id=incident_id,
+        actor=f"analyst:{details.get('analyst_id', 'unknown')}"
+        if isinstance(details, dict)
+        else "system:recommendations",
+        payload=details if isinstance(details, dict) else {"items": details},
+    )
 
 
 # 3. Generate safe recommendations
 def generate_recommendations(data, incident_id, db_path=DB_PATH):
     incident = next(
-        (i for i in data["incidents"]
-         if i["incident_id"] == incident_id),
+        (i for i in data["incidents"] if i["incident_id"] == incident_id),
         None,
     )
 
@@ -96,33 +107,30 @@ def generate_recommendations(data, incident_id, db_path=DB_PATH):
         raise ValueError("Incident not found")
 
     alerts = [
-        a for a in data["alerts"]
-        if a["alert_id"] in incident["alert_ids"]
-        and a["incident_id"] == incident_id
+        a
+        for a in data["alerts"]
+        if a["alert_id"] in incident["alert_ids"] and a["incident_id"] == incident_id
     ]
 
     if len(alerts) != len(incident["alert_ids"]):
         raise ValueError("Missing or unrelated alerts")
 
-    valid_flows = {
-        f["flow_id"] for f in data["flows"]
-    }
+    valid_flows = {f["flow_id"] for f in data["flows"]}
 
-    evidence = (
-        incident["evidence_sample_ids"]
-        + incident["alert_ids"]
-    )
+    evidence = incident["evidence_sample_ids"] + incident["alert_ids"]
 
-    if (
-        not evidence
-        or not set(incident["evidence_sample_ids"]).issubset(valid_flows)
-    ):
+    if not evidence or not set(incident["evidence_sample_ids"]).issubset(valid_flows):
         raise ValueError("Missing incident evidence")
 
     alert_types = {a["type"] for a in alerts}
 
     if not alert_types or alert_types - {
-        "PortScan", "DoS", "DDoS", "BruteForce", "Benign", "NeedsReview"
+        "PortScan",
+        "DoS",
+        "DDoS",
+        "BruteForce",
+        "Benign",
+        "NeedsReview",
     }:
         raise ValueError("Unknown alert type")
 
@@ -138,55 +146,70 @@ def generate_recommendations(data, incident_id, db_path=DB_PATH):
     recommendations = []
 
     for action in actions:
-        rec_id = hashlib.sha256(
-            f"{incident_id}:{action}".encode()
-        ).hexdigest()[:12].upper()
+        rec_id = hashlib.sha256(f"{incident_id}:{action}".encode()).hexdigest()[:12].upper()
 
         action_evidence = (
-            incident["evidence_sample_ids"] if action == "REVIEW_NETWORK_FLOWS"
-            else incident["alert_ids"] if action == "CHECK_RELATED_ALERTS"
+            incident["evidence_sample_ids"]
+            if action == "REVIEW_NETWORK_FLOWS"
+            else incident["alert_ids"]
+            if action == "CHECK_RELATED_ALERTS"
             else evidence
         )
-        recommendations.append({
-            "id": f"REC-{rec_id}",
-            "incident_id": incident_id,
-            "action": action,
-            "description": SAFE_ACTIONS[action],
-            "evidence_ids": action_evidence,
-        })
+        recommendations.append(
+            {
+                "id": f"REC-{rec_id}",
+                "incident_id": incident_id,
+                "action": action,
+                "description": SAFE_ACTIONS[action],
+                "evidence_ids": action_evidence,
+            }
+        )
 
     return recommendations
 
 
 def annotate_ai_next_steps(recommendations, next_steps):
     """Add validated AI rationale to case-rule-allowed checks only."""
-    by_action = {item['action']: item for item in recommendations}
+    by_action = {item["action"]: item for item in recommendations}
     ranked = []
     for step in next_steps or []:
         if not isinstance(step, dict):
             continue
-        action = step.get('action')
+        action = step.get("action")
         if not isinstance(action, str):
             continue
         base = by_action.get(action)
-        evidence = step.get('evidence_ids')
-        reason = step.get('reason')
-        if (base is None or not isinstance(reason, str) or not reason.strip()
-                or not isinstance(evidence, list) or not evidence
-                or any(not isinstance(value, str) for value in evidence)
-                or not set(evidence).issubset(set(base['evidence_ids']))):
+        evidence = step.get("evidence_ids")
+        reason = step.get("reason")
+        if (
+            base is None
+            or not isinstance(reason, str)
+            or not reason.strip()
+            or not isinstance(evidence, list)
+            or not evidence
+            or any(not isinstance(value, str) for value in evidence)
+            or not set(evidence).issubset(set(base["evidence_ids"]))
+        ):
             continue
-        ranked.append({**base, 'ai_suggested': True, 'ai_reason': reason, 'ai_evidence_ids': evidence})
+        ranked.append(
+            {**base, "ai_suggested": True, "ai_reason": reason, "ai_evidence_ids": evidence}
+        )
         by_action.pop(action)
-    return ranked + [{**item, 'ai_suggested': False} for item in recommendations if item['action'] in by_action]
+    return ranked + [
+        {**item, "ai_suggested": False} for item in recommendations if item["action"] in by_action
+    ]
 
 
 # 4. Approve or reject recommendations
 def save_decision(
-    data, incident_id, recommendation_id,
-    decision, analyst_id, verdict,
+    data,
+    incident_id,
+    recommendation_id,
+    decision,
+    analyst_id,
+    verdict,
     db_path=DB_PATH,
-    remark='',
+    remark="",
 ):
     if decision not in {"APPROVED", "REJECTED"}:
         raise ValueError("Invalid decision")
@@ -197,13 +220,10 @@ def save_decision(
         raise ValueError("Remark must be text of at most 1000 characters")
     remark = remark.strip()
 
-    recommendations = generate_recommendations(
-        data, incident_id, db_path
-    )
+    recommendations = generate_recommendations(data, incident_id, db_path)
 
     rec = next(
-        (r for r in recommendations
-         if r["id"] == recommendation_id),
+        (r for r in recommendations if r["id"] == recommendation_id),
         None,
     )
 
@@ -216,16 +236,13 @@ def save_decision(
         "actions": [rec["action"]],
     }
 
-    safety = validate_guardrails(
-        data, incident_id, proposal
-    )
+    safety = validate_guardrails(data, incident_id, proposal)
 
     if safety["status"] == "BLOCKED":
         log_event(
             incident_id,
             "DECISION_BLOCKED",
-            {"recommendation_id": recommendation_id,
-             "reasons": safety["reasons"]},
+            {"recommendation_id": recommendation_id, "reasons": safety["reasons"]},
             db_path,
         )
         raise ValueError("Guardrail blocked the proposal")
@@ -236,24 +253,37 @@ def save_decision(
 
     with closing(sqlite3.connect(db_path)) as db, db:
         try:
-            db.execute("""
+            db.execute(
+                """
                 INSERT INTO decisions (recommendation_id, incident_id, action, description, evidence_ids, decision, analyst_id, remark) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                rec["id"], incident_id,
-                rec["action"], rec["description"],
-                json.dumps(rec["evidence_ids"]),
-                decision, analyst_id, remark,
-            ))
-            append_in_transaction(db, 'ANALYST_DECISION', incident_id=incident_id,
-                                  actor=f'analyst:{analyst_id}', payload={
-                                      'recommendation_id': recommendation_id, 'decision': decision,
-                                      'analyst_id': analyst_id, 'safety_status': safety['status'], 'remark': remark,
-                                  })
+            """,
+                (
+                    rec["id"],
+                    incident_id,
+                    rec["action"],
+                    rec["description"],
+                    json.dumps(rec["evidence_ids"]),
+                    decision,
+                    analyst_id,
+                    remark,
+                ),
+            )
+            append_in_transaction(
+                db,
+                "ANALYST_DECISION",
+                incident_id=incident_id,
+                actor=f"analyst:{analyst_id}",
+                payload={
+                    "recommendation_id": recommendation_id,
+                    "decision": decision,
+                    "analyst_id": analyst_id,
+                    "safety_status": safety["status"],
+                    "remark": remark,
+                },
+            )
 
         except sqlite3.IntegrityError:
-            raise ValueError(
-                "Recommendation already has a decision"
-            ) from None
+            raise ValueError("Recommendation already has a decision") from None
 
     return {
         "recommendation_id": recommendation_id,
@@ -267,11 +297,14 @@ def get_case_note(incident_id, db_path=DB_PATH):
     init_db(db_path)
 
     with closing(sqlite3.connect(db_path)) as db, db:
-        rows = db.execute("""
+        rows = db.execute(
+            """
             SELECT description, evidence_ids
             FROM decisions
             WHERE incident_id = ? AND decision = 'APPROVED'
-        """, (incident_id,)).fetchall()
+        """,
+            (incident_id,),
+        ).fetchall()
 
     if not rows:
         raise ValueError("An approved investigation step is required before drafting a case note")
@@ -280,8 +313,7 @@ def get_case_note(incident_id, db_path=DB_PATH):
         "incident_id": incident_id,
         "status": "DRAFT",
         "approved_steps": [
-            {"description": description,
-             "evidence_ids": json.loads(evidence)}
+            {"description": description, "evidence_ids": json.loads(evidence)}
             for description, evidence in rows
         ],
     }

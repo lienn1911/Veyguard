@@ -105,7 +105,12 @@ class GeminiProvider:
                     parts.append({"text": message["content"]})
                 for call in message.get("tool_calls") or []:
                     parts.append(
-                        {"functionCall": {"name": call["name"], "args": call.get("arguments") or {}}}
+                        {
+                            "functionCall": {
+                                "name": call["name"],
+                                "args": call.get("arguments") or {},
+                            }
+                        }
                     )
                 if parts:
                     contents.append({"role": "model", "parts": parts})
@@ -179,13 +184,17 @@ class GeminiProvider:
 
     def _parse(self, response: httpx.Response) -> AssistantTurn:
         if response.status_code == 429:
-            raise ProviderRateLimited("Gemini free-tier rate limit reached", detail=_snippet(response))
+            raise ProviderRateLimited(
+                "Gemini free-tier rate limit reached", detail=_snippet(response)
+            )
         if response.status_code in (401, 403):
             raise ProviderAuthError(
                 "Gemini rejected the API key (check GEMINI_API_KEY)", detail=_snippet(response)
             )
         if response.status_code >= 500:
-            raise ProviderUnavailable(f"Gemini returned {response.status_code}", detail=_snippet(response))
+            raise ProviderUnavailable(
+                f"Gemini returned {response.status_code}", detail=_snippet(response)
+            )
         if response.status_code >= 400:
             raise ProviderProtocolError(
                 f"Gemini rejected the request ({response.status_code})", detail=_snippet(response)
@@ -193,7 +202,9 @@ class GeminiProvider:
         try:
             body = response.json()
         except ValueError as exc:
-            raise ProviderProtocolError("Gemini returned a non-JSON body", detail=_snippet(response)) from exc
+            raise ProviderProtocolError(
+                "Gemini returned a non-JSON body", detail=_snippet(response)
+            ) from exc
         if not isinstance(body, dict):
             raise ProviderProtocolError("Gemini response was not a JSON object")
         if body.get("promptFeedback", {}).get("blockReason"):
@@ -203,7 +214,9 @@ class GeminiProvider:
 
         candidates = body.get("candidates")
         if not isinstance(candidates, list) or not candidates:
-            raise ProviderProtocolError("Gemini response contained no candidates", detail=_snippet(response))
+            raise ProviderProtocolError(
+                "Gemini response contained no candidates", detail=_snippet(response)
+            )
         candidate = candidates[0] or {}
         parts = ((candidate.get("content") or {}).get("parts")) or []
         if not isinstance(parts, list):

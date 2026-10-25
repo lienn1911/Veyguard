@@ -22,16 +22,22 @@ def evaluate_proposal(*, incident_id, category, verdict, evidence_ids):
     before this adapter is called. The bridge also retains its own local safety
     rule, so this module can only strengthen the confirmation requirement.
     """
-    allowed = (isinstance(incident_id, str) and bool(incident_id)
-               and verdict in VALID_VERDICTS
-               and isinstance(evidence_ids, list)
-               and all(isinstance(item, str) for item in evidence_ids))
+    allowed = (
+        isinstance(incident_id, str)
+        and bool(incident_id)
+        and verdict in VALID_VERDICTS
+        and isinstance(evidence_ids, list)
+        and all(isinstance(item, str) for item in evidence_ids)
+    )
     protected = verdict == "Likely Benign" and category in PROTECTED_ALERTS
     return {
         "allowed": allowed,
         "requires_confirmation": protected,
-        "reasons": (["Protected alert: explicit analyst confirmation required before a benign decision"]
-                    if protected else []),
+        "reasons": (
+            ["Protected alert: explicit analyst confirmation required before a benign decision"]
+            if protected
+            else []
+        ),
     }
 
 
@@ -64,10 +70,7 @@ def validate_guardrails(result, incident_id, proposal):
 
     # 1. Find the selected incident
     incident = next(
-        (
-            item for item in result["incidents"]
-            if item["incident_id"] == incident_id
-        ),
+        (item for item in result["incidents"] if item["incident_id"] == incident_id),
         None,
     )
 
@@ -78,19 +81,12 @@ def validate_guardrails(result, incident_id, proposal):
         }
 
     # 2. Find alerts belonging to this incident
-    alerts_by_id = {
-        alert["alert_id"]: alert
-        for alert in result["alerts"]
-    }
+    alerts_by_id = {alert["alert_id"]: alert for alert in result["alerts"]}
 
-    flow_ids = {
-        flow["flow_id"] for flow in result["flows"]
-    }
+    flow_ids = {flow["flow_id"] for flow in result["flows"]}
 
     incident_alerts = [
-        alerts_by_id[alert_id]
-        for alert_id in incident["alert_ids"]
-        if alert_id in alerts_by_id
+        alerts_by_id[alert_id] for alert_id in incident["alert_ids"] if alert_id in alerts_by_id
     ]
 
     if len(incident_alerts) != len(incident["alert_ids"]):
@@ -99,10 +95,7 @@ def validate_guardrails(result, incident_id, proposal):
     if not incident_alerts:
         blocked.append("Incident has no alerts")
 
-    if any(
-            alert["incident_id"] != incident_id
-            for alert in incident_alerts
-    ):
+    if any(alert["incident_id"] != incident_id for alert in incident_alerts):
         blocked.append("Alert belongs to another incident")
 
     # 3. Collect valid evidence IDs for this incident
@@ -111,9 +104,7 @@ def validate_guardrails(result, incident_id, proposal):
     if len(valid_flows) != len(set(incident["evidence_sample_ids"])):
         blocked.append("Incident references missing flows")
 
-    valid_evidence = valid_flows | {
-        alert["alert_id"] for alert in incident_alerts
-    }
+    valid_evidence = valid_flows | {alert["alert_id"] for alert in incident_alerts}
 
     # 4. Check the AI verdict
     verdict = proposal.get("verdict")
@@ -136,10 +127,7 @@ def validate_guardrails(result, incident_id, proposal):
     # 6. Validate proposed investigation actions
     actions = proposal.get("actions", [])
 
-    if (
-        not isinstance(actions, list)
-        or any(not isinstance(action, str) for action in actions)
-    ):
+    if not isinstance(actions, list) or any(not isinstance(action, str) for action in actions):
         blocked.append("Malformed action list")
     else:
         for action in actions:
@@ -147,20 +135,13 @@ def validate_guardrails(result, incident_id, proposal):
                 blocked.append(f"Prohibited or unknown action: {action}")
 
     # 7. Require review for protected benign verdicts
-    alert_types = {
-        alert["type"] for alert in incident_alerts
-    }
+    alert_types = {alert["type"] for alert in incident_alerts}
 
     if alert_types - (PROTECTED_ALERTS | {"Benign", "NeedsReview"}):
         blocked.append("Unknown alert type")
 
-    if (
-        verdict == "Likely Benign"
-        and alert_types & PROTECTED_ALERTS
-    ):
-        review.append(
-            "Protected alert detected: analyst confirmation required"
-        )
+    if verdict == "Likely Benign" and alert_types & PROTECTED_ALERTS:
+        review.append("Protected alert detected: analyst confirmation required")
 
     # 8. Check for automatic priority downgrades
     # Any AI-requested change is prohibited in this MVP.
