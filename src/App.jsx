@@ -277,7 +277,7 @@ export default function App() {
                             key={incident.incident_id}
                             onClick={() => openCase(incident.incident_id)}
                           >
-                            <strong>{caseTitle(incident)}</strong>
+                            <strong>{incident.incident_id}</strong>
                             <span>
                               {incident.source_ip} → {incident.destination_ip}
                             </span>
