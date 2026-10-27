@@ -5322,7 +5322,7 @@ button:disabled {
 }
 
 .incident-page .incident-header .incident-back .case-back-chevron {
-  transform: none;
+  transform: translateY(-4px);
 }
 
 /* Audit workspace: concise case groups, readable events and optional technical detail. */
