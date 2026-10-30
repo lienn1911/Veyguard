@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Icon from './Icon.jsx';
+import VeyGuardAnimatedLogo from './VeyGuardAnimatedLogo.jsx';
 
 export default function Login({ onLogin, notice }) {
   const [username, setUsername] = useState('');
@@ -30,15 +31,12 @@ export default function Login({ onLogin, notice }) {
 
   return <main className="login-page">
     <div className="login-shell">
-      <section className="login-brand-side" aria-label="VeyGuard">
+   <section className="login-brand-side" aria-label="VeyGuard">
   <div className="login-brand-scene">
-    <img
-      src="/VeyGuard-logo.png"
-      alt="VeyGuard"
-      className="veyguard-login-logo"
-    />
+    <VeyGuardAnimatedLogo />
   </div>
 </section>
+
       <div className="login-form-side">
         <h1 className="login-heading">Sign in to your account</h1>
         {notice && <p className="login-notice" role="status">{notice}</p>}

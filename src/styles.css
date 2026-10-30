@@ -1918,3 +1918,141 @@ button:focus-visible{outline-color:#a889d9}
   object-fit: contain;
   margin: 0 auto;
 }
+
+
+/* Animate the ORIGINAL VeyGuard logo */
+.login-brand-side .veyguard-login-logo {
+  animation:
+    veyguardAppear 1.2s ease-out both,
+    veyguardFloat 4s ease-in-out 1.2s infinite;
+
+  transform-origin: center;
+  filter: drop-shadow(0 0 12px rgba(180, 137, 255, 0.18));
+}
+
+/* Smooth entrance */
+@keyframes veyguardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Gentle floating motion */
+@keyframes veyguardFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Reduce animation for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .login-brand-side .veyguard-login-logo {
+    animation: none;
+  }
+}
+
+
+/* VeyGuard SVG drawing animation */
+
+.login-brand-side .vg-animation {
+  display: block;
+  width: 550px;
+  max-width: 85%;
+  height: auto;
+  overflow: visible;
+  margin: 0 auto;
+}
+
+/* Animated stroke layer */
+
+.vg-sketch {
+  animation: vgSketchFade 0.55s ease 2.3s forwards;
+}
+
+.vg-line {
+  fill: none;
+  stroke: #eee3ff;
+  stroke-width: 13;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+
+  animation: vgDraw 0.75s ease-in-out forwards;
+}
+
+.vg-top {
+  animation-delay: 0.15s;
+}
+
+.vg-v {
+  animation-delay: 0.7s;
+}
+
+.vg-g {
+  animation-delay: 1.25s;
+}
+
+.vg-bottom {
+  animation-delay: 1.7s;
+}
+
+/* Original 3D logo reveal */
+
+.vg-original {
+  opacity: 0;
+  animation: vgReveal 0.9s ease 2.15s forwards;
+}
+
+/* Animation keyframes */
+
+@keyframes vgDraw {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes vgSketchFade {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vgReveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+  .vg-line,
+  .vg-sketch,
+  .vg-original {
+    animation: none;
+  }
+
+  .vg-sketch {
+    opacity: 0;
+  }
+
+  .vg-original {
+    opacity: 1;
+  }
+}
