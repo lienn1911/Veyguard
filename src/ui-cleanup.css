@@ -6932,6 +6932,119 @@ button:disabled {
 .case-queue-name .case-addresses {
   margin-top: 3px;
 }
+.case-list-confidence {
+  color: #777080;
+  font-size: 12px;
+  font-weight: 500;
+}
+.case-confidence-label { display: none; }
+
+.investigation-main-content .iris-cases-columns,
+.investigation-main-content .iris-cases-row {
+  grid-template-columns:
+    minmax(250px, 2.3fr) minmax(145px, 1.2fr) minmax(130px, 1.1fr)
+    minmax(140px, 1.15fr) minmax(115px, .9fr) minmax(115px, .9fr);
+  align-items: center;
+  gap: 16px;
+  padding-right: 24px;
+  padding-left: 24px;
+}
+.investigation-main-content .iris-cases-row {
+  min-height: 94px;
+}
+.investigation-main-content .iris-cases-columns > span,
+.investigation-main-content .iris-cases-row > * {
+  min-width: 0;
+  text-align: left;
+}
+.investigation-main-content .iris-cases-row > time,
+.investigation-main-content .iris-cases-row > .case-list-confidence {
+  color: #81768f;
+  font-size: 12px;
+}
+.investigation-main-content .iris-cases-row > .case-review-priority {
+  justify-self: start;
+}
+@container (max-width: 940px) {
+  .investigation-main-content .iris-cases-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 14px;
+  }
+  .investigation-main-content .iris-cases-row > .case-queue-name { grid-column: 1; grid-row: 1; }
+  .investigation-main-content .iris-cases-row > .case-review-priority { grid-column: 2; grid-row: 1; justify-self: end; }
+  .investigation-main-content .iris-cases-row > time { grid-column: 1 / -1; grid-row: 2; }
+  .investigation-main-content .iris-cases-row > .case-review-progress { grid-column: 2; grid-row: 4; justify-self: end; text-align: right; }
+  .investigation-main-content .iris-cases-row > .case-list-review { grid-column: 1; grid-row: 4; }
+  .investigation-main-content .iris-cases-row > .case-list-confidence {
+    grid-column: 1;
+    grid-row: 5;
+  }
+  .case-confidence-label { display: inline; }
+}
+@container (max-width: 520px) {
+  .investigation-main-content .iris-cases-row > .case-review-progress { grid-column: 1; grid-row: 6; justify-self: start; text-align: left; }
+  .investigation-main-content .iris-cases-row > .case-list-confidence {
+    grid-column: 1;
+    grid-row: 5;
+  }
+}
+
+.login-brand-side .login-brand-scene {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(85%, 550px);
+  aspect-ratio: 1;
+}
+.login-brand-side .vg-animation {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.vg-sketch { animation: vg-sketch-fade .55s ease 2.3s forwards; }
+.vg-line {
+  fill: none;
+  stroke: #eee3ff;
+  stroke-width: 13;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: vg-draw .75s ease-in-out forwards;
+}
+.vg-top { animation-delay: .15s; }
+.vg-v { animation-delay: .7s; }
+.vg-g { animation-delay: 1.25s; }
+.vg-bottom { animation-delay: 1.7s; }
+.vg-original { opacity: 0; animation: vg-reveal .9s ease 2.15s forwards; }
+@keyframes vg-draw { to { stroke-dashoffset: 0; } }
+@keyframes vg-sketch-fade { to { opacity: 0; } }
+@keyframes vg-reveal { to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .vg-line, .vg-sketch, .vg-original { animation: none; }
+  .vg-sketch { opacity: 0; }
+  .vg-original { opacity: 1; }
+}
+
+@media (min-width: 761px) {
+  .sidebar.collapsed:has(.account-menu) {
+    z-index: 30;
+    overflow: visible;
+  }
+  .sidebar.collapsed .sidebar-account {
+    position: relative;
+  }
+  .sidebar.collapsed .account-menu {
+    position: absolute;
+    right: auto;
+    bottom: 0;
+    left: calc(100% + 12px);
+    width: 220px;
+    margin: 0;
+    z-index: 1;
+  }
+}
 .review-priority-badge .priority-equals {
   display: inline-flex;
   align-items: center;
@@ -7090,4 +7203,53 @@ button:disabled {
   .home-progress-body {
     padding: 22px;
   }
+}
+
+.iris-cases-page,
+.iris-cases-page button,
+.iris-cases-page input {
+  font-family: Nunito, 'Segoe UI', sans-serif;
+}
+.iris-cases-page .case-list-heading h1 {
+  font-family: inherit;
+  font-size: 29px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.iris-cases-page .case-results-count {
+  font-size: 12px;
+  font-weight: 700;
+}
+.iris-cases-page .investigation-filters label > span,
+.iris-cases-page .investigation-filters .select-field > label {
+  font-size: 13px;
+  font-weight: 700;
+}
+.iris-cases-page .iris-cases-columns {
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+.iris-cases-page .iris-cases-row {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+.iris-cases-page .case-queue-name strong.case-stable-id {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+.iris-cases-page .case-queue-name .case-addresses,
+.iris-cases-page .case-queue-name .case-detection-type,
+.iris-cases-page .iris-cases-row > time,
+.iris-cases-page .iris-cases-row > .case-list-confidence {
+  font-size: 12px;
+  font-weight: 400;
+}
+.iris-cases-page .case-review-progress .case-review-state,
+.iris-cases-page .case-list-review .case-ai-assessment {
+  font-size: 12px;
+  font-weight: 700;
 }

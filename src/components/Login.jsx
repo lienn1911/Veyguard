@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Icon from './Icon.jsx';
+import VeyGuardAnimatedLogo from './VeyGuardAnimatedLogo.jsx';
 
 export default function Login({ onLogin, notice }) {
   const [username, setUsername] = useState('');
@@ -40,55 +41,9 @@ export default function Login({ onLogin, notice }) {
   return (
     <main className="login-page">
       <div className="login-shell">
-        <section className="login-brand-side" aria-label="SOC Desk">
-          <div className="login-brand-scene" aria-hidden="true">
-            <svg className="login-draw-logo" viewBox="0 0 100 100" fill="none">
-              <g
-                className="login-logo-ring login-logo-outer"
-                stroke="#fff"
-                strokeWidth="7"
-                strokeLinecap="round"
-              >
-                <path pathLength="100" d="M12 37A40 40 0 0 1 57 10" />
-                <path pathLength="100" d="M83 24A40 40 0 0 1 88 65" />
-                <path pathLength="100" d="M67 86A40 40 0 0 1 11 64" />
-              </g>
-              <g className="login-logo-ring login-logo-inner" strokeWidth="7" strokeLinecap="round">
-                <path pathLength="100" stroke="#fff" d="M43 30A23 23 0 0 0 39 71" />
-                <path pathLength="100" stroke="#fff" d="M67 69A23 23 0 0 1 54 75" />
-                <path pathLength="100" stroke="#C8B8EF" d="M52 27A23 23 0 0 1 75 50" />
-              </g>
-              <g className="login-logo-points" fill="#fff">
-                <circle cx="71" cy="12" r="5" />
-                <circle cx="11" cy="51" r="5" />
-                <circle cx="78" cy="79" r="5" />
-              </g>
-              <circle className="login-logo-core" cx="52" cy="53" r="8" fill="#C8B8EF" />
-            </svg>
-          </div>
-          <div className="login-brand-name" aria-hidden="true">
-            <span className="login-brand-word login-brand-word-soc">
-              {'SOC'.split('').map((letter, index) => (
-                <span
-                  className="login-brand-letter"
-                  style={{ '--letter-delay': `${1.15 + index * 0.075}s` }}
-                  key={index}
-                >
-                  {letter}
-                </span>
-              ))}
-            </span>
-            <span className="login-brand-word login-brand-word-desk">
-              {'Desk'.split('').map((letter, index) => (
-                <span
-                  className="login-brand-letter"
-                  style={{ '--letter-delay': `${1.38 + index * 0.075}s` }}
-                  key={index}
-                >
-                  {letter}
-                </span>
-              ))}
-            </span>
+        <section className="login-brand-side" aria-label="VeyGuard">
+          <div className="login-brand-scene">
+            <VeyGuardAnimatedLogo />
           </div>
         </section>
         <div className="login-form-side">

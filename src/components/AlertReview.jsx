@@ -192,14 +192,14 @@ export default function AlertReview({
     async function loadQueue() {
       try {
         const response = await fetch('/api/cases/queue');
-        if (!response.ok) throw new Error('Case queue unavailable');
+        if (!response.ok) throw new Error('Case status unavailable');
         const result = await response.json();
         if (active) {
           setQueue(result.cases);
           setQueueError('');
         }
-      } catch {
-        if (active) setQueueError('Case status unavailable. Restart the local service.');
+      } catch (error) {
+        if (active) setQueueError(error.message);
       }
     }
     loadQueue();
@@ -498,16 +498,13 @@ export default function AlertReview({
         <div className="iris-cases-table">
           <div className="iris-cases-columns">
             <span>Case</span>
-            <span>Review priority</span>
-            <span>AI result</span>
+            <span>First seen · UTC</span>
             <span>Review status</span>
-            <span>Why flagged</span>
-            <span>First seen</span>
+            <span>AI assessment</span>
+            <span>AI confidence</span>
+            <span>Review priority</span>
           </div>
           {filteredCases.map((item) => {
-            const caseAlerts = data.alerts.filter(
-              (alert) => alert.incident_id === item.incident_id,
-            );
             const state = queue?.[item.incident_id];
             const ai = caseAssessment(item, assessments[item.incident_id]);
             return (
@@ -532,12 +529,7 @@ export default function AlertReview({
                     {item.source_ip} → {item.destination_ip}
                   </span>
                 </span>
-                <span className="case-review-priority">
-                  <PriorityBadge priority={state?.review_priority} />
-                </span>
-                <span className="case-list-review">
-                  <span className={`case-ai-assessment ${ai.tone}`}>{ai.label}</span>
-                </span>
+                <time>{shortTime(item.window_start)}</time>
                 <span className="case-review-progress">
                   <span
                     className={`case-review-state review-${state?.review_progress?.state || 'unknown'}`}
@@ -557,10 +549,19 @@ export default function AlertReview({
                     <span className="case-report-saved-label">Report saved</span>
                   )}
                 </span>
-                <span className="case-list-reason">
-                  {formatRuleBasis(caseAlerts[0]?.rule_basis) || 'Rule details unavailable'}
+                <span className="case-list-review">
+                  <span className={`case-ai-assessment ${ai.tone}`}>{ai.label}</span>
                 </span>
-                <time>{shortTime(item.window_start)}</time>
+                <span
+                  className="case-list-confidence"
+                  aria-label={`AI confidence: ${ai.confidence || 'unavailable'}`}
+                >
+                  <span className="case-confidence-label">AI confidence: </span>
+                  {ai.confidence || '—'}
+                </span>
+                <span className="case-review-priority">
+                  <PriorityBadge priority={state?.review_priority} />
+                </span>
               </button>
             );
           })}
